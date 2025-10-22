@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Check-list de Abertura da Loja</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #222;
+      --muted: #6b7280;
+      --card: #f8fafc;
+      --border: #e5e7eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 24px; background: var(--bg); color: var(--fg);
+      font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    }
+    .wrap {
+      max-width: 820px; margin: 0 auto; background: var(--card);
+      border: 1px solid var(--border); border-radius: 16px; padding: 24px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.05);
+    }
+    h1 { font-size: 24px; margin: 0 0 16px; }
+    p.desc { color: var(--muted); margin: 0 0 24px; }
+    h2 { font-size: 18px; margin: 28px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { display: flex; align-items: center; gap: 10px; padding: 8px 6px; border-radius: 10px; }
+    li:hover { background: #fff; }
+    input[type="checkbox"] { width: 18px; height: 18px; }
+    label { cursor: pointer; }
+    .section { margin-bottom: 12px; }
+    .footer { color: var(--muted); font-size: 12px; margin-top: 24px; }
+    @media print {
+      body { background: #fff; }
+      .wrap { box-shadow: none; border: none; padding: 0; }
+      a#print { display: none; }
+    }
+    .toolbar { display: flex; gap: 10px; align-items: center; margin: 8px 0 16px; }
+    .btn { border: 1px solid var(--border); background: #fff; padding: 6px 10px; border-radius: 8px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Check-list de Abertura da Loja</h1>
+    <p class="desc">Marque cada item conforme concluir. (Conteúdo fiel ao documento fornecido.)</p>
+
+    <div class="toolbar">
+      <button id="clear" class="btn" type="button" title="Desmarcar todos">Desmarcar todos</button>
+      <button id="print" class="btn" type="button" title="Imprimir">Imprimir</button>
+    </div>
+
+    <section class="section">
+      <h2>Abertura</h2>
+      <ul>
+        <li><input id="a1" type="checkbox"><label for="a1">Colocar as bandeiras no lugar</label></li>
+        <li><input id="a2" type="checkbox"><label for="a2">Ligar o computador e a impressora</label></li>
+        <li><input id="a3" type="checkbox"><label for="a3">Logar: WhatsApp, Goomer, iFood</label></li>
+        <li><input id="a4" type="checkbox"><label for="a4">Story de abertura da loja</label></li>
+        <li><input id="a5" type="checkbox"><label for="a5">Barato do Dia: verificar, abrir e divulgar</label></li>
+        <li><input id="a6" type="checkbox"><label for="a6">Postar “Pronta Entrega”</label></li>
+        <li><input id="a7" type="checkbox"><label for="a7">Limpar estufas</label></li>
+        <li><input id="a8" type="checkbox"><label for="a8">Ligar máquina de café</label></li>
+        <li><input id="a9" type="checkbox"><label for="a9">Ligar estufas geladas e a quente</label></li>
+        <li><input id="a10" type="checkbox"><label for="a10">Organizar e arrumar as estufas</label></li>
+        <li><input id="a11" type="checkbox"><label for="a11">Verificar se cada produto tem sua placa correspondente</label></li>
+        <li><input id="a12" type="checkbox"><label for="a12">Limpar banheiros</label></li>
+        <li><input id="a13" type="checkbox"><label for="a13">Limpar a loja (caso necessário)</label></li>
+        <li><input id="a14" type="checkbox"><label for="a14">Limpar mesas / sofás / cadeiras</label></li>
+        <li><input id="a15" type="checkbox"><label for="a15">Repor guardanapos</label></li>
+        <li><input id="a16" type="checkbox"><label for="a16">Repor ketchup / mostarda / maionese</label></li>
+        <li><input id="a17" type="checkbox"><label for="a17">Identificar produtos que precisam sair</label></li>
+        <li><input id="a18" type="checkbox"><label for="a18">Postar nos stories e usá-los como sugestão</label></li>
+        <li><input id="a19" type="checkbox"><label for="a19">Conferir e repor louças</label></li>
+        <li><input id="a20" type="checkbox"><label for="a20">Conferir e repor embalagens</label></li>
+        <li><input id="a21" type="checkbox"><label for="a21">Passar cheirinho de baunilha na loja</label></li>
+        <li><input id="a22" type="checkbox"><label for="a22">Atualização do Delivery</label></li>
+        <li><input id="a23" type="checkbox"><label for="a23">1ª reposição: 11h00</label></li>
+        <li><input id="a24" type="checkbox"><label for="a24">2ª reposição: 15h00</label></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Fechamento</h2>
+      <ul>
+        <li><input id="f1" type="checkbox"><label for="f1">Fechar Barato do Dia</label></li>
+        <li><input id="f2" type="checkbox"><label for="f2">Fazer lista de reposição</label></li>
+        <li><input id="f3" type="checkbox"><label for="f3">Guardar bandeiras</label></li>
+        <li><input id="f4" type="checkbox"><label for="f4">Guardar mesas e cadeiras</label></li>
+        <li><input id="f5" type="checkbox"><label for="f5">Desligar ar-condicionado</label></li>
+        <li><input id="f6" type="checkbox"><label for="f6">Verificar se os bolos estão embalados</label></li>
+        <li><input id="f7" type="checkbox"><label for="f7">Embalar e guardar todos os produtos na geladeira</label></li>
+        <li><input id="f8" type="checkbox"><label for="f8">Fazer reposição de bebidas</label></li>
+      </ul>
+    </section>
+
+    <p class="footer">Versão HTML simples com caixas de seleção ao lado de cada item.</p>
+  </main>
+
+  <script>
+    // Botões utilitários (apenas o que foi pedido + qualidade de vida simples)
+    document.getElementById('clear').addEventListener('click', () => {
+      document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    });
+    document.getElementById('print').addEventListener('click', () => window.print());
+  </script>
+</body>
+</html>
