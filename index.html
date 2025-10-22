@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Portal de Manuais — Docce</title>
+  <title>Portal de Manuais da Docce</title>
   <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root{
@@ -12,8 +12,6 @@
       --card:#ffffff;
       --text:#1f2937;
       --muted:#6b7280;
-      --accent:#0ea5e9; /* azul discreto para foco */
-      --ring:0 0 0 3px rgba(14,165,233,.25);
       --radius:20px;
     }
     *{box-sizing:border-box}
@@ -29,160 +27,35 @@
     }
     h1{ font-size:clamp(24px, 2.4vw, 34px); margin:0 0 6px; letter-spacing:.2px }
     .sub{ color:var(--muted); margin:0 0 18px; font-size:15px }
-    .toolbar{ display:flex; gap:10px; flex-wrap:wrap; margin:14px 0 22px }
-    button, .btn{
-      appearance:none; border:1px solid rgba(0,0,0,.08); background:#fafafa; color:#111827;
-      padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:700; transition:.15s ease;
-    }
-    button:hover{ background:#f3f4f6 }
-    button:focus{ outline:none; box-shadow:var(--ring); border-color:#bae6fd }
     .list{
       display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:12px;
     }
     .item{
       border:1px solid rgba(0,0,0,.08); background:#fff; border-radius:14px; padding:14px 16px;
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
     }
     .item a{ color:#111827; text-decoration:none; font-weight:700 }
-    .item a:focus{ outline:none; box-shadow:var(--ring); border-radius:8px; }
+    .item a:hover{ text-decoration:underline }
     .item small{ color:var(--muted) }
-    .actions{ display:flex; gap:8px }
-    .danger{ color:#b91c1c; border-color:#fecaca; background:#fff8f8 }
-    .muted{ background:#f8fafc; color:#334155 }
-
-    details{
-      margin:18px 0 8px; border:1px solid rgba(0,0,0,.08); border-radius:14px; overflow:hidden;
-      background:#fcfcfc;
-    }
-    summary{ padding:12px 16px; cursor:pointer; font-weight:700; list-style:none }
-    summary::-webkit-details-marker{ display:none }
-    .panel{ padding:0 16px 16px }
-    .grid{ display:grid; grid-template-columns: 1.2fr 1fr; gap:12px; }
-    label{ font-size:13px; color:#475569; display:block; margin:6px 0 4px }
-    input{ width:100%; padding:10px 12px; border-radius:12px; border:1px solid rgba(0,0,0,.12); background:#fff; }
-    input:focus{ outline:none; box-shadow:var(--ring); border-color:#bae6fd }
-    .note{ font-size:12px; color:#64748b; margin-top:10px }
     footer{ color:#94a3b8; font-size:12px; text-align:center; margin-top:16px }
   </style>
 </head>
 <body>
   <main class="wrap">
     <section class="card">
-      <h1>Portal de Manuais — Docce</h1>
-      <p class="sub">Página simples para acessar seus roteiros e manuais. Coloque os arquivos <strong>encomendas.html</strong> e <strong>atendimento.html</strong> na mesma pasta deste <em>index.html</em> e os links abaixo já vão funcionar.</p>
+      <h1>Portal de Manuais da Docce</h1>
+      <p class="sub">Sorria, o hoje é especial.</p>
 
-      <div class="toolbar">
-        <button id="addToggle">Adicionar link</button>
-        <button id="resetBtn" class="muted" title="Recarrega os links padrão">Restaurar padrão</button>
-      </div>
-
-      <details id="addFormWrap">
-        <summary>Adicionar manual</summary>
-        <div class="panel">
-          <div class="grid">
-            <div>
-              <label for="title">Título do manual</label>
-              <input id="title" placeholder="Ex.: Roteiro de Encomendas" />
-            </div>
-            <div>
-              <label for="href">Arquivo (nome do .html)</label>
-              <input id="href" placeholder="Ex.: encomendas.html" />
-            </div>
-          </div>
-          <div class="toolbar" style="margin-top:14px">
-            <button id="saveBtn">Salvar</button>
-            <button id="cancelBtn" class="danger">Cancelar</button>
-          </div>
-          <p class="note">Dica: mantenha os arquivos HTML na mesma pasta do <em>index.html</em>. Você pode adicionar quantos links quiser. Eles ficam salvos no seu navegador (localStorage).</p>
+      <div id="linkList" class="list">
+        <div class="item">
+          <a href="encomendas.html">Roteiro de Encomendas</a><br>
         </div>
-      </details>
-
-      <div id="linkList" class="list" aria-live="polite"></div>
+        <div class="item">
+          <a href="atendimento.html">Manual de Atendimento</a><br>
+        </div>
+      </div>
 
       <footer>Feito com ❤ para agilizar seu atendimento</footer>
     </section>
   </main>
-
-  <script>
-    const DEFAULT_LINKS = [
-      { title: "Roteiro de Encomendas", href: "encomendas.html" },
-      { title: "Manual de Atendimento (Loja)", href: "atendimento.html" }
-    ];
-
-    const KEY = "docce-manual-links";
-    const $list = document.getElementById('linkList');
-    const $addFormWrap = document.getElementById('addFormWrap');
-    const $title = document.getElementById('title');
-    const $href = document.getElementById('href');
-
-    document.getElementById('addToggle').onclick = () => $addFormWrap.open = !$addFormWrap.open;
-    document.getElementById('cancelBtn').onclick = () => {
-      $addFormWrap.open = false; $title.value = ''; $href.value='';
-    };
-    document.getElementById('resetBtn').onclick = () => {
-      if(confirm('Restaurar os links padrão? Isso substituirá sua lista atual.')){
-        save(DEFAULT_LINKS);
-        render();
-      }
-    };
-    document.getElementById('saveBtn').onclick = () => {
-      const t = $title.value.trim();
-      const h = $href.value.trim();
-      if(!t || !h){ alert('Preencha título e arquivo.'); return; }
-      const links = load();
-      // evita duplicar pelo href
-      if(links.some(x => x.href.toLowerCase() === h.toLowerCase())){
-        alert('Já existe um link com esse arquivo.');
-        return;
-      }
-      links.push({ title:t, href:h });
-      save(links);
-      render();
-      $title.value=''; $href.value='';
-      $addFormWrap.open = false;
-    };
-
-    function load(){
-      try{
-        const raw = localStorage.getItem(KEY);
-        if(!raw) return DEFAULT_LINKS.slice();
-        const list = JSON.parse(raw);
-        if(!Array.isArray(list)) return DEFAULT_LINKS.slice();
-        return list;
-      }catch(e){ return DEFAULT_LINKS.slice(); }
-    }
-    function save(list){ localStorage.setItem(KEY, JSON.stringify(list)); }
-
-    function render(){
-      const links = load();
-      $list.innerHTML = '';
-      links.forEach((item, idx) => {
-        const card = document.createElement('div');
-        card.className = 'item';
-        const left = document.createElement('div');
-        left.innerHTML = `<a href="${item.href}">${item.title}</a><br><small>${item.href}</small>`;
-        const actions = document.createElement('div');
-        actions.className = 'actions';
-        const del = document.createElement('button');
-        del.className = 'danger';
-        del.textContent = 'Remover';
-        del.onclick = () => {
-          const now = load();
-          now.splice(idx, 1);
-          save(now); render();
-        };
-        actions.appendChild(del);
-        card.appendChild(left);
-        card.appendChild(actions);
-        $list.appendChild(card);
-      });
-    }
-
-    // inicia salvando defaults, sem sobrescrever personalizados
-    (function init(){
-      if(!localStorage.getItem(KEY)) save(DEFAULT_LINKS);
-      render();
-    })();
-  </script>
 </body>
 </html>
