@@ -7,8 +7,8 @@
   <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg1:#fff7f0;  /* laranja bem suave */
-      --bg2:#f3fff6;  /* verde bem suave */
+      --bg1:#fff7f0;
+      --bg2:#f3fff6;
       --card:#ffffff;
       --text:#1f2937;
       --muted:#6b7280;
@@ -29,15 +29,22 @@
     h1{ font-size:clamp(24px, 2.4vw, 34px); margin:0 0 6px; letter-spacing:.2px; text-align:center; }
     .sub{ color:var(--muted); margin:0 0 18px; font-size:15px; text-align:center; }
     .list{
-      display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:12px; justify-content:center;
+      display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:14px; justify-content:center;
     }
     .item{
-      border:1px solid rgba(0,0,0,.08); background:#fff; border-radius:14px; padding:14px 16px;
-      text-align:center;
+      border:1px solid rgba(0,0,0,.08); background:#fff; border-radius:14px; padding:16px 18px;
+      text-align:center; transition:transform .15s ease, box-shadow .15s ease;
     }
-    .item a{ color:#111827; text-decoration:none; font-weight:700; display:block; }
+    .item:hover{
+      transform:translateY(-2px);
+      box-shadow:0 4px 16px rgba(0,0,0,.08);
+    }
+    .item a{
+      color:#111827; text-decoration:none; font-weight:700; display:block;
+      font-size:16px; /* tamanho equilibrado e uniforme */
+    }
     .item a:hover{ text-decoration:underline }
-    .item small{ color:var(--muted); display:block; margin-top:4px; }
+    .item small{ color:var(--muted); display:block; margin-top:4px; font-size:13px; }
     footer{ color:#94a3b8; font-size:12px; text-align:center; margin-top:16px }
   </style>
 </head>
@@ -49,10 +56,10 @@
 
       <div id="linkList" class="list">
         <div class="item">
-          <a href="encomendas.html">Roteiro de Encomendas</a><small>
+          <a href="encomendas.html">Roteiro de Encomendas</a><small>encomendas.html</small>
         </div>
         <div class="item">
-          <a href="atendimento.html">Manual de Atendimento (Loja)</a><small>
+          <a href="atendimento.html">Manual de Atendimento (Loja)</a><small>atendimento.html</small>
         </div>
       </div>
 
