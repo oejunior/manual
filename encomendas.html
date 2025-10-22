@@ -1,270 +1,300 @@
 <!doctype html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Manual de Encomendas da Docce</title>
-  <meta name="description" content="Manual de Encomendas da Docce: guia completo de atendimento, tamanhos, valores, mensagens e políticas." />
-  <style>
-    :root{ --bg:#0f0f10; --card:#141416; --muted:#b6bbc6; --text:#f5f7fb; --accent1:#ff7a2f; --accent2:#2fd28f; --border:#26272b; --code:#0b0c0d; }
-    *{box-sizing:border-box} html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto}
-    a{color:var(--accent2);text-decoration:none}
-    header{padding:48px 20px 24px;background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#111}
-    header .wrap{max-width:1100px;margin:0 auto;display:flex;gap:20px;align-items:center}
-    .logo{width:64px;height:64px;border-radius:16px;background:#fff;display:grid;place-items:center;font-weight:800}
-    nav{background:#0e0f11;border-top:1px solid #000;border-bottom:1px solid #000;position:sticky;top:0;z-index:10}
-    nav .wrap{max-width:1100px;margin:0 auto;display:flex;gap:12px;overflow:auto;padding:10px 12px}
-    nav a{padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:#131417;color:#cbd2df;white-space:nowrap}
-    nav a:hover{border-color:var(--accent2);color:#e9fdf3}
-    main{max-width:1100px;margin:0 auto;padding:28px 20px 120px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin:18px 0;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-    h1{font-size:28px;margin:0}
-    h2{font-size:22px;margin:20px 0 8px}
-    h3{font-size:18px;margin:16px 0 10px;color:#dfe3ea}
-    blockquote{margin:12px 0;padding:10px 14px;border-left:3px solid var(--accent2);background:#0f1114;border-radius:8px;color:#d9dee8}
-    ul{margin:10px 0 0 18px}
-    table{width:100%;border-collapse:collapse;margin-top:10px}
-    th,td{border-bottom:1px solid var(--border);padding:8px 6px;text-align:center}
-    th.left,td.left{text-align:left}
-    td.muted{color:#b9c0cf}
-    tfoot td{font-weight:700}
-    .tag{padding:2px 8px;border-radius:999px;border:1px solid var(--border);background:#101215;color:#cbd2df;font-size:12px}
-    .code{background:#0b0c0d;border:1px dashed #2a2d35;border-radius:12px;padding:14px;white-space:pre-wrap;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas}
-    .hint{font-size:13px;color:#aeb6c5}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manual de Encomendas da Docce</title>
+<meta name="description" content="Manual de Encomendas da Docce — roteiro completo de atendimento com falas, observações, tabelas e políticas.">
+<style>
+  :root{
+    --bg:#0f0f10; --card:#15161a; --ink:#f4f6fb; --muted:#c7ccda; --accent:#ff7a2f; --accent2:#2fd28f; --line:#272a33;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter}
+  h1{margin:24px 0 4px;font-size:30px;text-align:center;color:var(--ink)}
+  header p{margin:0 0 24px;text-align:center;color:#d4d9e6}
+  main{max-width:1100px;margin:0 auto;padding:20px}
+  section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin:18px 0;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  h2{margin:0 0 10px;font-size:22px;color:#f0f3fa}
+  h3{margin:14px 0 8px;font-size:18px;color:#e3e7f2}
+  ul{margin:8px 0 0 20px}
+  blockquote{margin:10px 0;padding:12px 14px;border-left:4px solid var(--accent2);background:#10131a;border-radius:8px;color:#e6ebf6}
+  .muted{color:var(--muted)}
+  .tag{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:#11141a;color:#cbd2df;font-size:12px}
+  .code{background:#0b0c0d;border:1px dashed #2a2d35;border-radius:12px;padding:14px;white-space:pre-wrap;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas}
+  table{width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed}
+  th,td{border-bottom:1px solid var(--line);padding:8px 6px}
+  th{font-weight:700;text-align:center}
+  td.left, th.left{text-align:left}
+  td.center{text-align:center}
+  /* 4E: adjust widths */
+  table.cols-4 col:nth-child(1){width:22%}
+  table.cols-4 col:nth-child(2){width:43%} /* descrição um pouco menor para dar espaço às demais */
+  table.cols-4 col:nth-child(3){width:18%}
+  table.cols-4 col:nth-child(4){width:17%}
+</style>
 </head>
 <body>
 <header>
-  <div class="wrap">
-    <div class="logo">D</div>
-    <div>
-      <h1>Manual de Encomendas da Docce</h1>
-      <p>Guia completo de atendimento, tamanhos, valores, mensagens e políticas.</p>
-    </div>
-  </div>
+  <h1>Manual de Encomendas da Docce</h1>
+  <p>Roteiro de uso interno com falas, observações, tabelas e políticas.</p>
 </header>
 
-<nav>
-  <div class="wrap">
-    <a href="#sec1">1. Início</a>
-    <a href="#sec2">2. Necessidade</a>
-    <a href="#sec3">3. Linhas</a>
-    <a href="#sec4">4. Aprofundamento</a>
-    <a href="#sec4A">4A Bolos</a>
-    <a href="#sec4B">4B Bento</a>
-    <a href="#sec4C">4C Docinhos</a>
-    <a href="#sec4D">4D Sobremesas</a>
-    <a href="#sec4E">4E Taças/Boxes</a>
-    <a href="#sec5A">5A Pagamento</a>
-    <a href="#sec5B">5B Cancelamento</a>
-    <a href="#sec6">6 Confirmação</a>
-    <a href="#sec7">7 Encerramento</a>
-  </div>
-</nav>
-
 <main>
-  <!-- 1) INÍCIO -->
-  <section id="sec1" class="card">
-    <h2>🟢 1. Início da conversa – Apresentação (modelo de fala)</h2>
-    <blockquote>“Olá! Tudo bem? Com quem eu falo, por gentileza?”</blockquote>
-    <blockquote>“Prazer, [NOME]! Aqui é o Oscar da Docce 🍰. Posso te fazer algumas perguntinhas rápidas pra entender direitinho sua necessidade e te ajudar da melhor forma?”</blockquote>
-    <p class="hint">Use o nome do cliente ao menos 3 vezes ao longo da conversa.</p>
+
+  <!-- 1 -->
+  <section id="sec1">
+    <h2>🟢 1. Apresentação e Acolhimento</h2>
+    <blockquote>“Olá! Tudo bem? Com quem eu falo, por gentileza?”<br><span class="muted">*(aguardar o nome)*</span></blockquote>
+    <blockquote>“Prazer, [Nome do cliente]! Aqui é o [Seu nome] da Docce Cheesecake. Tudo certinho?<br>
+    Eu vou te fazer algumas perguntinhas rápidas só pra entender direitinho o que você precisa e te ajudar a escolher a melhor opção, tudo bem?”</blockquote>
   </section>
 
-  <!-- 2) NECESSIDADE -->
-  <section id="sec2" class="card">
+  <!-- 2 -->
+  <section id="sec2">
     <h2>🟡 2. Identificação da necessidade</h2>
-    <blockquote>“É pra qual ocasião, [NOME]? Aniversário, evento, comemoração em casa…?”</blockquote>
-    <blockquote>“Quantas pessoas vocês pretendem servir?”</blockquote>
-    <blockquote>“Perfeito, [NOME]. Com essa quantidade eu já te ajudo a escolher o tamanho e o tipo de produto ideal.”</blockquote>
+    <blockquote>“O seu pedido é para qual ocasião, [Nome do cliente]?<br>
+    É para um <b>aniversário</b>, um <b>evento</b> ou uma <b>comemoração em casa</b>?”</blockquote>
+    <p class="muted"><em>Aguardar a resposta do cliente.</em></p>
+    <blockquote>“Ah, entendi! Então é para [tipo de evento].<br>
+    Esse tipo de comemoração costuma pedir algo mais <b>[intimista / prático / elegante / chamativo — adaptar conforme o caso]</b>.”<br><br>
+    “Perfeito! Agora eu vou te apresentar as opções da nossa linha Docce pra você escolher o que mais combina com o seu momento.”</blockquote>
   </section>
 
-  <!-- 3) LINHAS -->
-  <section id="sec3" class="card">
-    <h2>🟠 3. Linhas Docce (apresentação e direcionamento)</h2>
+  <!-- 3 -->
+  <section id="sec3">
+    <h2>🟠 3. Apresentação de Itens Docce</h2>
     <ul>
-      <li>🎂 <strong>Bolos</strong> — no acetato (Mini, P, M, G) e bolos decorados. <span class="tag">Não trabalhamos com pasta americana</span></li>
-      <li>🍰 <strong>Bento Cakes</strong> — 200g, R$ 45,00 (cores padrão: preto e vermelho). <em>Outras cores</em>: +R$ 10,00. Embalagem: hamburgueira.</li>
-      <li>🍬 <strong>Docinhos</strong> — por cento (50/100) e unitários (mín. 25 para Bem casado e Macaron).</li>
-      <li>🍮 <strong>Sobremesas</strong> — tortas e cheesecakes (com PMG e tamanhos únicos, conforme o produto).</li>
-      <li>🍨 <strong>Taças e Boxes</strong> — Taça 1,2 L (serve 6–8) e Box 1,5 L (serve 8–10).</li>
+      <li><b>Bolos:</b> no acetato ou decorado.</li>
+      <li><b>Bento Cakes:</b> bolinhos individuais de 200 g.</li>
+      <li><b>Docinhos:</b> tradicionais e finos.</li>
+      <li><b>Sobremesas:</b> tortas e cheesecakes.</li>
+      <li><b>Taças e Boxes:</b> ideais para dividir.</li>
     </ul>
+    <blockquote>“Se você já souber qual item deseja, posso te enviar agora mesmo o cardápio completo <b>para você poder escolher.</b><br>
+    Caso prefira, posso te ajudar a definir o <b>tamanho e o tipo de produto ideal</b> para a sua comemoração.<br>
+    O que você prefere?”</blockquote>
   </section>
 
-  <!-- 4) APROFUNDAMENTO -->
-  <section id="sec4" class="card">
-    <h2>🟣 4. Aprofundamento – Tamanhos, rendimentos e delivery</h2>
+  <!-- 4 -->
+  <section id="sec4">
+    <h2>🟣 4. Aprofundamento</h2>
+    <blockquote>“[Nome do cliente], quantas pessoas você pretende servir?”<br>
+    <span class="muted">*(Aguardar a resposta do cliente)*</span><br><br>
+    “Perfeito! Com essa quantidade, eu já consigo te orientar sobre o <b>tamanho ideal</b> da sobremesa ou do bolo.”</blockquote>
+    <p class="muted"><em>Essa etapa serve para entender o tamanho adequado do pedido — seja bolo, sobremesa, taça ou outro produto. No caso do <b>Bento Cake</b>, ele é uma <b>porção individual</b>, então não há necessidade de calcular rendimento.</em></p>
+  </section>
+
+  <!-- 4A -->
+  <section id="sec4A">
+    <h2>🎂 4A. Bolos</h2>
+    <p>Os <b>bolos da Docce</b> são preparados com <b>massa branca</b> ou <b>massa de chocolate</b>, conforme o sabor escolhido. A única exceção é o <b>Red Velvet</b>, que possui uma <b>massa exclusiva, vermelha e aveludada</b>, com um suave <b>toque de cacau</b>.</p>
+
+    <h3>📋 Apresentações:</h3>
     <ul>
-      <li>🍰 <strong>Bolos</strong>: Mini ~1 kg (até 6 porções) • P ~1,8 kg (12–15) • M ~2,5–2,6 kg (20–22) • G ~3,5–3,6 kg (28–30).</li>
-      <li>🍨 <strong>Taças/Boxes</strong>: Taça 1,2 L (6–8) • Box 1,5 L (8–10).</li>
-      <li>🚚 <strong>Delivery</strong> permitido: Bento; Bolos no acetato Mini/P/M; Taças e Boxes.<br/>🛑 <strong>Somente retirada</strong>: Bolo G e bolos decorados, docinhos e sobremesas.</li>
+      <li><b>Bolos no acetato:</b> práticos, elegantes e podem permanecer fora da geladeira por um tempo maior.</li>
+      <li><b>Bolos decorados:</b> ideais para festas e comemorações maiores; devem permanecer refrigerados e ser retirados apenas pouco antes de servir.</li>
     </ul>
-  </section>
 
-  <!-- 4A) BOLOS -->
-  <section id="sec4A" class="card">
-    <h3>🎂 4A. Bolos — massas, tamanhos e valores</h3>
-    <p>Os bolos da Docce são feitos com <strong>massa branca</strong> ou <strong>massa de chocolate</strong>, conforme o sabor. A única exceção é o <strong>Red Velvet</strong>, que possui <em>massa exclusiva aveludada com toque de cacau</em>. <span class="tag">Não trabalhamos com pasta americana</span></p>
-    <p><span class="tag">Delivery</span> permitido para bolos no acetato <strong>Mini / P / M</strong>. <span class="tag">Retirada</span> para bolo <strong>G</strong> e <strong>bolos decorados</strong>.</p>
+    <h3>📏 Tamanhos e rendimentos:</h3>
+    <ul>
+      <li><b>Mini:</b> ~1 kg — até 6 fatias.</li>
+      <li><b>P:</b> ~1,8 kg — 12 a 15 fatias.</li>
+      <li><b>M:</b> ~2,5 a 2,6 kg — 20 a 22 fatias.</li>
+      <li><b>G:</b> ~3,5 a 3,6 kg — 28 a 30 fatias.</li>
+    </ul>
+
+    <h3>🚚 Condições de entrega:</h3>
+    <ul>
+      <li><b>Delivery permitido:</b> bolos no acetato (Mini, P e M).</li>
+      <li><b>Somente retirada:</b> bolos decorados e tamanho G.</li>
+    </ul>
+
+    <h3>📋 Observações:</h3>
+    <ul>
+      <li>As encomendas devem ser feitas com, no mínimo, 24 horas de antecedência.</li>
+      <li>Originalmente, os <b>nossos bolos do cardápio</b> são finalizados <b>com o acabamento tradicional em acetato</b>, e os <b>valores informados</b> refletem <b>essa apresentação padrão</b>.</li>
+      <li>Para coberturas diferentes, como <b>rosas de brigadeiro</b> ou <b>buttercream</b>, haverá <b>acréscimo</b> conforme a decoração e os itens solicitados.</li>
+      <li>Os <b>mini bolos</b> já acompanham <b>caixa presenteável</b>, e o valor já está incluso.</li>
+      <li>❌ Não trabalhamos com pasta americana.</li>
+    </ul>
+
+    <h3>💰 Acréscimos para decorações simples:</h3>
+    <ul>
+      <li>Mini ➜ <b>R$ 30,00</b></li>
+      <li>P ➜ <b>R$ 35,00</b></li>
+      <li>M ➜ <b>R$ 40,00</b></li>
+      <li>G ➜ <b>R$ 45,00</b></li>
+    </ul>
+
+    <h3>✂️ Toppers e decorações em papel ou acrílico:</h3>
+    <p>Para toppers de bolo e decorações feitas em <b>papel ou acrílico</b>, contamos com <b>profissionais parceiros de confiança</b>. Podemos encaminhar o contato desses parceiros para o cliente, que ajustará diretamente com eles os detalhes da arte, prazos e valores. Após a confecção, os toppers e elementos personalizados são <b>enviados para a Docce</b>, para que sejam aplicados ao bolo com todo o cuidado e carinho. Os <b>custos desses serviços adicionais</b> são combinados e pagos diretamente ao profissional parceiro, de forma clara, gentil e alinhada ao jeito Docce de atender.</p>
+
+    <h3>📊 Sabores e valores</h3>
     <table>
-      <thead><tr><th class="left">Sabor</th><th>Mini</th><th>P</th><th>M</th><th>G</th></tr></thead>
+      <thead>
+        <tr><th class="left">Sabor</th><th>P</th><th>M</th><th>G</th><th>Mini</th></tr>
+      </thead>
       <tbody>
-        <tr><td class='left'>2 Amores</td><td>R$ 135,00</td><td>R$ 230,00</td><td>R$ 351,00</td><td>R$ 472,00</td></tr>
-        <tr><td class='left'>Black Cake</td><td>R$ 160,00</td><td>R$ 280,00</td><td>R$ 415,00</td><td>R$ 560,00</td></tr>
-        <tr><td class='left'>Bolo Brigadeirudo</td><td>R$ 110,00</td><td>R$ 185,00</td><td>R$ 355,00</td><td>R$ 455,00</td></tr>
-        <tr><td class='left'>Bolo Chamego</td><td>R$ 135,00</td><td>R$ 230,00</td><td>R$ 351,00</td><td>R$ 472,00</td></tr>
-        <tr><td class='left'>Castanha</td><td>R$ 110,00</td><td>R$ 185,00</td><td>R$ 355,00</td><td>R$ 455,00</td></tr>
-        <tr><td class='left'>Floresta Negra</td><td>R$ 135,00</td><td>R$ 230,00</td><td>R$ 351,00</td><td>R$ 472,00</td></tr>
-        <tr><td class='left'>Frutas Vermelhas</td><td>R$ 135,00</td><td>R$ 230,00</td><td>R$ 351,00</td><td>R$ 472,00</td></tr>
-        <tr><td class='left'>Gargamel</td><td>R$ 125,00</td><td>R$ 215,00</td><td>R$ 325,00</td><td>R$ 437,00</td></tr>
-        <tr><td class='left'>Kinder Cake</td><td>R$ 139,00</td><td>R$ 250,00</td><td>R$ 361,00</td><td>R$ 486,00</td></tr>
-        <tr><td class='left'>Ninho com Nutella</td><td>R$ 110,00</td><td>R$ 185,00</td><td>R$ 355,00</td><td>R$ 455,00</td></tr>
-        <tr><td class='left'>Ninho, Morango e Chocolate</td><td>R$ 135,00</td><td>R$ 230,00</td><td>R$ 351,00</td><td>R$ 472,00</td></tr>
-        <tr><td class='left'>Olho de Sogra</td><td>R$ 135,00</td><td>R$ 230,00</td><td>R$ 351,00</td><td>R$ 472,00</td></tr>
-        <tr><td class='left'>Pistache Cake</td><td>R$ 160,00</td><td>R$ 280,00</td><td>R$ 416,00</td><td>R$ 560,00</td></tr>
-        <tr><td class='left'>Red Velvet</td><td>R$ 139,00</td><td>R$ 230,00</td><td>R$ 360,00</td><td>R$ 475,00</td></tr>
+        <tr><td class="left">2 Amores</td><td>R$ 230,00</td><td>R$ 351,00</td><td>R$ 472,00</td><td>R$ 135,00</td></tr>
+        <tr><td class="left">Black Cake</td><td>R$ 280,00</td><td>R$ 415,00</td><td>R$ 560,00</td><td>R$ 160,00</td></tr>
+        <tr><td class="left">Bolo Brigadeirudo</td><td>R$ 185,00</td><td>R$ 355,00</td><td>R$ 455,00</td><td>R$ 110,00</td></tr>
+        <tr><td class="left">Bolo Chamego</td><td>R$ 230,00</td><td>R$ 351,00</td><td>R$ 472,00</td><td>R$ 135,00</td></tr>
+        <tr><td class="left">Castanha</td><td>R$ 185,00</td><td>R$ 355,00</td><td>R$ 455,00</td><td>R$ 110,00</td></tr>
+        <tr><td class="left">Floresta Negra</td><td>R$ 230,00</td><td>R$ 351,00</td><td>R$ 472,00</td><td>R$ 135,00</td></tr>
+        <tr><td class="left">Frutas Vermelhas</td><td>R$ 230,00</td><td>R$ 351,00</td><td>R$ 472,00</td><td>R$ 135,00</td></tr>
+        <tr><td class="left">Gargamel</td><td>R$ 215,00</td><td>R$ 325,00</td><td>R$ 437,00</td><td>R$ 125,00</td></tr>
+        <tr><td class="left">Kinder Cake</td><td>R$ 250,00</td><td>R$ 361,00</td><td>R$ 486,00</td><td>R$ 139,00</td></tr>
+        <tr><td class="left">Ninho com Nutella</td><td>R$ 185,00</td><td>R$ 355,00</td><td>R$ 455,00</td><td>R$ 110,00</td></tr>
+        <tr><td class="left">Ninho, Morango e Chocolate</td><td>R$ 230,00</td><td>R$ 351,00</td><td>R$ 472,00</td><td>R$ 135,00</td></tr>
+        <tr><td class="left">Olho de Sogra</td><td>R$ 230,00</td><td>R$ 351,00</td><td>R$ 472,00</td><td>R$ 135,00</td></tr>
+        <tr><td class="left">Pistache Cake</td><td>R$ 280,00</td><td>R$ 416,00</td><td>R$ 560,00</td><td>R$ 160,00</td></tr>
+        <tr><td class="left">Red Velvet</td><td>R$ 230,00</td><td>R$ 360,00</td><td>R$ 475,00</td><td>R$ 139,00</td></tr>
       </tbody>
     </table>
   </section>
 
-  <!-- 4B) BENTO -->
-  <section id="sec4B" class="card">
-    <h3>🍰 4B. Bento Cakes — especificações e sabores</h3>
+  <!-- 4B -->
+  <section id="sec4B">
+    <h2>🍰 4B. Bento Cake</h2>
+    <p>O nosso <b>Bento Cake</b> tem aproximadamente <b>200 g</b> e custa <b>R$ 45,00</b>, nas cores padrão <b>preto</b> e <b>vermelho</b>. Caso o cliente deseje incluir outras cores, o valor passa a ser <b>R$ 55,00</b>.</p>
+    <p>Os Bentos são enviados em <b>embalagem tipo hamburgueira</b>, prática e charmosa.</p>
+    <p><b>Sabores disponíveis:</b></p>
     <ul>
-      <li><strong>Peso/Preço:</strong> 200g — <strong>R$ 45,00</strong></li>
-      <li><strong>Cores:</strong> padrão <em>preto</em> e <em>vermelho</em>. Outras cores: <strong>+ R$ 10,00</strong>.</li>
-      <li><strong>Embalagem:</strong> hamburgueira.</li>
-      <li><strong>Sabores:</strong> Brigadeirudo (<em>massa de chocolate</em>), Casadinho (<em>massa pão de ló</em>), Red Velvet (<em>massa exclusiva</em>).</li>
-      <li><span class="tag">Delivery permitido</span></li>
+      <li>🍫 <b>Brigadeirudo</b>: massa de chocolate com recheio de brigadeiro meio amargo.</li>
+      <li>🍯 <b>Casadinho</b>: massa de pão de ló com recheio de doce de leite artesanal.</li>
+      <li>❤️ <b>Red Velvet</b>: massa aveludada vermelha com toque de cacau, recheada com geleia de frutas vermelhas e cream cheese frosting.</li>
     </ul>
+    <p><b>Delivery permitido.</b></p>
   </section>
 
-  <!-- 4C) DOCINHOS -->
-  <section id="sec4C" class="card">
-    <h3>🍬 4C. Docinhos — por cento e unitários</h3>
-    <p class="hint">Valores por 100 e por 50 unidades. Itens unitários ao final (mínimo 25 unidades).</p>
+  <!-- 4C -->
+  <section id="sec4C">
+    <h2>🍬 4C. Docinhos — por cento e unitários</h2>
+    <p class="muted">Valores por 100 e por 50 unidades. Itens unitários ao final (mínimo 25 unidades).</p>
     <table>
-      <thead><tr><th class="left">Doce</th><th class="left">Descrição</th><th>100 unid.</th><th>50 unid.</th></tr></thead>
+      <thead>
+        <tr><th class="left">Doce</th><th class="left">Descrição</th><th>100 unid.</th><th>50 unid.</th></tr>
+      </thead>
       <tbody>
-        <tr><td class='left'>Brigadeiro beijinho</td><td class='left muted'>—</td><td>R$ 260,00</td><td>R$ 130,00</td></tr>
-        <tr><td class='left'>Brigadeiro brulê</td><td class='left muted'>—</td><td>R$ 300,00</td><td>R$ 150,00</td></tr>
-        <tr><td class='left'>Brigadeiro de café</td><td class='left muted'>—</td><td>R$ 260,00</td><td>R$ 130,00</td></tr>
-        <tr><td class='left'>Brigadeiro de caramelo salgado</td><td class='left muted'>—</td><td>R$ 260,00</td><td>R$ 130,00</td></tr>
-        <tr><td class='left'>Brigadeiro de casadinho</td><td class='left muted'>—</td><td>R$ 260,00</td><td>R$ 130,00</td></tr>
-        <tr><td class='left'>Brigadeiro de champanhe</td><td class='left muted'>—</td><td>R$ 320,00</td><td>R$ 160,00</td></tr>
-        <tr><td class='left'>Brigadeiro de chocolate branco</td><td class='left muted'>—</td><td>R$ 260,00</td><td>R$ 130,00</td></tr>
-        <tr><td class='left'>Brigadeiro de doce de leite</td><td class='left muted'>—</td><td>R$ 260,00</td><td>R$ 130,00</td></tr>
-        <tr><td class='left'>Brigadeiro de limão</td><td class='left muted'>—</td><td>R$ 320,00</td><td>R$ 160,00</td></tr>
-        <tr><td class='left'>Brigadeiro de maracujá</td><td class='left muted'>—</td><td>R$ 260,00</td><td>R$ 130,00</td></tr>
-        <tr><td class='left'>Brigadeiro de morango</td><td class='left muted'>—</td><td>R$ 260,00</td><td>R$ 130,00</td></tr>
-        <tr><td class='left'>Brigadeiro de sucrilhos</td><td class='left muted'>—</td><td>R$ 260,00</td><td>R$ 130,00</td></tr>
-        <tr><td class='left'>Brigadeiro ferreiro rochê</td><td class='left muted'>—</td><td>R$ 320,00</td><td>R$ 160,00</td></tr>
-        <tr><td class='left'>Brigadeiro tradicional</td><td class='left muted'>Nosso famoso brigadeiro meio amargo suave.</td><td>R$ 260,00</td><td>R$ 130,00</td></tr>
-        <tr><td class='left'>Mini Brownie</td><td class='left muted'>Coberturas diversas para escolher.</td><td>R$ 350,00</td><td>R$ 175,00</td></tr>
-        <tr><td class='left'>Mini Cheesecake</td><td class='left muted'>Coberturas variadas: frutas vermelhas, doce de leite, maracujá e outras.</td><td>R$ 450,00</td><td>R$ 225,00</td></tr>
+        <tr><td class='left'>Brigadeiro beijinho</td><td class='left muted'>—</td><td class='center'>R$ 260,00</td><td class='center'>R$ 130,00</td></tr>
+        <tr><td class='left'>Brigadeiro brulê</td><td class='left muted'>—</td><td class='center'>R$ 300,00</td><td class='center'>R$ 150,00</td></tr>
+        <tr><td class='left'>Brigadeiro de café</td><td class='left muted'>—</td><td class='center'>R$ 260,00</td><td class='center'>R$ 130,00</td></tr>
+        <tr><td class='left'>Brigadeiro de caramelo salgado</td><td class='left muted'>—</td><td class='center'>R$ 260,00</td><td class='center'>R$ 130,00</td></tr>
+        <tr><td class='left'>Brigadeiro de casadinho</td><td class='left muted'>—</td><td class='center'>R$ 260,00</td><td class='center'>R$ 130,00</td></tr>
+        <tr><td class='left'>Brigadeiro de champanhe</td><td class='left muted'>—</td><td class='center'>R$ 320,00</td><td class='center'>R$ 160,00</td></tr>
+        <tr><td class='left'>Brigadeiro de chocolate branco</td><td class='left muted'>—</td><td class='center'>R$ 260,00</td><td class='center'>R$ 130,00</td></tr>
+        <tr><td class='left'>Brigadeiro de doce de leite</td><td class='left muted'>—</td><td class='center'>R$ 260,00</td><td class='center'>R$ 130,00</td></tr>
+        <tr><td class='left'>Brigadeiro de limão</td><td class='left muted'>—</td><td class='center'>R$ 320,00</td><td class='center'>R$ 160,00</td></tr>
+        <tr><td class='left'>Brigadeiro de maracujá</td><td class='left muted'>—</td><td class='center'>R$ 260,00</td><td class='center'>R$ 130,00</td></tr>
+        <tr><td class='left'>Brigadeiro de morango</td><td class='left muted'>—</td><td class='center'>R$ 260,00</td><td class='center'>R$ 130,00</td></tr>
+        <tr><td class='left'>Brigadeiro de sucrilhos</td><td class='left muted'>—</td><td class='center'>R$ 260,00</td><td class='center'>R$ 130,00</td></tr>
+        <tr><td class='left'>Brigadeiro ferreiro rochê</td><td class='left muted'>—</td><td class='center'>R$ 320,00</td><td class='center'>R$ 160,00</td></tr>
+        <tr><td class='left'>Brigadeiro tradicional</td><td class='left muted'>Nosso famoso brigadeiro meio amargo suave.</td><td class='center'>R$ 260,00</td><td class='center'>R$ 130,00</td></tr>
+        <tr><td class='left'>Mini Brownie</td><td class='left muted'>Coberturas diversas para escolher.</td><td class='center'>R$ 350,00</td><td class='center'>R$ 175,00</td></tr>
+        <tr><td class='left'>Mini Cheesecake</td><td class='left muted'>Coberturas variadas: frutas vermelhas, doce de leite, maracujá e outras.</td><td class='center'>R$ 450,00</td><td class='center'>R$ 225,00</td></tr>
         <!-- Unitários -->
-        <tr><td class='left'>Bem casado (unitário)</td><td class='left muted'>Mínimo 25 unidades • Preço unitário</td><td>—</td><td>—</td></tr>
-        <tr><td class='left'>Macarons (unitário)</td><td class='left muted'>Mínimo 25 unidades • Preço unitário</td><td>—</td><td>—</td></tr>
+        <tr><td class='left'>Bem casado (unitário)</td><td class='left muted'>Mínimo 25 unidades • Preço unitário</td><td class='center'>—</td><td class='center'>—</td></tr>
+        <tr><td class='left'>Macarons (unitário)</td><td class='left muted'>Mínimo 25 unidades • Preço unitário</td><td class='center'>—</td><td class='center'>—</td></tr>
       </tbody>
     </table>
-    <p class="hint">Valores unitários: Bem casado R$ 8,00 • Macaron R$ 9,90 (mínimo 25 un).</p>
+    <p class="muted">Valores unitários: <b>Bem casado R$ 8,00</b> • <b>Macaron R$ 9,90</b> (mínimo 25 unidades).</p>
   </section>
 
-  <!-- 4D) SOBREMESAS -->
-  <section id="sec4D" class="card">
-    <h3>🍮 4D. Sobremesas — PMG e Tamanhos Únicos</h3>
-    <p>Rendimentos padrão quando aplicável: <strong>P (6)</strong> • <strong>M (8–10)</strong> • <strong>G (12–14)</strong>. <span class="tag">Somente retirada</span></p>
+  <!-- 4D -->
+  <section id="sec4D">
+    <h2>🍮 4D. Sobremesas</h2>
+    <p>Rendimentos padrão quando aplicável: <b>P (6 porções)</b> • <b>M (8 a 10 porções)</b> • <b>G (12 a 14 porções)</b>. <span class="tag">Somente retirada</span></p>
 
-    <!-- (1) PMG -->
     <table>
-      <thead><tr><th class="left">Sobremesa</th><th class="left">Descrição</th><th>P (6)</th><th>M (8–10)</th><th>G (12–14)</th></tr></thead>
+      <thead>
+        <tr><th class="left">Sobremesa</th><th class="left">Descrição</th><th>P</th><th>M</th><th>G</th></tr>
+      </thead>
       <tbody>
-        <tr><td class='left'>Banoffee</td><td class='left muted'>Massa crocante pâté sucré, doce de leite artesanal, banana nanica e chantilly.</td><td>R$ 110,00</td><td>R$ 155,00</td><td>R$ 210,00</td></tr>
-        <tr><td class='left'>Cheesecake Básico</td><td class='left muted'>Escolha um sabor: frutas vermelhas, caramelo flor de sal ou ganache meia amarga.</td><td>R$ 115,00</td><td>R$ 175,00</td><td>R$ 245,00</td></tr>
-        <tr><td class='left'>Cheesecake Tradicional</td><td class='left muted'>Escolha até dois sabores: frutas vermelhas, maracujá, goiabada, morango, doce de leite ou limão.</td><td>R$ 115,00</td><td>R$ 175,00</td><td>R$ 245,00</td></tr>
-        <tr><td class='left'>Morangoffe</td><td class='left muted'>Massa crocante pâté sucré, creme branco, morango fresco e chantilly.</td><td>R$ 135,00</td><td>R$ 175,00</td><td>R$ 230,00</td></tr>
-        <tr><td class='left'>Torta de Limão</td><td class='left muted'>Massa crocante pâté sucré, ganache de limão e chantilly ou merengue.</td><td>R$ 110,00</td><td>R$ 155,00</td><td>R$ 210,00</td></tr>
-        <tr><td class='left'>Uvoffee</td><td class='left muted'>Massa crocante pâté sucré, brigadeiro meio amargo, uva Thompson e chantilly.</td><td>R$ 110,00</td><td>R$ 160,00</td><td>R$ 230,00</td></tr>
+        <tr><td class='left'>Banoffee</td><td class='left muted'>Massa crocante pâté sucré, doce de leite artesanal, banana nanica e chantilly.</td><td class='center'>R$ 110,00</td><td class='center'>R$ 155,00</td><td class='center'>R$ 210,00</td></tr>
+        <tr><td class='left'>Cheesecake Básico</td><td class='left muted'>Escolha um sabor: frutas vermelhas, caramelo flor de sal ou ganache meia amarga.</td><td class='center'>R$ 115,00</td><td class='center'>R$ 175,00</td><td class='center'>R$ 245,00</td></tr>
+        <tr><td class='left'>Cheesecake Tradicional</td><td class='left muted'>Escolha até dois sabores: frutas vermelhas, maracujá, goiabada, morango, doce de leite ou limão.</td><td class='center'>R$ 115,00</td><td class='center'>R$ 175,00</td><td class='center'>R$ 245,00</td></tr>
+        <tr><td class='left'>Morangoffe</td><td class='left muted'>Massa crocante pâté sucré, creme branco, morango fresco e chantilly.</td><td class='center'>R$ 135,00</td><td class='center'>R$ 175,00</td><td class='center'>R$ 230,00</td></tr>
+        <tr><td class='left'>Torta de Limão</td><td class='left muted'>Massa crocante pâté sucré, ganache de limão e chantilly ou merengue.</td><td class='center'>R$ 110,00</td><td class='center'>R$ 155,00</td><td class='center'>R$ 210,00</td></tr>
+        <tr><td class='left'>Uvoffee</td><td class='left muted'>Massa crocante pâté sucré, brigadeiro meio amargo, uva Thompson e chantilly.</td><td class='center'>R$ 110,00</td><td class='center'>R$ 160,00</td><td class='center'>R$ 230,00</td></tr>
       </tbody>
     </table>
 
-    <!-- (2) Mousses -->
     <table style="margin-top:14px">
-      <thead><tr><th class="left">Mousses</th><th class="left">Observação</th></tr></thead>
+      <thead><tr><th>Mousses</th><th>Observação</th></tr></thead>
       <tbody>
-        <tr><td class="left">Maracujá ou Limão</td><td class="left muted">Consultar tamanhos disponíveis e valores pelo WhatsApp.</td></tr>
+        <tr><td>Maracujá ou Limão</td><td class="left muted">Consultar tamanhos disponíveis e valores pelo WhatsApp.</td></tr>
       </tbody>
     </table>
 
-    <!-- (3) Quilo Cookie -->
     <table style="margin-top:14px">
-      <thead><tr><th class="left">Produto</th><th class="left">Descrição</th><th>Valor</th><th>Nutella</th></tr></thead>
+      <thead><tr><th>Produto</th><th class="left">Descrição</th><th>Valor</th><th>Nutella</th></tr></thead>
       <tbody>
         <tr>
-          <td class="left">Quilo Cookie</td>
-          <td class="left muted">Cookie recheado de 1 kg (Red Velvet, Duo, Branco & Meio Amargo, Tradicional com Nutella). Tamanho único: 6 fatias.</td>
-          <td>R$ 120,00</td>
-          <td>R$ 160,00</td>
+          <td>Quilo Cookie</td>
+          <td class="left muted">Cookie recheado de 1 kg (Red Velvet, Duo, Branco &amp; Meio Amargo, Tradicional com Nutella). Tamanho único: 6 fatias.</td>
+          <td class="center">R$ 120,00</td>
+          <td class="center">R$ 160,00</td>
         </tr>
       </tbody>
     </table>
 
-    <!-- (4) Tortas tamanho único -->
     <table style="margin-top:14px">
-      <thead><tr><th class="left">Torta</th><th class="left">Descrição</th><th>Valor (tamanho único)</th></tr></thead>
+      <thead><tr><th>Torta</th><th class="left">Descrição</th><th>Valor (tamanho único)</th></tr></thead>
       <tbody>
-        <tr><td class="left">Torta 3 Chocolates</td><td class="left muted">Base de brownie, mousse de chocolate meio amargo e mousse de chocolate branco. Tamanho único: 8 fatias.</td><td>R$ 180,00</td></tr>
-        <tr><td class="left">Torta Cookie Chocolate</td><td class="left muted">Base de cookie, melaca de chocolate meio amargo e mousse de doce de leite. Tamanho único: até 8 fatias.</td><td>R$ 175,00</td></tr>
-        <tr><td class="left">Torta de Castanha</td><td class="left muted">Castanha com damasco, estilo americano. Tamanho único: 10–12 fatias (130 g).</td><td>R$ 165,00</td></tr>
-        <tr><td class="left">Torta de Chocolate sem Farinha</td><td class="left muted">Chocolate meio amargo. Tamanho único: 10–12 fatias.</td><td>R$ 220,00</td></tr>
-        <tr><td class="left">Charlotte Pistache</td><td class="left muted">Creme leve de pistache e bolacha champanhe intercalados. Tamanho único: 12 fatias (120 g).</td><td>R$ 195,00</td></tr>
+        <tr><td>Torta 3 Chocolates</td><td class="left muted">Base de brownie, mousse de chocolate meio amargo e mousse de chocolate branco. Tamanho único: 8 fatias.</td><td class="center">R$ 180,00</td></tr>
+        <tr><td>Torta Cookie Chocolate</td><td class="left muted">Base de cookie, melaca de chocolate meio amargo e mousse de doce de leite. Tamanho único: até 8 fatias.</td><td class="center">R$ 175,00</td></tr>
+        <tr><td>Torta de Castanha</td><td class="left muted">Castanha com damasco, estilo americano. Tamanho único: 10–12 fatias (130 g).</td><td class="center">R$ 165,00</td></tr>
+        <tr><td>Torta de Chocolate sem Farinha</td><td class="left muted">Chocolate meio amargo. Tamanho único: 10–12 fatias.</td><td class="center">R$ 220,00</td></tr>
+        <tr><td>Charlotte Pistache</td><td class="left muted">Creme leve de pistache e bolacha champanhe intercalados. Tamanho único: 12 fatias (120 g).</td><td class="center">R$ 195,00</td></tr>
       </tbody>
     </table>
   </section>
 
-  <!-- 4E) TAÇAS/BOXES -->
-  <section id="sec4E" class="card">
-    <h3>🍨 4E. Taças e Boxes — apresentação e valores</h3>
+  <!-- 4E -->
+  <section id="sec4E">
+    <h2>🍨 4E. Taças e Boxes</h2>
     <p><span class="tag">Delivery permitido</span> para Taças e Boxes.</p>
-    <table>
-      <thead><tr><th class="left">Produto</th><th class="left">Descrição</th><th>Apresentação</th><th>Valor</th></tr></thead>
+    <table class="cols-4">
+      <colgroup><col><col><col><col></colgroup>
+      <thead><tr><th>Produto</th><th>Descrição</th><th>Apresentação</th><th>Valor</th></tr></thead>
       <tbody>
-        <tr><td class='left'>Box Brûlée</td><td class='left muted'>Brigadeiro de baunilha em camadas com massa amanteigada e brigadeiro brûlée maçaricado.</td><td>Caixa 1,5 L (8–10)</td><td>R$ 175,00</td></tr>
-        <tr><td class='left'>Box Gargamel</td><td class='left muted'>Doce de leite artesanal, creme branco, brigadeiro meio amargo e massa amanteigada.</td><td>Caixa 1,5 L (8–10)</td><td>R$ 185,00</td></tr>
-        <tr><td class='left'>Box Morango</td><td class='left muted'>Creme branco, morango fresco e chantilly intercalado com massa amanteigada.</td><td>Caixa 1,5 L (8–10)</td><td>R$ 195,00</td></tr>
-        <tr><td class='left'>Box Ninho, Nutella & Brownie</td><td class='left muted'>Mousse de ninho, brownie fudge e Nutella pura.</td><td>Caixa 1,5 L (8–10)</td><td>R$ 230,00</td></tr>
-        <tr><td class='left'>Box Ninho, Nutella & Morango</td><td class='left muted'>Creme de ninho, morango fresco, massa amanteigada e Nutella pura.</td><td>Caixa 1,5 L (8–10)</td><td>R$ 245,00</td></tr>
-        <tr><td class='left'>Box Red Velvet</td><td class='left muted'>Massa aveludada com toque de cacau, mousse de cream cheese e geleia de frutas vermelhas.</td><td>Caixa 1,5 L (8–10)</td><td>R$ 195,00</td></tr>
-        <tr><td class='left'>Box Tiramisù</td><td class='left muted'>Bolacha champanhe banhada no café e creme de cream cheese com toque de chocolate.</td><td>Caixa 1,5 L (8–10)</td><td>R$ 155,00</td></tr>
-        <tr><td class='left'>Taça Ninho & Pistache</td><td class='left muted'>Mousse de pistache e de ninho com massa amanteigada; leve e cremosa.</td><td>Taça 1,2 L (6–8)</td><td>R$ 185,00</td></tr>
+        <tr><td class='left'>Box Brûlée</td><td class='left muted'>Brigadeiro de baunilha em camadas com massa amanteigada e brigadeiro brûlée maçaricado.</td><td class="center">Box 1,5 L (8–10)</td><td class="center">R$ 175,00</td></tr>
+        <tr><td class='left'>Box Gargamel</td><td class='left muted'>Doce de leite artesanal, creme branco, brigadeiro meio amargo e massa amanteigada.</td><td class="center">Box 1,5 L (8–10)</td><td class="center">R$ 185,00</td></tr>
+        <tr><td class='left'>Box Morango</td><td class='left muted'>Creme branco, morango fresco e chantilly intercalado com massa amanteigada.</td><td class="center">Box 1,5 L (8–10)</td><td class="center">R$ 195,00</td></tr>
+        <tr><td class='left'>Box Ninho, Nutella &amp; Brownie</td><td class='left muted'>Mousse de ninho, brownie fudge e Nutella pura.</td><td class="center">Box 1,5 L (8–10)</td><td class="center">R$ 230,00</td></tr>
+        <tr><td class='left'>Box Ninho, Nutella &amp; Morango</td><td class='left muted'>Creme de ninho, morango fresco, massa amanteigada e Nutella pura.</td><td class="center">Box 1,5 L (8–10)</td><td class="center">R$ 245,00</td></tr>
+        <tr><td class='left'>Box Red Velvet</td><td class='left muted'>Massa aveludada com toque de cacau, mousse de cream cheese e geleia de frutas vermelhas.</td><td class="center">Box 1,5 L (8–10)</td><td class="center">R$ 195,00</td></tr>
+        <tr><td class='left'>Box Tiramisù</td><td class='left muted'>Bolacha champanhe banhada no café e creme de cream cheese com toque de chocolate.</td><td class="center">Box 1,5 L (8–10)</td><td class="center">R$ 155,00</td></tr>
+        <tr><td class='left'>Taça Ninho &amp; Pistache</td><td class='left muted'>Mousse de pistache e de ninho com massa amanteigada; leve e cremosa.</td><td class="center">Taça 1,2 L (6–8)</td><td class="center">R$ 185,00</td></tr>
       </tbody>
     </table>
   </section>
 
-  <!-- 5A) PAGAMENTO -->
-  <section id="sec5A" class="card">
+  <!-- 5A -->
+  <section id="sec5A">
     <h2>💳 5A. Formas de pagamento</h2>
     <ul>
       <li>💸 Dinheiro</li>
       <li>🔑 PIX</li>
-      <li>💳 Cartão (crédito/débito) — para entregas permitidas enviamos a maquineta.</li>
-      <li>🔗 Link de pagamento: apenas para pedidos <strong>acima de R$ 200,00</strong>.</li>
+      <li>💳 Cartão (crédito ou débito) — para entregas permitidas, enviamos a maquineta junto com o pedido, pra facilitar seu pagamento.</li>
+      <li>🔗 Link de pagamento: disponível para pedidos acima de <b>R$ 200,00</b>.</li>
     </ul>
-    <p><strong>Adiantamento obrigatório:</strong> solicitamos 50% do valor total para iniciar a produção, independentemente do produto.</p>
+    <p>💛 Para confirmar sua encomenda, solicitamos um <b>adiantamento de 50%</b> do valor total. Esse valor é o que garante o agendamento e o início da produção do seu pedido.</p>
   </section>
 
-  <!-- 5B) CANCELAMENTO -->
-  <section id="sec5B" class="card">
+  <!-- 5B -->
+  <section id="sec5B">
     <h2>📄 5B. Política de cancelamento</h2>
     <ul>
-      <li>O adiantamento de 50% <strong>não é reembolsável</strong>.</li>
-      <li>Em caso de cancelamento, o valor fica como <strong>crédito por 1 ano</strong> para um novo pedido.</li>
-      <li>O crédito <strong>não congela preços</strong>: aplica-se a tabela vigente na data do novo pedido.</li>
+      <li>O adiantamento de <b>50%</b> é necessário para garantir a produção e <b>não é reembolsável</b>.</li>
+      <li>Em caso de cancelamento, esse valor permanece como <b>crédito integral</b>, que poderá ser utilizado em <b>até 1 ano</b>, em um novo pedido.</li>
+      <li>O crédito pode ser aplicado em qualquer produto Docce, respeitando a <b>tabela de valores vigente</b> no momento da nova encomenda.</li>
     </ul>
   </section>
 
-  <!-- 6) CONFIRMAÇÃO (modelo limpo) -->
-  <section id="sec6" class="card">
+  <!-- 6 -->
+  <section id="sec6">
     <h2>🧾 6. Modelo de confirmação de encomendas</h2>
     <pre class="code">*🧾 CONFIRMAÇÃO DE ENCOMENDAS*
 
@@ -291,15 +321,16 @@ Estamos preparando o seu pedido.
 Agradecemos a preferência.</pre>
   </section>
 
-  <!-- 7) ENCERRAMENTO -->
-  <section id="sec7" class="card">
-    <h2>🤝 7. Encerramento do atendimento</h2>
-    <blockquote>“Qualquer dúvida é só me chamar por aqui, [NOME]. A Docce agradece a preferência!”</blockquote>
+  <!-- 7 -->
+  <section id="sec7">
+    <h2>💬 7. Encerramento do atendimento</h2>
+    <blockquote>“Foi um prazer te atender, [Nome do cliente]! 💛<br>
+    Seu pedido está confirmado e será preparado com todo o carinho da equipe Docce.<br>
+    Qualquer dúvida é só chamar por aqui.<br>
+    Agradecemos pela preferência e confiança!”</blockquote>
   </section>
-</main>
 
-<footer>
-  <p style="padding:20px;color:#9aa3b2;border-top:1px solid var(--border);background:#0e0f11">Docce • Manual de Encomendas</p>
-</footer>
+  <p class="muted" style="text-align:center;margin-top:30px">Docce • Manual de Encomendas</p>
+</main>
 </body>
 </html>
