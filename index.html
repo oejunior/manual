@@ -24,18 +24,20 @@
     .card{
       background:var(--card); border-radius:var(--radius); box-shadow:0 10px 30px rgba(0,0,0,.06);
       padding:28px; border:1px solid rgba(0,0,0,.06);
+      text-align:center;
     }
-    h1{ font-size:clamp(24px, 2.4vw, 34px); margin:0 0 6px; letter-spacing:.2px }
-    .sub{ color:var(--muted); margin:0 0 18px; font-size:15px }
+    h1{ font-size:clamp(24px, 2.4vw, 34px); margin:0 0 6px; letter-spacing:.2px; text-align:center; }
+    .sub{ color:var(--muted); margin:0 0 18px; font-size:15px; text-align:center; }
     .list{
-      display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:12px;
+      display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:12px; justify-content:center;
     }
     .item{
       border:1px solid rgba(0,0,0,.08); background:#fff; border-radius:14px; padding:14px 16px;
+      text-align:center;
     }
-    .item a{ color:#111827; text-decoration:none; font-weight:700 }
+    .item a{ color:#111827; text-decoration:none; font-weight:700; display:block; }
     .item a:hover{ text-decoration:underline }
-    .item small{ color:var(--muted) }
+    .item small{ color:var(--muted); display:block; margin-top:4px; }
     footer{ color:#94a3b8; font-size:12px; text-align:center; margin-top:16px }
   </style>
 </head>
@@ -47,10 +49,10 @@
 
       <div id="linkList" class="list">
         <div class="item">
-          <a href="encomendas.html">Roteiro de Encomendas</a><br><small>encomendas.html</small>
+          <a href="encomendas.html">Roteiro de Encomendas</a><small>encomendas.html</small>
         </div>
         <div class="item">
-          <a href="atendimento.html">Manual de Atendimento (Loja)</a><br><small>atendimento.html</small>
+          <a href="atendimento.html">Manual de Atendimento (Loja)</a><small>atendimento.html</small>
         </div>
       </div>
 
