@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Manual de Atendimento – Encomendas Docce (V2)</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#0a0a0a; --card:#121212; --ink:#f5f5f5; --muted:#bdbdbd; --accent:#ff7a00; --rule:#1e1e1e; --hint:#141414; }
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--ink);
+    font-family:"Lato","Palatino Linotype","Palatino",serif; font-weight:400; line-height:1.62;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;}
+  .wrap{ max-width:980px; margin:48px auto 96px; padding:0 20px; }
+  header{ text-align:center; margin-bottom:22px; }
+  h1{ font-size:clamp(28px,4.4vw,42px); margin:0 0 8px; font-weight:700; letter-spacing:.2px;}
+  .subtitle{ color:var(--muted); font-size:clamp(14px,2.6vw,16px); }
+  .cta-row{ display:flex; justify-content:center; margin-top:14px; }
+  .cta-btn{
+    display:inline-block; background:var(--accent); color:#111; font-weight:700; text-decoration:none;
+    padding:10px 16px; border-radius:12px; border:0; transition:transform .06s;
+  }
+  .cta-btn:active{ transform:translateY(1px); }
+
+  section{ background:var(--card); border:1px solid var(--rule); border-radius:14px; padding:18px 20px; margin:16px 0;}
+  h2{ font-size:clamp(19px,3.1vw,22px); margin:2px 0 8px; line-height:1.3; color:#fff; }
+  h3{ font-size:clamp(16px,2.8vw,18px); margin:14px 0 6px; color:#fff; }
+  p{ margin:8px 0; } ul,ol{ margin:8px 0 8px 20px; padding:0;} li{ margin:6px 0; }
+  .essencial{ font-weight:700; color:var(--accent); }
+  .muted{ color:var(--muted); }
+  .rule{ height:1px; background:var(--rule); border:0; margin:18px 0; }
+  .tag{ display:inline-block; border:1px solid var(--rule); padding:2px 8px; border-radius:999px; font-size:12px; color:var(--muted); margin-right:6px; }
+  .ex,.script,.template{ border-left:3px solid var(--accent); padding:10px 14px; background:var(--hint);
+    border-radius:10px; color:#eaeaea; font-size:14.5px; margin:10px 0; }
+  .grid2{ display:grid; grid-template-columns:1fr; gap:12px; } @media(min-width:780px){ .grid2{ grid-template-columns:1fr 1fr; } }
+  .grid3{ display:grid; grid-template-columns:1fr; gap:12px; } @media(min-width:960px){ .grid3{ grid-template-columns:1fr 1fr 1fr; } }
+  .badge{ font-size:12px; padding:2px 8px; border-radius:999px; background:#0f172a; border:1px solid var(--rule); color:#cbd5e1; }
+  .checklist li{ margin:4px 0; }
+  .mono{ font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+  .small{ color:var(--muted); font-size:13px; }
+  @media print{
+    body{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Manual de Atendimento – Encomendas Docce</h1>
+      <div class="subtitle">Passo a passo completo: da abordagem ao pós-venda, com scripts, checklists e modelos prontos.</div>
+      <div class="cta-row">
+        <a class="cta-btn" href="docce-mini-encomendas.html" target="_blank" rel="noopener">Abrir Mini Encomendas</a>
+      </div>
+    </header>
+
+    <section>
+      <p><span class="tag">Objetivo</span> Garantir um atendimento consistente, rápido e seguro, com registro completo, prazos claros, condições de pagamento e confirmação via protocolo.</p>
+      <p class="small">Pontos marcados como <span class="essencial">essenciais</span> são obrigatórios. Use os <em>scripts</em> e <em>templates</em> para acelerar a conversa sem perder a cordialidade.</p>
+    </section>
+
+    <section id="1-abordagem">
+      <h2>1) Abertura e Abordagem</h2>
+      <div class="grid2">
+        <div>
+          <h3>1.1 Objetivo</h3>
+          <ul>
+            <li>Estabelecer acolhimento, entender a necessidade e conduzir para coleta de dados.</li>
+            <li>Manter tom cordial e objetivo, sem prometer nada antes de checar <span class="essencial">disponibilidade</span>.</li>
+          </ul>
+          <div class="script"><strong>Script inicial (loja/WhatsApp):</strong><br>
+            “Olá! 😄 Bem-vindo(a) à Docce. É uma encomenda? <span class="essencial">Para qual data e horário você precisa</span>? Posso confirmar a disponibilidade e já organizar tudo contigo.”</div>
+        </div>
+        <div>
+          <h3>1.2 Boas práticas</h3>
+          <ul>
+            <li>Escute primeiro; anote palavras-chave (data, produto, quantidade).</li>
+            <li>Se for ocasião especial, reconheça: “Que bacana, parabéns!”</li>
+            <li>Se houver pressa, sinalize que vai checar <span class="essencial">agenda</span> imediatamente.</li>
+          </ul>
+          <div class="script"><span class="badge">Evite</span> fazer promessas de horário/formato antes de validar produção e entrega.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="2-essenciais">
+      <h2>2) Informações Essenciais do Pedido</h2>
+      <p>Coletar nesta ordem para manter fluidez. Tudo com <span class="essencial">essencial</span> é obrigatório.</p>
+      <ol>
+        <li><span class="essencial">Data e horário desejados</span> (retirada/entrega). <span class="essencial">Checar disponibilidade</span>.</li>
+        <li><span class="essencial">Produto e sabores</span> (bolo, minis, docinhos, sobremesas).</li>
+        <li><span class="essencial">Quantidade/porções</span> e <span class="essencial">tamanho</span> (quando aplicável).</li>
+        <li>Personalizações (mensagem, cores, tema, restrições).</li>
+        <li><span class="essencial">Nome completo</span> e <span class="essencial">telefone (WhatsApp)</span>.</li>
+        <li>Modalidade: <span class="essencial">Retirada</span> ou <span class="essencial">Delivery</span>.
+          <ul>
+            <li>Se delivery: <span class="essencial">Endereço completo</span> (rua, número, bairro), ponto de referência, <span class="essencial">taxa</span>.</li>
+          </ul>
+        </li>
+      </ol>
+      <div class="template"><strong>Template de anotação rápida (interno):</strong><br>
+        <span class="mono">Data/horário:</span> __/__/__ às __:__ • <span class="mono">Produto:</span> ______ • <span class="mono">Sabores:</span> ______ • <span class="mono">Qtd/Tam:</span> ______ • <span class="mono">Perso:</span> ______ • <span class="mono">Cliente:</span> Nome + WhatsApp • <span class="mono">Modalidade:</span> Retirada/Delivery (Endereço + Taxa)</div>
+    </section>
+
+    <section id="3-prazos">
+      <h2>3) Prazos &amp; Disponibilidade</h2>
+      <div class="grid2">
+        <div>
+          <h3>3.1 Validação</h3>
+          <ul>
+            <li><span class="essencial">Checar agenda</span> antes de falar preço definitivo.</li>
+            <li>Se a janela estiver apertada, explique com transparência e proponha alternativas (tamanho, formato, horário).</li>
+          </ul>
+          <div class="script"><strong>Script:</strong> “Para <span class="essencial">__/__/__ às __:__</span>, consigo produzir com qualidade. Posso te passar o valor e como funciona o pagamento?”</div>
+        </div>
+        <div>
+          <h3>3.2 Se não houver vaga</h3>
+          <ul>
+            <li>Ofereça: outro horário, outra data, ou formato que encaixe.</li>
+            <li>Mantenha postura propositiva (traga opções viáveis).</li>
+          </ul>
+          <div class="script"><strong>Script:</strong> “Nossa agenda está completa nesse horário 😕. Consigo às <span class="essencial">__:__</span> ou no dia <span class="essencial">__/__/__</span>. Também posso sugerir <em>mini</em> versão que produzimos a tempo.”</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="4-especificacoes">
+      <h2>4) Especificações do Produto</h2>
+      <div class="grid2">
+        <div>
+          <h3>4.1 Bolos</h3>
+          <ul>
+            <li>Sabores/recheios/cobertura disponíveis.</li>
+            <li>Tamanhos → porções estimadas.</li>
+            <li>Mensagem na placa; acabamento (ganache, frutas, confeitos).</li>
+          </ul>
+          <div class="script"><span class="badge">Observação</span> Se houver referência visual do cliente, avaliar <span class="essencial">viabilidade técnica</span> antes de confirmar.</div>
+        </div>
+        <div>
+          <h3>4.2 Docinhos &amp; Minis</h3>
+          <ul>
+            <li>Sabores por centro; pedido mínimo por sabor (se aplicável).</li>
+            <li>Apresentação: forrinhos, caixas/bandejas.</li>
+            <li>Conservação e transporte.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>4.3 Sobremesas</h3>
+          <ul>
+            <li>Opções disponíveis para a data (algumas com prazos reduzidos, outras com 24h).</li>
+            <li>Montagem, caldas, toppings.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>4.4 Personalizações</h3>
+          <ul>
+            <li>Mensagem/tema/cor.</li>
+            <li>Itens extras (topper, velas).</li>
+            <li><span class="essencial">Aprovar viabilidade</span> antes do fechamento.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="5-orcamento">
+      <h2>5) Orçamento</h2>
+      <p>Apresente com clareza o que está incluído e, quando fizer sentido, ofereça 2–3 alternativas (bom, melhor, premium).</p>
+      <ul>
+        <li><span class="essencial">Valor total</span> = produto + extras + taxa (se delivery).</li>
+        <li>Se houver opções, descreva brevemente as diferenças.</li>
+        <li>Evite listas longas; objetividade ajuda na decisão.</li>
+      </ul>
+      <div class="script"><strong>Frase-chave:</strong> “O total fica em <span class="essencial">R$ ___</span>, incluindo (itens). Se preferir, tenho essa outra opção por R$ ___, com (diferença).”</div>
+    </section>
+
+    <section id="6-pagamento">
+      <h2>6) Pagamento &amp; Adiantamento</h2>
+      <div class="grid2">
+        <div>
+          <h3>6.1 Política</h3>
+          <ul>
+            <li><span class="essencial">Forma de pagamento</span>: PIX, cartão, dinheiro.</li>
+            <li><span class="essencial">Adiantamento</span> quando aplicável (valor/percentual) para garantir produção.</li>
+            <li>Prazo-limite para confirmação do pagamento.</li>
+          </ul>
+          <div class="script"><strong>Script:</strong> “Para garantir sua data, preciso de um <span class="essencial">adiantamento</span> de R$ __ até __:__h de __/__/__. Posso te enviar a chave PIX agora.”</div>
+        </div>
+        <div>
+          <h3>6.2 Envio de PIX</h3>
+          <div class="template"><strong>Template (WhatsApp):</strong><br>
+            Chave PIX (Docce): <span class="essencial">____@____</span><br>
+            Valor do adiantamento: <span class="essencial">R$ ___</span><br>
+            Prazo-limite: <span class="essencial">__/__/__ às __:__</span><br>
+            Assim que você enviar, me sinaliza por aqui pra eu confirmar certinho. 💛
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="7-contato">
+      <h2>7) Dados do Cliente &amp; Contato</h2>
+      <ul>
+        <li><span class="essencial">Nome completo</span> e <span class="essencial">WhatsApp</span> confirmados.</li>
+        <li>E-mail (opcional) para confirmação formal.</li>
+        <li>Observações: alergias, restrições, acesso ao local, horários.</li>
+      </ul>
+      <div class="template"><strong>Registro interno (modelo):</strong><br>
+        <span class="mono">Cliente:</span> Nome / WhatsApp • <span class="mono">E-mail:</span> opcional • <span class="mono">Obs:</span> alergias, acesso, etc.
+      </div>
+    </section>
+
+    <section id="8-logistica">
+      <h2>8) Logística: Retirada ou Delivery</h2>
+      <div class="grid2">
+        <div>
+          <h3>8.1 Retirada</h3>
+          <ul>
+            <li><span class="essencial">Endereço da loja</span> e <span class="essencial">janela de atendimento</span>.</li>
+            <li>Orientações: transportar nivelado; manter resfriado se necessário.</li>
+          </ul>
+          <div class="script"><strong>Script:</strong> “A retirada será na Docce (endereço), entre __:__ e __:__. Recomendo levar a caixa sempre nivelada.”</div>
+        </div>
+        <div>
+          <h3>8.2 Delivery</h3>
+          <ul>
+            <li><span class="essencial">Endereço completo</span>, ponto de referência.</li>
+            <li><span class="essencial">Taxa de entrega</span> informada no orçamento.</li>
+            <li>Quem recebe e instruções de portaria, se houver.</li>
+          </ul>
+          <div class="script"><strong>Script:</strong> “Entrega em (rua, nº, bairro), referência: __. Taxa: <span class="essencial">R$ __</span>. Quem recebe no local?”</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="9-confirmacao">
+      <h2>9) Confirmação Final &amp; Protocolo</h2>
+      <ol>
+        <li>Recapitular <span class="essencial">item por item</span> (data, horário, produto, sabores, quantidade, personalização, modalidade, taxa, total, pagamento).</li>
+        <li><span class="essencial">Gerar número de protocolo</span> e enviar no WhatsApp.</li>
+        <li>Se houver adiantamento, <span class="essencial">confirmar recebimento</span> e guardar comprovante.</li>
+      </ol>
+      <div class="template"><strong>Template de mensagem (WhatsApp):</strong><br>
+        *Protocolo Docce:* <span class="essencial">AB1234</span><br>
+        Data/horário: __/__/__ às __:__<br>
+        Pedido: (produto, sabor, tamanho, qtd, personalização)<br>
+        Modalidade: (retirada/delivery) – Taxa: R$ __<br>
+        Total: R$ __ | Pagamento: (PIX/cartão/dinheiro)<br>
+        Observações: (…)
+      </div>
+    </section>
+
+    <section id="10-posvenda">
+      <h2>10) Pós-venda</h2>
+      <ul>
+        <li>Envie mensagem breve após a entrega/retirada confirmando se <span class="essencial">ficou tudo certo</span>.</li>
+        <li>Registre feedbacks úteis (sabor, entrega, embalagem).</li>
+        <li>Convide a acompanhar novidades e avaliações.</li>
+      </ul>
+      <div class="script"><strong>Mensagem-sugestão:</strong> “Oi! Passando pra confirmar se deu tudo certo com sua encomenda. Qualquer coisa, estamos por aqui 💛”</div>
+    </section>
+
+    <section id="11-situacoes">
+      <h2>11) Situações Especiais (Respostas Orientadas)</h2>
+      <h3>11.1 Agenda cheia</h3>
+      <div class="script">“Para esse dia nossa agenda já está completa 😕. Posso te sugerir (outro horário / outro dia / formato alternativo que conseguimos produzir a tempo).”</div>
+      <h3>11.2 Pedido de última hora</h3>
+      <div class="script">“Vou verificar disponibilidade agora. Se não der para o formato original, consigo te propor uma opção que mantém a qualidade e entrega no prazo.”</div>
+      <h3>11.3 Personalização inviável</h3>
+      <div class="script">“Pra manter o padrão de qualidade, essa personalização específica não é viável. Posso te mostrar duas alternativas muito próximas do que você imaginou.”</div>
+      <h3>11.4 Negociação de preço</h3>
+      <div class="script">“Consigo ajustar para este formato aqui, que mantém o sabor e cabe no valor que você deseja. Te explico o que muda e o que permanece.”</div>
+    </section>
+
+    <section id="12-checklist">
+      <h2>12) Checklist Mínimo Antes de Fechar</h2>
+      <ul class="checklist">
+        <li><span class="essencial">Data</span> e <span class="essencial">horário</span> confirmados.</li>
+        <li><span class="essencial">Produto</span>, <span class="essencial">sabores</span>, <span class="essencial">tamanho</span> e <span class="essencial">quantidade</span>.</li>
+        <li>Personalizações revisadas e viáveis.</li>
+        <li><span class="essencial">Nome</span>, <span class="essencial">telefone</span> e (se delivery) <span class="essencial">endereço completo</span>.</li>
+        <li><span class="essencial">Valor total</span> e forma de pagamento definidos.</li>
+        <li><span class="essencial">Adiantamento</span> (se houver) com prazo claro.</li>
+        <li><span class="essencial">Protocolo</span> gerado e enviado ao cliente.</li>
+      </ul>
+      <p class="small muted">Imprima esta página pelo navegador. Se quiser, eu adiciono um botão “Imprimir” fixo (só se você autorizar).</p>
+    </section>
+
+    <p class="small" style="margin-top:26px;">Versão 2 — com atalho para o Mini Encomendas. Se quiser mudar rótulo/posição do botão, eu altero apenas isso.</p>
+  </div>
+</body>
+</html>

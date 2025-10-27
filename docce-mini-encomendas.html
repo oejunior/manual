@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Docce — Mini Encomendas (V1)</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#0a0a0a; --card:#121212; --ink:#f5f5f5; --muted:#bdbdbd; --accent:#ff7a00; --rule:#1e1e1e; --hint:#141414; --ok:#22c55e; --warn:#f59e0b; --err:#ef4444;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:"Lato","Palatino Linotype","Palatino",serif;line-height:1.62;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  .wrap{max-width:980px;margin:40px auto 80px;padding:0 18px;}
+  header{text-align:center;margin-bottom:18px;}
+  h1{font-size:clamp(24px,4.2vw,36px);margin:0 0 6px;font-weight:700}
+  .subtitle{color:var(--muted);font-size:14px}
+  section{background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:16px 18px;margin:14px 0}
+  h2{font-size:18px;margin:2px 0 10px}
+  label{display:block;margin:8px 0 4px}
+  input[type="text"], input[type="tel"], input[type="number"], input[type="datetime-local"], select, textarea{
+    width:100%;background:#0f0f0f;border:1px solid var(--rule);border-radius:10px;color:var(--ink);padding:10px 12px;outline:none}
+  textarea{min-height:80px;resize:vertical}
+  .row{display:grid;grid-template-columns:1fr;gap:10px}
+  @media(min-width:780px){.row{grid-template-columns:1fr 1fr}}
+  .row3{display:grid;grid-template-columns:1fr;gap:10px}
+  @media(min-width:900px){.row3{grid-template-columns:1fr 1fr 1fr}}
+  .hint{background:var(--hint);border-left:3px solid var(--accent);padding:10px 12px;border-radius:10px;color:#eaeaea;font-size:14px}
+  .muted{color:var(--muted)}
+  .btnbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  button{background:var(--accent);border:0;border-radius:10px;padding:10px 14px;color:#000;font-weight:700;cursor:pointer}
+  .ghost{background:transparent;color:var(--ink);border:1px solid var(--rule)}
+  .badge{font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--rule);color:#cbd5e1;background:#0f172a;display:inline-block}
+  .warn{color:var(--warn)} .ok{color:var(--ok)} .err{color:var(--err)}
+  .hidden{display:none}
+  pre{white-space:pre-wrap;background:#0f0f0f;border:1px solid var(--rule);border-radius:12px;padding:12px}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Mini Encomendas — Docce</h1>
+    <div class="subtitle">Fluxo rápido: perguntas inteligentes por tipo de produto • Gera resumo pronto pro WhatsApp</div>
+  </header>
+
+  <section>
+    <h2>1) Cliente & Agendamento</h2>
+    <div class="row">
+      <div>
+        <label>Nome do cliente <span class="muted">(obrigatório)</span></label>
+        <input id="nome" type="text" placeholder="Ex.: Ana Silva">
+      </div>
+      <div>
+        <label>WhatsApp</label>
+        <input id="whats" type="tel" placeholder="(69) 9 9999-9999">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Data e horário desejados</label>
+        <input id="quando" type="datetime-local">
+      </div>
+      <div>
+        <label>Retirada ou Delivery?</label>
+        <select id="modalidade">
+          <option value="">Selecione...</option>
+          <option value="retirada">Retirada</option>
+          <option value="delivery">Delivery</option>
+        </select>
+      </div>
+    </div>
+    <div id="enderecoBox" class="row hidden" style="margin-top:8px">
+      <div><label>Rua</label><input id="rua" type="text" placeholder="Rua..."></div>
+      <div><label>Número</label><input id="numero" type="text" placeholder="123"></div>
+      <div><label>Bairro</label><input id="bairro" type="text" placeholder="Centro"></div>
+    </div>
+    <div id="avisoEntrega" class="hint hidden"><span class="badge">Regras de entrega</span> <span id="textoAvisoEntrega"></span></div>
+  </section>
+
+  <section>
+    <h2>2) O que o cliente quer?</h2>
+    <div class="row3">
+      <div>
+        <label>Categoria</label>
+        <select id="categoria">
+          <option value="">Selecione...</option>
+          <option value="bolo">Bolo</option>
+          <option value="taca">Taça</option>
+          <option value="box">Sobremesa em Box</option>
+          <option value="cheesecake">Cheesecake</option>
+          <option value="docinhos">Docinhos / Minis</option>
+          <option value="sobremesa">Sobremesa (outras)</option>
+        </select>
+      </div>
+      <div>
+        <label>Sabor / Descrição resumida</label>
+        <input id="sabor" type="text" placeholder="Ex.: Red Velvet, Brigadeiro, Frutas Vermelhas...">
+      </div>
+      <div>
+        <label>Quantidade</label>
+        <input id="quantidade" type="number" min="1" placeholder="Ex.: 1, 2, 3...">
+      </div>
+    </div>
+  </section>
+
+  <section id="condicionais" class="hidden">
+    <h2>3) Detalhes do Produto</h2>
+
+    <div id="blocoBolo" class="hidden">
+      <div class="row3">
+        <div>
+          <label>Tamanho</label>
+          <select id="boloTamanho">
+            <option value="">Selecione...</option>
+            <option>Mini</option>
+            <option>Pequeno</option>
+            <option>Médio</option>
+            <option>Grande</option>
+          </select>
+        </div>
+        <div>
+          <label>Decorado?</label>
+          <select id="boloDecorado">
+            <option value="">Selecione...</option>
+            <option value="sim">Sim</option>
+            <option value="nao">Não</option>
+          </select>
+        </div>
+        <div>
+          <label>Acetato?</label>
+          <select id="boloAcetato">
+            <option value="">Selecione...</option>
+            <option value="sim">Sim</option>
+            <option value="nao">Não</option>
+          </select>
+        </div>
+      </div>
+      <div id="boloDecoracaoBox" class="row hidden" style="margin-top:8px">
+        <div><label>Tema/Cores</label><input id="boloTema" type="text" placeholder="Ex.: floral, azul+branco"></div>
+        <div><label>Mensagem na placa</label><input id="boloMensagem" type="text" placeholder="Ex.: Parabéns, Júlia!"></div>
+      </div>
+      <div id="boloAcetatoBox" class="row hidden" style="margin-top:8px">
+        <div><label>Altura aproximada (cm)</label><input id="boloAltura" type="number" min="5" placeholder="Ex.: 12"></div>
+        <div><label>Observações da montagem</label><input id="boloObsAcetato" type="text" placeholder="Ex.: camadas, topo, frutas"></div>
+      </div>
+    </div>
+
+    <div id="blocoTaca" class="hidden">
+      <div class="row">
+        <div><label>Tamanho da taça</label><input id="tacaTamanho" type="text" placeholder="Ex.: 500 ml / 1,2 L"></div>
+        <div><label>Camadas / Montagem</label><input id="tacaCamadas" type="text" placeholder="Ex.: bolo, creme ninho, morango, ganache"></div>
+      </div>
+    </div>
+
+    <div id="blocoBox" class="hidden">
+      <div class="hint"><span class="badge">Info</span> Sobremesas em <b>Box</b> <span class="ok">podem ser entregues</span> sem restrição.</div>
+      <div class="row">
+        <div><label>Tamanho/Modelo da box</label><input id="boxModelo" type="text" placeholder="Ex.: Box média 20x20"></div>
+        <div><label>Conteúdo</label><input id="boxConteudo" type="text" placeholder="Ex.: brownie, creme, morangos, ganache"></div>
+      </div>
+    </div>
+
+    <div id="blocoCheesecake" class="hidden">
+      <div class="hint"><span class="badge">Atenção</span> Cheesecake <span class="warn">não pode delivery</span>. Disponível apenas para <b>Retirada</b>.</div>
+      <div class="row">
+        <div><label>Tamanho</label><input id="chzTamanho" type="text" placeholder="Ex.: 18 cm / 22 cm"></div>
+        <div><label>Calda/Cobertura</label><input id="chzCaldas" type="text" placeholder="Ex.: morango, frutas vermelhas, ganache"></div>
+      </div>
+    </div>
+
+    <div id="blocoDocinhos" class="hidden">
+      <div class="row">
+        <div><label>Sabores (centro)</label><input id="docSabores" type="text" placeholder="Ex.: brigadeiro, ninho, pistache"></div>
+        <div><label>Apresentação</label><input id="docApresentacao" type="text" placeholder="Ex.: forrinhos, caixa 25 un."></div>
+      </div>
+      <div class="row">
+        <div><label>Pedido mínimo por sabor</label><input id="docMinimo" type="text" placeholder="Ex.: 1/2 cento por sabor"></div>
+        <div><label>Observações</label><input id="docObs" type="text" placeholder="Ex.: 15 g por unidade com confeito"></div>
+      </div>
+    </div>
+
+    <div id="blocoSobremesa" class="hidden">
+      <div class="row">
+        <div><label>Formato/Embalagem</label><input id="sobFormato" type="text" placeholder="Ex.: travessa 1,5 L / pote 300 ml"></div>
+        <div><label>Detalhes</label><input id="sobDetalhes" type="text" placeholder="Ex.: camadas, cobertura, toppings"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>4) Observações (opcional)</h2>
+    <textarea id="obs" placeholder="Alergias, acesso ao local, preferências..."></textarea>
+  </section>
+
+  <section>
+    <div class="btnbar">
+      <button id="btnGerar">Gerar resumo</button>
+      <button id="btnCopiar" class="ghost">Copiar</button>
+      <button id="btnImprimir" class="ghost">Imprimir</button>
+      <button id="btnLimpar" class="ghost">Limpar</button>
+    </div>
+    <div id="saidaBox" class="hidden" style="margin-top:12px">
+      <label>Resumo (WhatsApp)</label>
+      <pre id="saida" class="mono"></pre>
+    </div>
+  </section>
+
+  <p class="muted" style="text-align:center;margin-top:10px">V1 — base funcional. Diga o que quer ajustar que eu mexo apenas nisso.</p>
+</div>
+
+<script>
+  const el = id => document.getElementById(id);
+  const modalidade = el('modalidade'), categoria = el('categoria');
+  const enderecoBox = el('enderecoBox'), avisoEntrega = el('avisoEntrega'), textoAvisoEntrega = el('textoAvisoEntrega');
+  const blocos = { bolo: el('blocoBolo'), taca: el('blocoTaca'), box: el('blocoBox'), cheesecake: el('blocoCheesecake'), docinhos: el('blocoDocinhos'), sobremesa: el('blocoSobremesa') };
+  const condicionais = el('condicionais');
+
+  function hideAllBlocks(){ Object.values(blocos).forEach(b => b.classList.add('hidden')); }
+  function toggleEndereco(){ enderecoBox.classList.toggle('hidden', modalidade.value !== 'delivery'); }
+
+  modalidade.addEventListener('change', ()=>{
+    toggleEndereco();
+    if(categoria.value === 'cheesecake' && modalidade.value === 'delivery'){
+      avisoEntrega.classList.remove('hidden');
+      textoAvisoEntrega.innerHTML = "Cheesecake <b>não pode delivery</b>. A modalidade foi ajustada para <b>Retirada</b>.";
+      modalidade.value = 'retirada'; toggleEndereco();
+    } else { avisoEntrega.classList.add('hidden'); }
+  });
+
+  categoria.addEventListener('change', ()=>{
+    condicionais.classList.toggle('hidden', categoria.value === '');
+    hideAllBlocks(); avisoEntrega.classList.add('hidden');
+
+    if(categoria.value === 'cheesecake'){
+      avisoEntrega.classList.remove('hidden');
+      textoAvisoEntrega.innerHTML = "Cheesecake <b>não pode delivery</b>. Selecione <b>Retirada</b>.";
+      if(modalidade.value === 'delivery'){ modalidade.value = 'retirada'; toggleEndereco(); }
+    } else if(categoria.value === 'box'){
+      avisoEntrega.classList.remove('hidden');
+      textoAvisoEntrega.innerHTML = "Sobremesas em <b>Box</b> <span class='ok'>podem ser entregues</span> sem restrição.";
+    }
+    if(blocos[categoria.value]) blocos[categoria.value].classList.remove('hidden');
+  });
+
+  const boloDecorado = el('boloDecorado'), boloAcetato = el('boloAcetato'),
+        boloDecoracaoBox = el('boloDecoracaoBox'), boloAcetatoBox = el('boloAcetatoBox');
+  if(boloDecorado){ boloDecorado.addEventListener('change', ()=> boloDecoracaoBox.classList.toggle('hidden', boloDecorado.value !== 'sim')); }
+  if(boloAcetato){ boloAcetato.addEventListener('change', ()=> boloAcetatoBox.classList.toggle('hidden', boloAcetato.value !== 'sim')); }
+
+  el('btnGerar').addEventListener('click', ()=>{
+    const nome = el('nome').value.trim(), whats = el('whats').value.trim(), quando = el('quando').value,
+          mod = el('modalidade').value, rua = el('rua').value.trim(), numero = el('numero').value.trim(), bairro = el('bairro').value.trim(),
+          cat = el('categoria').value, sabor = el('sabor').value.trim(), qtd = el('quantidade').value.trim(), obs = el('obs').value.trim();
+    if(!nome){ alert('Preencha o nome do cliente.'); return; }
+
+    let itens=[]; let detalhes=[];
+    if(cat==='bolo'){
+      const tam=el('boloTamanho').value, dec=el('boloDecorado').value, ace=el('boloAcetato').value,
+            tema=el('boloTema').value.trim(), msg=el('boloMensagem').value.trim(),
+            alt=el('boloAltura').value.trim(), obsA=el('boloObsAcetato').value.trim();
+      itens.push(`Bolo ${tam||''}${sabor?(' – '+sabor):''}${qtd?(' x'+qtd):''}`.trim());
+      if(dec==='sim'){ detalhes.push(`Decorado${tema?(' • Tema/Cores: '+tema):''}${msg?(' • Mensagem: '+msg):''}`); }
+      if(ace==='sim'){ detalhes.push(`Acetato${alt?(' • Altura: '+alt+'cm'):''}${obsA?(' • '+obsA):''}`); }
+    }
+    if(cat==='taca'){
+      const tTam=el('tacaTamanho').value.trim(), tCam=el('tacaCamadas').value.trim();
+      itens.push(`Taça${tTam?(' '+tTam):''}${sabor?(' – '+sabor):''}${qtd?(' x'+qtd):''}`); if(tCam) detalhes.push(`Montagem: ${tCam}`);
+    }
+    if(cat==='box'){
+      const bMod=el('boxModelo').value.trim(), bCon=el('boxConteudo').value.trim();
+      itens.push(`Sobremesa em Box${bMod?(' – '+bMod):''}${qtd?(' x'+qtd):''}`); if(sabor) detalhes.push(`Sabor: ${sabor}`); if(bCon) detalhes.push(`Conteúdo: ${bCon}`);
+    }
+    if(cat==='cheesecake'){
+      const cTam=el('chzTamanho').value.trim(), cCal=el('chzCaldas').value.trim();
+      itens.push(`Cheesecake${cTam?(' '+cTam):''}${sabor?(' – '+sabor):''}${qtd?(' x'+qtd):''}`); if(cCal) detalhes.push(`Cobertura: ${cCal}`);
+    }
+    if(cat==='docinhos'){
+      const dSab=el('docSabores').value.trim(), dAp=el('docApresentacao').value.trim(), dMin=el('docMinimo').value.trim(), dOb=el('docObs').value.trim();
+      itens.push(`Docinhos${qtd?(' x'+qtd):''}${sabor?(' – '+sabor):''}`); if(dSab) detalhes.push(`Sabores/centro: ${dSab}`); if(dAp) detalhes.push(`Apresentação: ${dAp}`); if(dMin) detalhes.push(`Mínimo: ${dMin}`); if(dOb) detalhes.push(dOb);
+    }
+    if(cat==='sobremesa'){
+      const sFor=el('sobFormato').value.trim(), sDet=el('sobDetalhes').value.trim();
+      itens.push(`Sobremesa${sFor?(' – '+sFor):''}${sabor?(' – '+sabor):''}${qtd?(' x'+qtd):''}`); if(sDet) detalhes.push(sDet);
+    }
+
+    let modalidadeLinha = mod ? (mod==='delivery' ? 'Delivery' : 'Retirada') : '';
+    if(mod==='delivery'){
+      const end=[rua,numero,bairro].filter(Boolean).join(', ');
+      if(end) modalidadeLinha += ` – Endereço: ${end}`;
+    }
+    if(cat==='cheesecake' && mod==='delivery'){ modalidadeLinha += ' (ajustado para Retirada: cheesecake não pode delivery)'; }
+
+    let dataLinha='';
+    if(quando){
+      const d=new Date(quando); const dd=String(d.getDate()).padStart(2,'0'); const mm=String(d.getMonth()+1).padStart(2,'0');
+      const yyyy=d.getFullYear(); const hh=String(d.getHours()).padStart(2,'0'); const mi=String(d.getMinutes()).padStart(2,'0');
+      dataLinha=`${dd}/${mm}/${yyyy} às ${hh}:${mi}`;
+    }
+
+    const prot=(()=>{const L='ABCDEFGHIJKLMNOPQRSTUVWXYZ'; return L[Math.floor(Math.random()*26)]+L[Math.floor(Math.random()*26)]+String(Math.floor(1000+Math.random()*9000));})();
+    let linhas=[];
+    linhas.push(`*Protocolo Docce:* ${prot}`);
+    if(dataLinha) linhas.push(`*Data/horário:* ${dataLinha}`);
+    if(itens.length) linhas.push(`*Pedido:* ${itens.join(' | ')}`);
+    if(detalhes.length) linhas.push(`*Detalhes:* ${detalhes.join(' • ')}`);
+    if(modalidadeLinha) linhas.push(`*Modalidade:* ${modalidadeLinha}`);
+    if(el('nome').value || el('whats').value){
+      let c=[]; if(el('nome').value) c.push(`Nome: ${el('nome').value}`); if(el('whats').value) c.push(`WhatsApp: ${el('whats').value}`);
+      linhas.push(`*Cliente:* ${c.join(' | ')}`);
+    }
+    if(obs) linhas.push(`*Observações:* ${obs}`);
+    el('saida').textContent = linhas.join('
+');
+    el('saidaBox').classList.remove('hidden');
+    window.scrollTo({top: document.body.scrollHeight, behavior:'smooth'});
+  });
+
+  el('btnCopiar').addEventListener('click', async ()=>{
+    const texto = el('saida').textContent;
+    if(!texto){ alert('Gere o resumo primeiro.'); return; }
+    try{ await navigator.clipboard.writeText(texto); alert('Copiado!'); }
+    catch(e){ alert('Não consegui copiar automaticamente. Selecione o texto e copie.'); }
+  });
+
+  el('btnImprimir').addEventListener('click', ()=> window.print());
+
+  el('btnLimpar').addEventListener('click', ()=>{
+    document.querySelectorAll('input, textarea').forEach(i=> i.value='');
+    document.querySelectorAll('select').forEach(s=> s.value='');
+    Object.values({bolo:el('blocoBolo'),taca:el('blocoTaca'),box:el('blocoBox'),cheesecake:el('blocoCheesecake'),docinhos:el('blocoDocinhos'),sobremesa:el('blocoSobremesa')}).forEach(b=>b.classList.add('hidden'));
+    el('condicionais').classList.add('hidden');
+    el('enderecoBox').classList.add('hidden'); el('avisoEntrega').classList.add('hidden');
+    el('saida').textContent=''; el('saidaBox').classList.add('hidden');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+</script>
+</body>
+</html>
