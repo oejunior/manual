@@ -66,8 +66,30 @@
         </div>
       </div>
 
+      <div class="item">
+          <a onclick="acessarRestrito()" style="cursor:pointer;"> Área Restrita</a>
+        </div>
+      </div>
+
       <footer>Docce Cheesecake ● Manuais da Docce</footer>
     </section>
   </main>
+
+  <script>
+const senhaCorreta = "Docce2242";        // ALTERE AQUI
+const paginaSecreta = "entregas.html"; // ALTERE AQUI
+
+function acessarRestrito() {
+    const senha = prompt("Digite a senha:");
+
+    if (senha === senhaCorreta) {
+        window.location.href = paginaSecreta;
+    } else if (senha !== null) {
+        alert("Senha incorreta.");
+    }
+}
+</script>
+
+
 </body>
 </html>
