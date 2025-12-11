@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Docce Cheesecake - Controle de Entregas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Fontes -->
+  <link href="https://fonts.googleapis.com/css2?family=Signika:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --docce-bg: #f7f0e9;
+      --docce-card: #ffffff;
+      --docce-accent: #c9774d;   /* caramelo */
+      --docce-accent-soft: #f3d3bd;
+      --docce-dark: #3b2618;     /* chocolate */
+      --docce-text: #3d2c23;
+      --docce-muted: #8a7666;
+      --docce-border: #e2d4c8;
+      --danger: #c0392b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Signika", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 16px;
+      background: radial-gradient(circle at top, #fcefe4 0, #f7f0e9 40%, #f1e5da 100%);
+      color: var(--docce-text);
+    }
+
+    header.docce-header {
+      background: linear-gradient(135deg, #3b2618, #5a3723);
+      color: #fff;
+      padding: 18px 20px;
+      border-radius: 16px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+
+    .docce-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .docce-brand-title {
+      font-family: "Playfair Display", serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.03em;
+    }
+
+    .docce-brand-tagline {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .docce-header-badge {
+      background: rgba(255,255,255,0.12);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(255,255,255,0.25);
+      white-space: nowrap;
+    }
+
+    h1, h2, h3 {
+      font-family: "Playfair Display", serif;
+      color: var(--docce-dark);
+      margin-top: 0;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .card {
+      background: var(--docce-card);
+      padding: 16px;
+      margin-bottom: 16px;
+      border-radius: 14px;
+      border: 1px solid var(--docce-border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      color: var(--docce-dark);
+    }
+
+    input {
+      width: 100%;
+      padding: 6px 10px;
+      margin-top: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--docce-border);
+      font-size: 0.9rem;
+      background: #fdf9f5;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--docce-accent);
+      box-shadow: 0 0 0 1px var(--docce-accent-soft);
+      background: #fff;
+    }
+
+    input[readonly] {
+      background: #f3ebe2;
+      color: var(--docce-muted);
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .col {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      font-family: "Signika", system-ui, sans-serif;
+      font-weight: 500;
+      font-size: 0.8rem;
+      border-radius: 999px;
+      padding: 5px 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.1s ease;
+      background: #f2e3d5;
+      color: var(--docce-dark);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    button.primary {
+      background: var(--docce-accent);
+      color: #fff;
+    }
+
+    button.danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    button.small {
+      padding: 3px 10px;
+      font-size: 0.78rem;
+      border-radius: 10px;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      border: 1px solid var(--docce-border);
+      padding: 6px 8px;
+      text-align: left;
+    }
+
+    th {
+      background: #f8eee4;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--docce-accent-soft);
+      color: var(--docce-dark);
+      font-size: 0.78rem;
+      margin-bottom: 6px;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--docce-accent);
+    }
+
+    .error {
+      color: #b00020;
+      font-size: 0.82rem;
+      margin-top: 4px;
+    }
+
+    .success {
+      color: #0a7b1f;
+      font-size: 0.82rem;
+      margin-top: 4px;
+    }
+
+    .hint {
+      font-size: 0.78rem;
+      color: var(--docce-muted);
+      margin-top: 2px;
+    }
+
+    .section-subtitle {
+      font-size: 0.82rem;
+      color: var(--docce-muted);
+      margin-bottom: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .pin-label {
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 700px) {
+      body {
+        padding: 10px;
+      }
+      header.docce-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .docce-header-badge {
+        align-self: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="docce-header">
+    <div class="docce-brand">
+      <div class="docce-brand-title">Docce Cheesecake</div>
+      <div class="docce-brand-tagline">Sorria, o hoje é especial.</div>
+    </div>
+    <div class="docce-header-badge">
+      Painel de entregas • uso interno
+    </div>
+  </header>
+
+  <!-- NOVO PEDIDO -->
+  <div class="card">
+    <h2>Novo pedido</h2>
+    <p class="section-subtitle">
+      Cadastre o pedido assim que ele chegar. Se já souber o entregador, informe o código. Se não souber, o pedido vai ficar aguardando código.
+    </p>
+
+    <form id="entregaForm">
+      <div class="row">
+        <div class="col">
+          <label>
+            Nome do cliente
+            <input type="text" id="nomeCliente" required placeholder="Nome do cliente">
+          </label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label>
+            Total do pedido (R$)
+            <input type="number" id="totalPedido" step="0.01" min="0" required placeholder="Ex: 75,90">
+          </label>
+        </div>
+        <div class="col">
+          <label>
+            Taxa de entrega (R$)
+            <input type="number" id="taxaEntrega" step="0.01" min="0" required placeholder="Ex: 8,00">
+          </label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label>
+            Código do entregador (opcional)
+            <input type="text" id="codigoEntregador" placeholder="4 últimos dígitos do telefone">
+            <div class="hint">Se não souber ainda, pode deixar em branco. O pedido vai ficar aguardando código.</div>
+          </label>
+        </div>
+        <div class="col" style="align-self:flex-end;">
+          <button type="button" id="btnBuscar" class="small">
+            Buscar entregador
+          </button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label>
+            Nome do entregador
+            <input type="text" id="nomeEntregador" readonly>
+          </label>
+        </div>
+        <div class="col">
+          <label>
+            Chave PIX
+            <input type="text" id="pixEntregador" readonly>
+          </label>
+        </div>
+      </div>
+
+      <div id="mensagemForm"></div>
+
+      <div style="margin-top: 12px;">
+        <button type="submit" class="primary small">Adicionar pedido</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- PEDIDOS PENDENTES -->
+  <div class="card">
+    <h2>Pedidos aguardando código do entregador</h2>
+    <p class="section-subtitle">
+      Pedidos já cadastrados, mas ainda sem entregador definido. Quando o motoboy chegar, informe o código e vincule cada pedido.
+    </p>
+    <div class="badge" id="contadorPendentes">
+      <span class="badge-dot"></span>
+      0 pedidos pendentes
+    </div>
+    <table id="tabelaPendentes">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Cliente</th>
+          <th>Total (R$)</th>
+          <th>Taxa (R$)</th>
+          <th>Código entregador</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaPendentesBody">
+        <!-- linhas geradas via JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ENTREGAS DO DIA (COM ENTREGADOR DEFINIDO) -->
+  <div class="card">
+    <h2>Entregas do dia (sessão atual)</h2>
+    <p class="section-subtitle">
+      Aqui aparecem apenas as entregas que já têm entregador definido. Essas entregas são registradas no Google Sheets.
+    </p>
+    <div class="badge" id="contadorEntregas">
+      <span class="badge-dot"></span>
+      0 entregas lançadas
+    </div>
+    <table id="tabelaEntregas">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Código</th>
+          <th>Entregador</th>
+          <th>PIX</th>
+          <th>Cliente</th>
+          <th>Total pedido (R$)</th>
+          <th>Taxa (R$)</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- linhas geradas via JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FECHAMENTO -->
+  <div class="card">
+    <h2>Fechamento do dia</h2>
+    <p class="section-subtitle">
+      O fechamento usa as entregas salvas no Google Sheets (independente deste navegador). Mostra o total de taxas do dia e o resumo por entregador.
+    </p>
+    <button class="primary small" id="btnFechamento">Fazer fechamento do dia</button>
+
+    <div id="resultadoFechamento" style="margin-top:16px;"></div>
+  </div>
+
+  <!-- ÁREA INTERNA COM PIN -->
+  <div class="card">
+    <h2>Área interna &mdash; Cadastro de entregadores</h2>
+    <p class="section-subtitle">
+      Uso administrativo. Protegido por PIN para evitar que qualquer pessoa veja ou altere a lista de chaves PIX e telefones.
+    </p>
+
+    <div id="areaPin">
+      <label class="pin-label">
+        Digite o PIN administrativo
+      </label>
+      <div class="row">
+        <div class="col">
+          <input type="password" id="pinInput" placeholder="PIN interno">
+        </div>
+        <div class="col" style="max-width:160px;">
+          <button type="button" class="small" id="btnPinEntrar">Entrar</button>
+        </div>
+      </div>
+      <div id="pinMensagem"></div>
+      <div class="hint">Defina o PIN direto no código. Use apenas com o administrativo.</div>
+    </div>
+
+    <div id="areaInternaContent" class="hidden" style="margin-top:14px;">
+      <p class="section-subtitle">
+        Cadastro de entregadores salvo no Google Sheets. Qualquer alteração aqui é enviada para a planilha.
+      </p>
+
+      <table id="tabelaEntregadores">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Chave PIX</th>
+            <th>Telefone</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- preenchido via JS -->
+        </tbody>
+      </table>
+
+      <hr style="margin:16px 0; border:none; border-top:1px solid #e2d4c8;">
+
+      <h3>Cadastro / edição de entregador</h3>
+      <form id="formCadastroEntregador">
+        <div class="row">
+          <div class="col">
+            <label>
+              Código do entregador
+              <input type="text" id="cadCodigo" placeholder="Ex: 2603" required>
+              <div class="hint">Padrão: 4 últimos dígitos do telefone.</div>
+            </label>
+          </div>
+          <div class="col">
+            <label>
+              Nome do entregador
+              <input type="text" id="cadNome" placeholder="Nome completo" required>
+            </label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label>
+              Chave PIX
+              <input type="text" id="cadPix" placeholder="Chave PIX" required>
+            </label>
+          </div>
+          <div class="col">
+            <label>
+              Telefone
+              <input type="text" id="cadTelefone" placeholder="(69) 9 0000-0000">
+            </label>
+          </div>
+        </div>
+
+        <div id="cadMensagem"></div>
+
+        <div style="margin-top:12px;">
+          <button type="submit" class="primary small">Salvar entregador</button>
+          <button type="button" class="small" id="btnNovoEntregador">Novo / limpar formulário</button>
+        </div>
+      </form>
+
+      <p class="hint" style="margin-top:8px;">
+        Para editar um entregador, clique em "Editar" na tabela, ajuste os campos e clique em "Salvar entregador".
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // ==========================
+    //  CONFIGURAÇÕES
+    // ==========================
+
+    // 🔗 URL do Apps Script publicado (termina com /exec)
+    const API_URL = "https://script.google.com/macros/s/AKfycbzaclRECAd2UkYtr0dYCUIMqutLKZh_mW5ScwVJrh9jJoEsG3gNQU_Oe69MmFBoOAl3/exec";
+
+    // 🔑 PIN administrativo
+    const PIN_SISTEMA = "2603";
+
+    // ==========================
+    //  HELPERS DE API
+    // ==========================
+
+    async function apiGet(params) {
+      const url = API_URL + "?" + new URLSearchParams(params).toString();
+      const resp = await fetch(url);
+      if (!resp.ok) {
+        throw new Error("Erro ao chamar API (GET)");
+      }
+      return resp.json();
+    }
+
+    async function apiPost(body) {
+      const resp = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      if (!resp.ok) {
+        throw new Error("Erro ao chamar API (POST)");
+      }
+      return resp.json();
+    }
+
+    // ==========================
+    //  ESTADO
+    // ==========================
+
+    let entregadores = [];   // do Google Sheets
+    let entregas = [];       // entregas com entregador definido (sessão)
+    let pendentes = [];      // pedidos aguardando código de entregador
+    let proximoIdPendente = 1;
+
+    // ==========================
+    //  ELEMENTOS
+    // ==========================
+
+    const formEntrega = document.getElementById("entregaForm");
+    const inputNomeCliente = document.getElementById("nomeCliente");
+    const inputTotalPedido = document.getElementById("totalPedido");
+    const inputTaxaEntrega = document.getElementById("taxaEntrega");
+    const inputCodigoEntregador = document.getElementById("codigoEntregador");
+    const inputNomeEntregador = document.getElementById("nomeEntregador");
+    const inputPixEntregador = document.getElementById("pixEntregador");
+    const mensagemForm = document.getElementById("mensagemForm");
+
+    const tabelaPendentesBody = document.getElementById("tabelaPendentesBody");
+    const contadorPendentes = document.getElementById("contadorPendentes");
+
+    const tabelaEntregasBody = document.querySelector("#tabelaEntregas tbody");
+    const contadorEntregas = document.getElementById("contadorEntregas");
+    const resultadoFechamento = document.getElementById("resultadoFechamento");
+
+    const pinInput = document.getElementById("pinInput");
+    const btnPinEntrar = document.getElementById("btnPinEntrar");
+    const pinMensagem = document.getElementById("pinMensagem");
+    const areaInternaContent = document.getElementById("areaInternaContent");
+    const tabelaEntregadoresBody = document.querySelector("#tabelaEntregadores tbody");
+
+    const formCadastroEntregador = document.getElementById("formCadastroEntregador");
+    const cadCodigo = document.getElementById("cadCodigo");
+    const cadNome = document.getElementById("cadNome");
+    const cadPix = document.getElementById("cadPix");
+    const cadTelefone = document.getElementById("cadTelefone");
+    const cadMensagem = document.getElementById("cadMensagem");
+    const btnNovoEntregador = document.getElementById("btnNovoEntregador");
+
+    let codigoEmEdicao = null;
+
+    // ==========================
+    //  MENSAGENS
+    // ==========================
+
+    function limparMensagemForm() {
+      mensagemForm.textContent = "";
+      mensagemForm.className = "";
+    }
+
+    function mostrarErro(msg) {
+      mensagemForm.textContent = msg;
+      mensagemForm.className = "error";
+    }
+
+    function mostrarSucesso(msg) {
+      mensagemForm.textContent = msg;
+      mensagemForm.className = "success";
+    }
+
+    function limparMensagemPin() {
+      pinMensagem.textContent = "";
+      pinMensagem.className = "";
+    }
+
+    function mostrarErroPin(msg) {
+      pinMensagem.textContent = msg;
+      pinMensagem.className = "error";
+    }
+
+    function mostrarSucessoPin(msg) {
+      pinMensagem.textContent = msg;
+      pinMensagem.className = "success";
+    }
+
+    function mostrarErroCad(msg) {
+      cadMensagem.textContent = msg;
+      cadMensagem.className = "error";
+    }
+
+    function mostrarSucessoCad(msg) {
+      cadMensagem.textContent = msg;
+      cadMensagem.className = "success";
+    }
+
+    // ==========================
+    //  ENTREGADORES (SHEETS)
+    // ==========================
+
+    async function carregarEntregadoresDoServidor() {
+      try {
+        const dados = await apiGet({ tipo: "entregadores" });
+        entregadores = dados.entregadores || [];
+      } catch (err) {
+        console.error(err);
+        alert("Não foi possível carregar a lista de entregadores do servidor.");
+      }
+    }
+
+    function buscarEntregadorPorCodigo(codigo) {
+      return entregadores.find(e => e.codigo === String(codigo).trim());
+    }
+
+    async function cadastroRapidoEntregador() {
+      let nome = prompt("Nome do entregador:");
+      if (!nome) return null;
+      nome = nome.trim();
+      if (!nome) {
+        alert("Nome inválido. Cadastro cancelado.");
+        return null;
+      }
+
+      let telefone = prompt("Telefone do entregador (pode digitar com DDD e traços):");
+      if (!telefone) return null;
+      telefone = telefone.trim();
+      const apenasDigitos = telefone.replace(/\D/g, "");
+      if (apenasDigitos.length < 4) {
+        alert("Telefone inválido. Não foi possível obter os 4 últimos dígitos.");
+        return null;
+      }
+      const codigo = apenasDigitos.slice(-4);
+
+      let pix = prompt("Chave PIX do entregador:");
+      if (!pix) return null;
+      pix = pix.trim();
+      if (!pix) {
+        alert("Chave PIX inválida. Cadastro cancelado.");
+        return null;
+      }
+
+      const jaExiste = entregadores.find(e => e.codigo === codigo);
+      if (jaExiste) {
+        const continuar = confirm(
+          "Já existe um entregador com o código " + codigo +
+          ". Deseja mesmo usar este código para o novo cadastro?"
+        );
+        if (!continuar) {
+          alert("Cadastro de entregador cancelado.");
+          return null;
+        }
+      }
+
+      try {
+        const resposta = await apiPost({
+          acao: "salvarEntregador",
+          entregador: { codigo, nome, pix, telefone }
+        });
+        if (!resposta.ok) {
+          throw new Error("Erro ao salvar entregador no servidor.");
+        }
+        await carregarEntregadoresDoServidor();
+        const ent = buscarEntregadorPorCodigo(codigo) || { codigo, nome, pix, telefone };
+        return ent;
+      } catch (err) {
+        console.error(err);
+        alert("Erro ao salvar entregador no servidor.");
+        return null;
+      }
+    }
+
+    async function preencherDadosEntregadorCampoPrincipal() {
+      limparMensagemForm();
+      const codigoDigitado = inputCodigoEntregador.value.trim();
+      if (!codigoDigitado) {
+        mostrarErro("Digite o código do entregador ou deixe em branco para salvar como pendente.");
+        return;
+      }
+
+      let entregador = buscarEntregadorPorCodigo(codigoDigitado);
+      if (!entregador) {
+        const querCadastrar = confirm("Entregador não encontrado. Deseja cadastrar agora?");
+        if (!querCadastrar) {
+          mostrarErro("Entregador não encontrado para o código informado.");
+          inputNomeEntregador.value = "";
+          inputPixEntregador.value = "";
+          return;
+        }
+        entregador = await cadastroRapidoEntregador();
+        if (!entregador) {
+          mostrarErro("Cadastro de entregador cancelado.");
+          inputNomeEntregador.value = "";
+          inputPixEntregador.value = "";
+          return;
+        }
+        inputCodigoEntregador.value = entregador.codigo;
+      }
+
+      inputNomeEntregador.value = entregador.nome;
+      inputPixEntregador.value = entregador.pix;
+      mostrarSucesso("Entregador localizado e preenchido automaticamente.");
+    }
+
+    // ==========================
+    //  PENDENTES
+    // ==========================
+
+    function atualizarTabelaPendentes() {
+      tabelaPendentesBody.innerHTML = "";
+      pendentes.forEach((p, index) => {
+        const tr = document.createElement("tr");
+        tr.dataset.pendenteId = p.id;
+
+        const tdIndex = document.createElement("td");
+        tdIndex.textContent = index + 1;
+
+        const tdCliente = document.createElement("td");
+        tdCliente.textContent = p.nomeCliente;
+
+        const tdTotal = document.createElement("td");
+        tdTotal.textContent = p.totalPedido.toFixed(2).replace(".", ",");
+
+        const tdTaxa = document.createElement("td");
+        tdTaxa.textContent = p.taxaEntrega.toFixed(2).replace(".", ",");
+
+        const tdCodigo = document.createElement("td");
+        const inputCod = document.createElement("input");
+        inputCod.type = "text";
+        inputCod.className = "codigo-pendente-input";
+        inputCod.placeholder = "cód.";
+        tdCodigo.appendChild(inputCod);
+
+        const tdAcoes = document.createElement("td");
+        const btnVincular = document.createElement("button");
+        btnVincular.type = "button";
+        btnVincular.textContent = "Vincular";
+        btnVincular.className = "small";
+        btnVincular.classList.add("btnVincularPendente");
+
+        const btnExcluir = document.createElement("button");
+        btnExcluir.type = "button";
+        btnExcluir.textContent = "Excluir";
+        btnExcluir.className = "small danger";
+        btnExcluir.style.marginLeft = "4px";
+        btnExcluir.classList.add("btnExcluirPendente");
+
+        tdAcoes.appendChild(btnVincular);
+        tdAcoes.appendChild(btnExcluir);
+
+        tr.appendChild(tdIndex);
+        tr.appendChild(tdCliente);
+        tr.appendChild(tdTotal);
+        tr.appendChild(tdTaxa);
+        tr.appendChild(tdCodigo);
+        tr.appendChild(tdAcoes);
+
+        tabelaPendentesBody.appendChild(tr);
+      });
+
+      contadorPendentes.textContent =
+        pendentes.length + (pendentes.length === 1 ? " pedido pendente" : " pedidos pendentes");
+    }
+
+    async function vincularPendente(pendenteId, codigoDigitado, inputElemento) {
+      const pendente = pendentes.find(p => p.id === pendenteId);
+      if (!pendente) return;
+
+      const codigo = String(codigoDigitado || "").trim();
+      if (!codigo) {
+        alert("Digite o código do entregador.");
+        inputElemento && inputElemento.focus();
+        return;
+      }
+
+      let entregador = buscarEntregadorPorCodigo(codigo);
+      if (!entregador) {
+        const querCadastrar = confirm("Entregador não encontrado. Deseja cadastrar agora?");
+        if (!querCadastrar) return;
+        entregador = await cadastroRapidoEntregador();
+        if (!entregador) return;
+      }
+
+      // cria entrega local
+      const novaEntrega = {
+        id: null, // será preenchido pela resposta do servidor
+        codigo: entregador.codigo,
+        nomeEntregador: entregador.nome,
+        pixEntregador: entregador.pix,
+        nomeCliente: pendente.nomeCliente,
+        totalPedido: pendente.totalPedido,
+        taxaEntrega: pendente.taxaEntrega
+      };
+      entregas.push(novaEntrega);
+      atualizarTabelaEntregas();
+
+      // salva no servidor
+      try {
+        const resposta = await apiPost({
+          acao: "novaEntrega",
+          entrega: {
+            codigo: entregador.codigo,
+            cliente: pendente.nomeCliente,
+            total: pendente.totalPedido,
+            taxa: pendente.taxaEntrega
+          }
+        });
+        // se o Apps Script devolver id, você pode usar:
+        // novaEntrega.id = resposta.entrega && resposta.entrega.id;
+      } catch (err) {
+        console.error(err);
+        alert("Erro ao registrar entrega no servidor. Confira depois no fechamento.");
+      }
+
+      // remove pendente
+      pendentes = pendentes.filter(p => p.id !== pendenteId);
+      atualizarTabelaPendentes();
+    }
+
+    function excluirPendente(pendenteId) {
+      pendentes = pendentes.filter(p => p.id !== pendenteId);
+      atualizarTabelaPendentes();
+    }
+
+    // ==========================
+    //  ENTREGAS (sessão)
+    // ==========================
+
+    function atualizarTabelaEntregas() {
+      tabelaEntregasBody.innerHTML = "";
+      entregas.forEach((e, index) => {
+        const tr = document.createElement("tr");
+        tr.dataset.entregaIndex = index; // usamos índice local
+
+        const tdIndex = document.createElement("td");
+        tdIndex.textContent = index + 1;
+
+        const tdCodigo = document.createElement("td");
+        tdCodigo.textContent = e.codigo;
+
+        const tdNome = document.createElement("td");
+        tdNome.textContent = e.nomeEntregador;
+
+        const tdPix = document.createElement("td");
+        tdPix.textContent = e.pixEntregador;
+
+        const tdCliente = document.createElement("td");
+        tdCliente.textContent = e.nomeCliente;
+
+        const tdTotal = document.createElement("td");
+        tdTotal.textContent = e.totalPedido.toFixed(2).replace(".", ",");
+
+        const tdTaxa = document.createElement("td");
+        tdTaxa.textContent = e.taxaEntrega.toFixed(2).replace(".", ",");
+
+        const tdAcoes = document.createElement("td");
+        const btnEditar = document.createElement("button");
+        btnEditar.type = "button";
+        btnEditar.textContent = "Editar";
+        btnEditar.className = "small";
+        btnEditar.classList.add("btnEditarEntrega");
+
+        const btnExcluir = document.createElement("button");
+        btnExcluir.type = "button";
+        btnExcluir.textContent = "Excluir";
+        btnExcluir.className = "small danger";
+        btnExcluir.style.marginLeft = "4px";
+        btnExcluir.classList.add("btnExcluirEntrega");
+
+        tdAcoes.appendChild(btnEditar);
+        tdAcoes.appendChild(btnExcluir);
+
+        tr.appendChild(tdIndex);
+        tr.appendChild(tdCodigo);
+        tr.appendChild(tdNome);
+        tr.appendChild(tdPix);
+        tr.appendChild(tdCliente);
+        tr.appendChild(tdTotal);
+        tr.appendChild(tdTaxa);
+        tr.appendChild(tdAcoes);
+
+        tabelaEntregasBody.appendChild(tr);
+      });
+
+      contadorEntregas.textContent =
+        entregas.length + (entregas.length === 1 ? " entrega lançada" : " entregas lançadas");
+    }
+
+    async function editarEntrega(indice) {
+      const entrega = entregas[indice];
+      if (!entrega) return;
+
+      let novoCodigo = prompt("Novo código do entregador:", entrega.codigo);
+      if (!novoCodigo) return;
+      novoCodigo = novoCodigo.trim();
+      if (!novoCodigo) return;
+
+      let entregador = buscarEntregadorPorCodigo(novoCodigo);
+      if (!entregador) {
+        const querCadastrar = confirm("Entregador não encontrado. Deseja cadastrar agora?");
+        if (!querCadastrar) return;
+        entregador = await cadastroRapidoEntregador();
+        if (!entregador) return;
+        novoCodigo = entregador.codigo;
+      }
+
+      entrega.codigo = entregador.codigo;
+      entrega.nomeEntregador = entregador.nome;
+      entrega.pixEntregador = entregador.pix;
+      atualizarTabelaEntregas();
+
+      // Aqui seria o ponto de chamar a API para atualizar o código da entrega no Sheets
+      // se você tiver um ID por entrega. Exemplo (quando o Apps Script suportar isso):
+      // await apiPost({ acao: "atualizarEntregaCodigo", id: entrega.id, novoCodigo: entregador.codigo });
+    }
+
+    async function excluirEntrega(indice) {
+      const entrega = entregas[indice];
+      if (!entrega) return;
+
+      const confirma = confirm("Deseja excluir esta entrega?");
+      if (!confirma) return;
+
+      // Aqui seria o ponto de chamar a API para excluir a entrega no Sheets
+      // quando o Apps Script suportar isso (usando o id da entrega).
+
+      entregas.splice(indice, 1);
+      atualizarTabelaEntregas();
+    }
+
+    // ==========================
+    //  FECHAMENTO (Sheets)
+    // ==========================
+
+    function hojeISO() {
+      const hoje = new Date();
+      const ano = hoje.getFullYear();
+      const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+      const dia = String(hoje.getDate()).padStart(2, "0");
+      return `${ano}-${mes}-${dia}`;
+    }
+
+    async function fazerFechamento() {
+      limparMensagemForm();
+      resultadoFechamento.innerHTML = "";
+
+      try {
+        await carregarEntregadoresDoServidor();
+        const hoje = hojeISO();
+        const dados = await apiGet({ tipo: "entregasDia", data: hoje });
+        const lista = dados.entregas || [];
+
+        if (lista.length === 0) {
+          resultadoFechamento.innerHTML = "<p>Nenhuma entrega lançada no dia para fechamento.</p>";
+          return;
+        }
+
+        const mapa = new Map();
+        let totalTaxasDia = 0;
+
+        lista.forEach(entrega => {
+          const baseEntregador = buscarEntregadorPorCodigo(entrega.codigo) || {
+            nome: "(não cadastrado)",
+            pix: ""
+          };
+          const chave = entrega.codigo + "|" + baseEntregador.nome + "|" + baseEntregador.pix;
+
+          if (!mapa.has(chave)) {
+            mapa.set(chave, {
+              codigo: entrega.codigo,
+              nomeEntregador: baseEntregador.nome,
+              pixEntregador: baseEntregador.pix,
+              quantidade: 0,
+              somaTaxas: 0,
+              somaTotalPedidos: 0
+            });
+          }
+
+          const item = mapa.get(chave);
+          item.quantidade += 1;
+          item.somaTaxas += entrega.taxa || 0;
+          item.somaTotalPedidos += entrega.total || 0;
+
+          totalTaxasDia += entrega.taxa || 0;
+        });
+
+        let html = "<h3>Fechamento do dia</h3>";
+        html += "<p><strong>Total de taxas de entrega do dia:</strong> R$ " +
+                totalTaxasDia.toFixed(2).replace('.', ',') +
+                "</p>";
+
+        html += "<h3>Resumo por entregador</h3>";
+        html += "<table><thead><tr>" +
+                "<th>Código</th>" +
+                "<th>Entregador</th>" +
+                "<th>PIX</th>" +
+                "<th>Qtd. entregas</th>" +
+                "<th>Total taxas (R$)</th>" +
+                "<th>Total pedidos (R$)</th>" +
+                "</tr></thead><tbody>";
+
+        mapa.forEach(item => {
+          html += "<tr>" +
+                  "<td>" + item.codigo + "</td>" +
+                  "<td>" + item.nomeEntregador + "</td>" +
+                  "<td>" + item.pixEntregador + "</td>" +
+                  "<td>" + item.quantidade + "</td>" +
+                  "<td>" + item.somaTaxas.toFixed(2).replace('.', ',') + "</td>" +
+                  "<td>" + item.somaTotalPedidos.toFixed(2).replace('.', ',') + "</td>" +
+                  "</tr>";
+        });
+
+        html += "</tbody></table>";
+        resultadoFechamento.innerHTML = html;
+
+      } catch (err) {
+        console.error(err);
+        resultadoFechamento.innerHTML = "<p>Erro ao buscar dados para fechamento.</p>";
+      }
+    }
+
+    // ==========================
+    //  ÁREA INTERNA / PIN / CRUD ENTREGADORES
+    // ==========================
+
+    function renderTabelaEntregadores() {
+      tabelaEntregadoresBody.innerHTML = "";
+      entregadores.forEach(ent => {
+        const tr = document.createElement("tr");
+
+        const tdCodigo = document.createElement("td");
+        tdCodigo.textContent = ent.codigo;
+
+        const tdNome = document.createElement("td");
+        tdNome.textContent = ent.nome;
+
+        const tdPix = document.createElement("td");
+        tdPix.textContent = ent.pix;
+
+        const tdTelefone = document.createElement("td");
+        tdTelefone.textContent = ent.telefone || "";
+
+        const tdAcoes = document.createElement("td");
+        const btnEditar = document.createElement("button");
+        btnEditar.type = "button";
+        btnEditar.textContent = "Editar";
+        btnEditar.className = "small";
+        btnEditar.classList.add("btnEditarEntregador");
+        btnEditar.dataset.codigo = ent.codigo;
+
+        tdAcoes.appendChild(btnEditar);
+
+        tr.appendChild(tdCodigo);
+        tr.appendChild(tdNome);
+        tr.appendChild(tdPix);
+        tr.appendChild(tdTelefone);
+        tr.appendChild(tdAcoes);
+
+        tabelaEntregadoresBody.appendChild(tr);
+      });
+    }
+
+    function limparFormularioCadastro() {
+      cadCodigo.value = "";
+      cadNome.value = "";
+      cadPix.value = "";
+      cadTelefone.value = "";
+      cadMensagem.textContent = "";
+      cadMensagem.className = "";
+      codigoEmEdicao = null;
+    }
+
+    async function salvarCadastroEntregador(event) {
+      event.preventDefault();
+      cadMensagem.textContent = "";
+      cadMensagem.className = "";
+
+      const codigo = cadCodigo.value.trim();
+      const nome = cadNome.value.trim();
+      const pix = cadPix.value.trim();
+      const telefone = cadTelefone.value.trim();
+
+      if (!codigo || !nome || !pix) {
+        mostrarErroCad("Código, nome e PIX são obrigatórios.");
+        return;
+      }
+
+      const indiceExistente = entregadores.findIndex(e => e.codigo === codigo);
+      if (codigoEmEdicao && codigoEmEdicao !== codigo && indiceExistente !== -1) {
+        mostrarErroCad("Já existe um entregador com esse código.");
+        return;
+      }
+
+      try {
+        const resposta = await apiPost({
+          acao: "salvarEntregador",
+          entregador: { codigo, nome, pix, telefone }
+        });
+
+        if (!resposta.ok) {
+          throw new Error("Erro ao salvar no servidor");
+        }
+
+        await carregarEntregadoresDoServidor();
+        renderTabelaEntregadores();
+        limparFormularioCadastro();
+        mostrarSucessoCad("Entregador salvo com sucesso.");
+      } catch (err) {
+        console.error(err);
+        mostrarErroCad("Erro ao salvar entregador no servidor.");
+      }
+    }
+
+    function carregarEntregadorNoFormulario(codigo) {
+      cadMensagem.textContent = "";
+      cadMensagem.className = "";
+
+      const ent = entregadores.find(e => e.codigo === codigo);
+      if (!ent) return;
+
+      cadCodigo.value = ent.codigo;
+      cadNome.value = ent.nome;
+      cadPix.value = ent.pix;
+      cadTelefone.value = ent.telefone || "";
+      codigoEmEdicao = ent.codigo;
+    }
+
+    async function tentarEntrarAreaInterna() {
+      limparMensagemPin();
+      const pin = pinInput.value.trim();
+      if (!pin) {
+        mostrarErroPin("Digite o PIN administrativo.");
+        return;
+      }
+      if (pin !== PIN_SISTEMA) {
+        mostrarErroPin("PIN incorreto. Tente novamente.");
+        return;
+      }
+
+      try {
+        await carregarEntregadoresDoServidor();
+        areaInternaContent.classList.remove("hidden");
+        mostrarSucessoPin("Acesso liberado.");
+        renderTabelaEntregadores();
+      } catch (err) {
+        console.error(err);
+        mostrarErroPin("Erro ao carregar entregadores do servidor.");
+      }
+    }
+
+    // ==========================
+    //  EVENTOS
+    // ==========================
+
+    document.getElementById("btnBuscar").addEventListener("click", () => {
+      preencherDadosEntregadorCampoPrincipal();
+    });
+
+    inputCodigoEntregador.addEventListener("blur", () => {
+      if (inputCodigoEntregador.value && !inputNomeEntregador.value) {
+        preencherDadosEntregadorCampoPrincipal();
+      }
+    });
+
+    formEntrega.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      limparMensagemForm();
+
+      const nomeCli = inputNomeCliente.value.trim();
+      const total = parseFloat(String(inputTotalPedido.value).replace(",", "."));
+      const taxa = parseFloat(String(inputTaxaEntrega.value).replace(",", "."));
+      const codigo = inputCodigoEntregador.value.trim();
+
+      if (!nomeCli) {
+        mostrarErro("Informe o nome do cliente.");
+        return;
+      }
+      if (isNaN(total) || total < 0) {
+        mostrarErro("Informe um valor válido para o total do pedido.");
+        return;
+      }
+      if (isNaN(taxa) || taxa < 0) {
+        mostrarErro("Informe um valor válido para a taxa de entrega.");
+        return;
+      }
+
+      // Caso NÃO tenha código -> vira pendente
+      if (!codigo) {
+        const pend = {
+          id: proximoIdPendente++,
+          nomeCliente: nomeCli,
+          totalPedido: total,
+          taxaEntrega: taxa
+        };
+        pendentes.push(pend);
+        atualizarTabelaPendentes();
+        mostrarSucesso("Pedido cadastrado como pendente, aguardando código do entregador.");
+
+        // limpa campos de pedido
+        inputNomeCliente.value = "";
+        inputTotalPedido.value = "";
+        inputTaxaEntrega.value = "";
+        inputNomeEntregador.value = "";
+        inputPixEntregador.value = "";
+        inputCodigoEntregador.value = "";
+        inputNomeCliente.focus();
+        return;
+      }
+
+      // Se tiver código -> já vira entrega com entregador definido
+      let entregador = buscarEntregadorPorCodigo(codigo);
+      if (!entregador) {
+        const querCadastrar = confirm("Entregador não encontrado. Deseja cadastrar agora?");
+        if (!querCadastrar) {
+          mostrarErro("Entregador não encontrado para o código informado.");
+          return;
+        }
+        entregador = await cadastroRapidoEntregador();
+        if (!entregador) {
+          mostrarErro("Cadastro de entregador cancelado.");
+          return;
+        }
+      }
+
+      const novaEntrega = {
+        id: null,
+        codigo: entregador.codigo,
+        nomeEntregador: entregador.nome,
+        pixEntregador: entregador.pix,
+        nomeCliente: nomeCli,
+        totalPedido: total,
+        taxaEntrega: taxa
+      };
+      entregas.push(novaEntrega);
+      atualizarTabelaEntregas();
+      mostrarSucesso("Entrega adicionada com sucesso.");
+
+      try {
+        const resposta = await apiPost({
+          acao: "novaEntrega",
+          entrega: {
+            codigo: entregador.codigo,
+            cliente: nomeCli,
+            total,
+            taxa
+          }
+        });
+        // se o Apps Script devolver id, você pode atribuir aqui:
+        // novaEntrega.id = resposta.entrega && resposta.entrega.id;
+      } catch (err) {
+        console.error(err);
+        alert("Erro ao registrar entrega no servidor. Confira depois no fechamento.");
+      }
+
+      inputNomeCliente.value = "";
+      inputTotalPedido.value = "";
+      inputTaxaEntrega.value = "";
+      inputNomeEntregador.value = "";
+      inputPixEntregador.value = "";
+      inputCodigoEntregador.value = "";
+      inputNomeCliente.focus();
+    });
+
+    // tabela de pendentes: delegação de eventos
+    tabelaPendentesBody.addEventListener("click", (e) => {
+      const tr = e.target.closest("tr");
+      if (!tr) return;
+      const pendenteId = Number(tr.dataset.pendenteId || 0);
+      const inputCodigo = tr.querySelector(".codigo-pendente-input");
+
+      if (e.target.classList.contains("btnVincularPendente")) {
+        const codigoDigitado = inputCodigo ? inputCodigo.value : "";
+        vincularPendente(pendenteId, codigoDigitado, inputCodigo);
+      }
+
+      if (e.target.classList.contains("btnExcluirPendente")) {
+        excluirPendente(pendenteId);
+      }
+    });
+
+    // tabela de entregas: delegação de eventos
+    tabelaEntregasBody.addEventListener("click", (e) => {
+      const tr = e.target.closest("tr");
+      if (!tr) return;
+      const indice = Number(tr.dataset.entregaIndex || 0);
+
+      if (e.target.classList.contains("btnEditarEntrega")) {
+        editarEntrega(indice);
+      }
+      if (e.target.classList.contains("btnExcluirEntrega")) {
+        excluirEntrega(indice);
+      }
+    });
+
+    document.getElementById("btnFechamento").addEventListener("click", () => {
+      fazerFechamento();
+    });
+
+    btnPinEntrar.addEventListener("click", () => {
+      tentarEntrarAreaInterna();
+    });
+
+    pinInput.addEventListener("keyup", (e) => {
+      if (e.key === "Enter") {
+        tentarEntrarAreaInterna();
+      }
+    });
+
+    formCadastroEntregador.addEventListener("submit", salvarCadastroEntregador);
+    btnNovoEntregador.addEventListener("click", limparFormularioCadastro);
+
+    tabelaEntregadoresBody.addEventListener("click", (e) => {
+      if (e.target.classList.contains("btnEditarEntregador")) {
+        const codigo = e.target.dataset.codigo;
+        carregarEntregadorNoFormulario(codigo);
+      }
+    });
+
+    // Carrega entregadores ao abrir a página
+    carregarEntregadoresDoServidor();
+  </script>
+</body>
+</html>
