@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Docce Cheesecake - Controle de Entregas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Fonte mais elegante para os títulos (opcional) -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --docce-bg: #f7f0e9;
+      --docce-card: #ffffff;
+      --docce-accent: #c9774d;   /* caramelo */
+      --docce-accent-soft: #f3d3bd;
+      --docce-dark: #3b2618;     /* chocolate */
+      --docce-text: #3d2c23;
+      --docce-muted: #8a7666;
+      --docce-border: #e2d4c8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 16px;
+      background: radial-gradient(circle at top, #fcefe4 0, #f7f0e9 40%, #f1e5da 100%);
+      color: var(--docce-text);
+    }
+
+    header.docce-header {
+      background: linear-gradient(135deg, #3b2618, #5a3723);
+      color: #fff;
+      padding: 18px 20px;
+      border-radius: 16px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+
+    .docce-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .docce-brand-title {
+      font-family: "Playfair Display", serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.03em;
+    }
+
+    .docce-brand-tagline {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .docce-header-badge {
+      background: rgba(255,255,255,0.12);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(255,255,255,0.25);
+      white-space: nowrap;
+    }
+
+    h1, h2, h3 {
+      font-family: "Playfair Display", serif;
+      color: var(--docce-dark);
+      margin-top: 0;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .card {
+      background: var(--docce-card);
+      padding: 16px;
+      margin-bottom: 16px;
+      border-radius: 14px;
+      border: 1px solid var(--docce-border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.92rem;
+      color: var(--docce-dark);
+    }
+
+    input {
+      width: 100%;
+      padding: 8px 10px;
+      margin-top: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--docce-border);
+      font-size: 0.95rem;
+      background: #fdf9f5;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--docce-accent);
+      box-shadow: 0 0 0 1px var(--docce-accent-soft);
+      background: #fff;
+    }
+
+    input[readonly] {
+      background: #f3ebe2;
+      color: var(--docce-muted);
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .col {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    button {
+      padding: 9px 16px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    button.primary {
+      background: var(--docce-accent);
+      color: #fff;
+    }
+
+    button.secondary {
+      background: #f2e3d5;
+      color: var(--docce-dark);
+    }
+
+    button.danger {
+      background: #c0392b;
+      color: #fff;
+    }
+
+    button + button {
+      margin-left: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      border: 1px solid var(--docce-border);
+      padding: 6px 8px;
+      text-align: left;
+    }
+
+    th {
+      background: #f8eee4;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--docce-accent-soft);
+      color: var(--docce-dark);
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--docce-accent);
+    }
+
+    .error {
+      color: #b00020;
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .success {
+      color: #0a7b1f;
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: var(--docce-muted);
+      margin-top: 2px;
+    }
+
+    .section-subtitle {
+      font-size: 0.85rem;
+      color: var(--docce-muted);
+      margin-bottom: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #f2e3d5;
+      font-size: 0.75rem;
+      color: var(--docce-dark);
+    }
+
+    .pin-label {
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 700px) {
+      body {
+        padding: 10px;
+      }
+      header.docce-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .docce-header-badge {
+        align-self: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="docce-header">
+    <div class="docce-brand">
+      <div class="docce-brand-title">Docce Cheesecake</div>
+      <div class="docce-brand-tagline">Sorria, o hoje é especial.</div>
+    </div>
+    <div class="docce-header-badge">
+      Painel de entregas • uso interno
+    </div>
+  </header>
+
+  <div class="card">
+    <h2>Lançar nova entrega</h2>
+    <p class="section-subtitle">
+      Digite o <strong>código do entregador</strong> e os dados da entrega. O nome e a chave PIX são preenchidos automaticamente.
+    </p>
+    <form id="entregaForm">
+      <div class="row">
+        <div class="col">
+          <label>
+            Código do entregador
+            <input type="text" id="codigoEntregador" required placeholder="Ex: 2603">
+            <div class="hint">Geralmente o final do telefone, ou o código que vocês definirem.</div>
+          </label>
+        </div>
+        <div class="col" style="align-self:flex-end;">
+          <button type="button" class="secondary" id="btnBuscar">Buscar entregador</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label>
+            Nome do entregador
+            <input type="text" id="nomeEntregador" readonly>
+          </label>
+        </div>
+        <div class="col">
+          <label>
+            Chave PIX
+            <input type="text" id="pixEntregador" readonly>
+          </label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label>
+            Nome do cliente
+            <input type="text" id="nomeCliente" required placeholder="Nome do cliente">
+          </label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label>
+            Total do pedido (R$)
+            <input type="number" id="totalPedido" step="0.01" min="0" required placeholder="Ex: 75,90">
+          </label>
+        </div>
+        <div class="col">
+          <label>
+            Taxa de entrega (R$)
+            <input type="number" id="taxaEntrega" step="0.01" min="0" required placeholder="Ex: 8,00">
+          </label>
+        </div>
+      </div>
+
+      <div id="mensagemForm" class=""></div>
+
+      <div style="margin-top: 12px;">
+        <button type="submit" class="primary">Adicionar entrega</button>
+        <button type="button" class="secondary" id="btnLimparUltima">Excluir última linha</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Entregas do dia</h2>
+    <p class="section-subtitle">
+      Conferência rápida do que já foi lançado. Use no final do expediente para cruzar com o fechamento.
+    </p>
+    <div class="badge" id="contadorEntregas">
+      <span class="badge-dot"></span>
+      0 entregas lançadas
+    </div>
+    <table id="tabelaEntregas">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Código</th>
+          <th>Entregador</th>
+          <th>PIX</th>
+          <th>Cliente</th>
+          <th>Total pedido (R$)</th>
+          <th>Taxa (R$)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- linhas geradas via JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Fechamento do dia</h2>
+    <p class="section-subtitle">
+      Ao finalizar o expediente, clique no botão para ver o resumo por entregador: quantidade de entregas, total em taxas e total em pedidos.
+    </p>
+    <button class="primary" id="btnFechamento">Fazer fechamento do dia</button>
+    <button class="secondary" id="btnLimparTudo">Limpar todas as entregas</button>
+
+    <div id="resultadoFechamento" style="margin-top:16px;"></div>
+  </div>
+
+  <!-- ÁREA INTERNA COM PIN -->
+  <div class="card">
+    <h2>Área interna &mdash; Cadastro de entregadores</h2>
+    <p class="section-subtitle">
+      Uso administrativo. Protegido por PIN para evitar que qualquer pessoa veja a lista de chaves PIX.
+    </p>
+
+    <div id="areaPin">
+      <label class="pin-label">
+        Digite o PIN administrativo
+      </label>
+      <div class="row">
+        <div class="col">
+          <input type="password" id="pinInput" placeholder="PIN interno">
+        </div>
+        <div class="col" style="max-width:160px;">
+          <button type="button" class="secondary" id="btnPinEntrar">Entrar</button>
+        </div>
+      </div>
+      <div id="pinMensagem" class=""></div>
+      <div class="hint">Dica: você pode definir o PIN direto no código (para o time administrativo).</div>
+    </div>
+
+    <div id="areaInternaContent" class="hidden" style="margin-top:14px;">
+      <p class="section-subtitle">
+        Cadastro carregado da configuração no código. Ajustes permanentes devem ser feitos no arquivo
+        <span class="pill">index.html</span> (na parte de <code>const entregadores = [...]</code>).
+      </p>
+
+      <table id="tabelaEntregadores">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Chave PIX</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- preenchido via JS -->
+        </tbody>
+      </table>
+
+      <p class="hint" style="margin-top:8px;">
+        Esta área é apenas para consulta rápida durante o dia. Para mudar código, nome ou PIX de alguém de forma definitiva,
+        é só editar o bloco <code>entregadores</code> no código e publicar novamente no GitHub.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // ==========================
+    //  CONFIGURAÇÕES DO SISTEMA
+    // ==========================
+
+    // 🔑 PIN ADMINISTRATIVO
+    const PIN_SISTEMA = "2603";
+
+    // 📋 CADASTRO DE ENTREGADORES
+    const entregadores = [
+      { codigo: "2603", nome: "Oscar Espinola Jr.", pix: "seu.pix@exemplo.com" },
+      // { codigo: "1234", nome: "Fulano da Silva", pix: "chave-pix-fulano" },
+      // { codigo: "5678", nome: "Ciclano de Souza", pix: "chave-pix-ciclano" },
+    ];
+
+    // ==========================
+    //  LÓGICA PRINCIPAL
+    // ==========================
+
+    const entregas = [];
+
+    const form = document.getElementById('entregaForm');
+    const inputCodigo = document.getElementById('codigoEntregador');
+    const inputNomeEntregador = document.getElementById('nomeEntregador');
+    const inputPixEntregador = document.getElementById('pixEntregador');
+    const inputNomeCliente = document.getElementById('nomeCliente');
+    const inputTotalPedido = document.getElementById('totalPedido');
+    const inputTaxaEntrega = document.getElementById('taxaEntrega');
+    const mensagemForm = document.getElementById('mensagemForm');
+    const tabelaBody = document.querySelector('#tabelaEntregas tbody');
+    const contadorEntregas = document.getElementById('contadorEntregas');
+    const resultadoFechamento = document.getElementById('resultadoFechamento');
+
+    const pinInput = document.getElementById('pinInput');
+    const btnPinEntrar = document.getElementById('btnPinEntrar');
+    const pinMensagem = document.getElementById('pinMensagem');
+    const areaInternaContent = document.getElementById('areaInternaContent');
+    const tabelaEntregadoresBody = document.querySelector('#tabelaEntregadores tbody');
+
+    function limparMensagem() {
+      mensagemForm.textContent = "";
+      mensagemForm.className = "";
+    }
+
+    function mostrarErro(msg) {
+      mensagemForm.textContent = msg;
+      mensagemForm.className = "error";
+    }
+
+    function mostrarSucesso(msg) {
+      mensagemForm.textContent = msg;
+      mensagemForm.className = "success";
+    }
+
+    function buscarEntregadorPorCodigo(codigo) {
+      return entregadores.find(e => e.codigo === codigo.trim());
+    }
+
+    function preencherDadosEntregador() {
+      limparMensagem();
+      const codigo = inputCodigo.value.trim();
+      if (!codigo) {
+        mostrarErro("Digite o código do entregador.");
+        return;
+      }
+
+      const entregador = buscarEntregadorPorCodigo(codigo);
+      if (!entregador) {
+        inputNomeEntregador.value = "";
+        inputPixEntregador.value = "";
+        mostrarErro("Entregador não encontrado para o código informado.");
+        return;
+      }
+
+      inputNomeEntregador.value = entregador.nome;
+      inputPixEntregador.value = entregador.pix;
+      mostrarSucesso("Entregador localizado e preenchido automaticamente.");
+    }
+
+    function atualizarTabela() {
+      tabelaBody.innerHTML = "";
+      entregas.forEach((entrega, index) => {
+        const tr = document.createElement('tr');
+
+        const tdIndex = document.createElement('td');
+        tdIndex.textContent = index + 1;
+
+        const tdCodigo = document.createElement('td');
+        tdCodigo.textContent = entrega.codigo;
+
+        const tdNome = document.createElement('td');
+        tdNome.textContent = entrega.nomeEntregador;
+
+        const tdPix = document.createElement('td');
+        tdPix.textContent = entrega.pixEntregador;
+
+        const tdCliente = document.createElement('td');
+        tdCliente.textContent = entrega.nomeCliente;
+
+        const tdTotal = document.createElement('td');
+        tdTotal.textContent = entrega.totalPedido.toFixed(2).replace('.', ',');
+
+        const tdTaxa = document.createElement('td');
+        tdTaxa.textContent = entrega.taxaEntrega.toFixed(2).replace('.', ',');
+
+        tr.appendChild(tdIndex);
+        tr.appendChild(tdCodigo);
+        tr.appendChild(tdNome);
+        tr.appendChild(tdPix);
+        tr.appendChild(tdCliente);
+        tr.appendChild(tdTotal);
+        tr.appendChild(tdTaxa);
+
+        tabelaBody.appendChild(tr);
+      });
+
+      contadorEntregas.textContent =
+        entregas.length + (entregas.length === 1 ? " entrega lançada" : " entregas lançadas");
+    }
+
+    function adicionarEntrega(event) {
+      event.preventDefault();
+      limparMensagem();
+
+      const codigo = inputCodigo.value.trim();
+      const nomeCli = inputNomeCliente.value.trim();
+      const total = parseFloat(String(inputTotalPedido.value).replace(',', '.'));
+      const taxa = parseFloat(String(inputTaxaEntrega.value).replace(',', '.'));
+
+      if (!codigo) {
+        mostrarErro("Informe o código do entregador.");
+        return;
+      }
+
+      const entregador = buscarEntregadorPorCodigo(codigo);
+      if (!entregador) {
+        mostrarErro("Entregador não encontrado. Clique em 'Buscar entregador' para conferir.");
+        return;
+      }
+
+      if (!nomeCli) {
+        mostrarErro("Informe o nome do cliente.");
+        return;
+      }
+
+      if (isNaN(total) || total < 0) {
+        mostrarErro("Informe um valor válido para o total do pedido.");
+        return;
+      }
+
+      if (isNaN(taxa) || taxa < 0) {
+        mostrarErro("Informe um valor válido para a taxa de entrega.");
+        return;
+      }
+
+      entregas.push({
+        codigo: codigo,
+        nomeEntregador: entregador.nome,
+        pixEntregador: entregador.pix,
+        nomeCliente: nomeCli,
+        totalPedido: total,
+        taxaEntrega: taxa
+      });
+
+      atualizarTabela();
+      mostrarSucesso("Entrega adicionada com sucesso.");
+
+      inputNomeCliente.value = "";
+      inputTotalPedido.value = "";
+      inputTaxaEntrega.value = "";
+      inputNomeCliente.focus();
+    }
+
+    function excluirUltimaEntrega() {
+      limparMensagem();
+      if (entregas.length === 0) {
+        mostrarErro("Não há entregas para excluir.");
+        return;
+      }
+      entregas.pop();
+      atualizarTabela();
+      mostrarSucesso("Última entrega removida.");
+    }
+
+    function limparTodasEntregas() {
+      const confirma = confirm("Tem certeza que deseja limpar TODAS as entregas do dia?");
+      if (!confirma) return;
+      entregas.length = 0;
+      atualizarTabela();
+      resultadoFechamento.innerHTML = "";
+      limparMensagem();
+      mostrarSucesso("Todas as entregas foram limpas.");
+    }
+
+    // 🔽 FUNÇÃO ATUALIZADA COM TOTAL DE TAXAS DO DIA
+    function fazerFechamento() {
+      limparMensagem();
+      if (entregas.length === 0) {
+        resultadoFechamento.innerHTML = "<p>Nenhuma entrega lançada para fechar.</p>";
+        return;
+      }
+
+      const mapa = new Map();
+      let totalTaxasDia = 0;
+
+      entregas.forEach(entrega => {
+        const chave = entrega.codigo + "|" + entrega.nomeEntregador + "|" + entrega.pixEntregador;
+
+        if (!mapa.has(chave)) {
+          mapa.set(chave, {
+            codigo: entrega.codigo,
+            nomeEntregador: entrega.nomeEntregador,
+            pixEntregador: entrega.pixEntregador,
+            quantidade: 0,
+            somaTaxas: 0,
+            somaTotalPedidos: 0
+          });
+        }
+
+        const item = mapa.get(chave);
+        item.quantidade += 1;
+        item.somaTaxas += entrega.taxaEntrega;
+        item.somaTotalPedidos += entrega.totalPedido;
+
+        // soma geral do dia
+        totalTaxasDia += entrega.taxaEntrega;
+      });
+
+      let html = "<h3>Fechamento do dia</h3>";
+      html += "<p><strong>Total de taxas de entrega do dia:</strong> R$ " +
+              totalTaxasDia.toFixed(2).replace('.', ',') +
+              "</p>";
+
+      html += "<h3>Resumo por entregador</h3>";
+      html += "<table><thead><tr>" +
+              "<th>Código</th>" +
+              "<th>Entregador</th>" +
+              "<th>PIX</th>" +
+              "<th>Qtd. entregas</th>" +
+              "<th>Total taxas (R$)</th>" +
+              "<th>Total pedidos (R$)</th>" +
+              "</tr></thead><tbody>";
+
+      mapa.forEach(item => {
+        html += "<tr>" +
+                "<td>" + item.codigo + "</td>" +
+                "<td>" + item.nomeEntregador + "</td>" +
+                "<td>" + item.pixEntregador + "</td>" +
+                "<td>" + item.quantidade + "</td>" +
+                "<td>" + item.somaTaxas.toFixed(2).replace('.', ',') + "</td>" +
+                "<td>" + item.somaTotalPedidos.toFixed(2).replace('.', ',') + "</td>" +
+                "</tr>";
+      });
+
+      html += "</tbody></table>";
+      resultadoFechamento.innerHTML = html;
+    }
+
+    // ==========================
+    //  ÁREA INTERNA / PIN
+    // ==========================
+
+    function renderTabelaEntregadores() {
+      tabelaEntregadoresBody.innerHTML = "";
+      entregadores.forEach(ent => {
+        const tr = document.createElement('tr');
+
+        const tdCodigo = document.createElement('td');
+        tdCodigo.textContent = ent.codigo;
+
+        const tdNome = document.createElement('td');
+        tdNome.textContent = ent.nome;
+
+        const tdPix = document.createElement('td');
+        tdPix.textContent = ent.pix;
+
+        tr.appendChild(tdCodigo);
+        tr.appendChild(tdNome);
+        tr.appendChild(tdPix);
+
+        tabelaEntregadoresBody.appendChild(tr);
+      });
+    }
+
+    function limparMensagemPin() {
+      pinMensagem.textContent = "";
+      pinMensagem.className = "";
+    }
+
+    function mostrarErroPin(msg) {
+      pinMensagem.textContent = msg;
+      pinMensagem.className = "error";
+    }
+
+    function mostrarSucessoPin(msg) {
+      pinMensagem.textContent = msg;
+      pinMensagem.className = "success";
+    }
+
+    function tentarEntrarAreaInterna() {
+      limparMensagemPin();
+      const pin = pinInput.value.trim();
+      if (!pin) {
+        mostrarErroPin("Digite o PIN administrativo.");
+        return;
+      }
+      if (pin !== PIN_SISTEMA) {
+        mostrarErroPin("PIN incorreto. Tente novamente.");
+        return;
+      }
+
+      areaInternaContent.classList.remove('hidden');
+      mostrarSucessoPin("Acesso liberado.");
+      renderTabelaEntregadores();
+    }
+
+    // ==========================
+    //  EVENTOS
+    // ==========================
+
+    document.getElementById('btnBuscar').addEventListener('click', preencherDadosEntregador);
+    inputCodigo.addEventListener('blur', () => {
+      if (!inputNomeEntregador.value) {
+        preencherDadosEntregador();
+      }
+    });
+
+    form.addEventListener('submit', adicionarEntrega);
+    document.getElementById('btnLimparUltima').addEventListener('click', excluirUltimaEntrega);
+    document.getElementById('btnFechamento').addEventListener('click', fazerFechamento);
+    document.getElementById('btnLimparTudo').addEventListener('click', limparTodasEntregas);
+
+    btnPinEntrar.addEventListener('click', tentarEntrarAreaInterna);
+    pinInput.addEventListener('keyup', (e) => {
+      if (e.key === "Enter") {
+        tentarEntrarAreaInterna();
+      }
+    });
+  </script>
+</body>
+</html>
