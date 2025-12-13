@@ -343,7 +343,7 @@ async function initFirebaseIfPossible() {
   const cfg = firebaseConfig;
 
   // Se ainda estiver com placeholders, avisa e não tenta logar
-  if (!cfg || !cfg.apiKey || cfg.apiKey === "SUA_API_KEY" || cfg.projectId === "SEU_PROJECT_ID") {
+  if (!cfg || !cfg.apiKey || cfg.apiKey === "AIzaSyBwuo9jDigmdKgfeofbc38c28v82Ia-ZJk" || cfg.projectId === "docce-entregas") {
     showToast("⚠️ Configure o firebaseConfig no HTML (apiKey / projectId).");
     return false;
   }
