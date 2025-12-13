@@ -1,770 +1,1124 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Docce • Entregas</title>
-  <link href="https://fonts.googleapis.com/css2?family=Signika:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    :root{--bg:#0f0f10;--stroke:#2a2a2f;--text:#f3f3f4;--muted:#b7b7be;--good:#2ecc71;--warn:#f1c40f;--bad:#ff5c5c;--accent:#e9d7b5;--shadow:0 12px 32px rgba(0,0,0,.45);--radius:16px}
-    *{box-sizing:border-box}html,body{height:100%}
-    body{margin:0;font-family:"Signika",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-    .wrap{max-width:1320px;margin:0 auto;padding:22px}
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border:1px solid var(--stroke);background:rgba(23,23,25,.8);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(8px);position:sticky;top:12px;z-index:10}
-    .brand{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--stroke);border-radius:14px;background:rgba(29,29,32,.55)}.logo{width:36px;height:36px;border-radius:12px;border:1px solid rgba(233,215,181,.35);background:linear-gradient(145deg, rgba(233,215,181,.18), rgba(233,215,181,.04));display:grid;place-items:center;color:var(--accent);font-weight:600}
-    .title{line-height:1.1}.title b{display:block;font-size:16px}.title span{display:block;font-size:12px;color:var(--muted)}
-    .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-    .pill{border:1px solid var(--stroke);background:rgba(29,29,32,.85);color:var(--text);padding:10px 12px;border-radius:999px;display:flex;align-items:center;gap:10px;min-height:40px}
-    .pill label{font-size:12px;color:var(--muted)}.pill input{border:none;outline:none;background:transparent;color:var(--text);font:inherit;min-width:160px}.pill input[type="date"]{min-width:145px}
-    .btn{border:1px solid var(--stroke);background:rgba(233,215,181,.10);color:var(--accent);padding:10px 14px;border-radius:999px;cursor:pointer;font:inherit;transition:.12s transform ease,.12s opacity ease,.12s background ease;user-select:none;white-space:nowrap}
-    .btn:hover{transform:translateY(-1px);background:rgba(233,215,181,.14)}.btn:active{transform:translateY(0);opacity:.85}
-    .btn.secondary{background:rgba(29,29,32,.85);color:var(--text)}.btn.danger{background:rgba(255,92,92,.10);color:var(--bad);border-color:rgba(255,92,92,.25)}.btn.good{background:rgba(46,204,113,.10);color:var(--good);border-color:rgba(46,204,113,.25)}.btn.tiny{padding:7px 10px;font-size:12px}
-    .grid{margin-top:18px;display:grid;grid-template-columns:2fr 1fr;gap:14px}@media(max-width:980px){.grid{grid-template-columns:1fr}}
-    .card{border:1px solid var(--stroke);background:rgba(23,23,25,.82);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-    .card header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--stroke);background:linear-gradient(180deg, rgba(233,215,181,.07), transparent)}
-    .card header h2{margin:0;font-size:14px}.card header .hint{font-size:12px;color:var(--muted)}.card .body{padding:14px 16px}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}.row3{grid-template-columns:1fr 1fr 1fr}
-    @media(max-width:700px){.row,.row3{grid-template-columns:1fr}.pill input{min-width:0}}
-    .field{border:1px solid var(--stroke);background:rgba(29,29,32,.75);border-radius:14px;padding:10px 12px}
-    .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
-    .field input{width:100%;border:none;outline:none;background:transparent;color:var(--text);font:inherit;font-size:14px}
-    .list{margin-top:10px;border-top:1px dashed rgba(255,255,255,.08);padding-top:10px;display:flex;flex-direction:column;gap:8px}
-    .item{border:1px solid rgba(255,255,255,.08);background:rgba(29,29,32,.55);border-radius:14px;padding:10px 12px;display:grid;grid-template-columns:1.2fr .8fr auto;gap:10px;align-items:center}
-    .item .main b{display:block;font-size:13px}.item .main small{display:block;color:var(--muted);font-size:12px}
-    .item .meta{justify-self:end;text-align:right}.item .meta b{display:block;font-size:13px}.item .meta small{display:block;color:var(--muted);font-size:12px}
-    .item .actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
-    @media(max-width:760px){.item{grid-template-columns:1fr}.item .meta{justify-self:start;text-align:left}.item .actions{justify-content:flex-start}}
-    .notice{margin-top:12px;padding:10px 12px;border-radius:14px;border:1px solid rgba(233,215,181,.18);background:rgba(233,215,181,.06);color:var(--accent);font-size:13px}
-    .muted{color:var(--muted)}.sep{height:1px;background:rgba(255,255,255,.06);margin:12px 0}.hidden{display:none !important}
-    .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:18px;z-index:100}
-    .backdrop.show{display:flex}
-    .modal{width:min(520px,100%);border:1px solid var(--stroke);background:rgba(23,23,25,.96);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
-    .modal header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--stroke);background:linear-gradient(180deg, rgba(233,215,181,.08), transparent)}
-    .modal header b{font-size:14px}.modal .content{padding:14px 16px}.modal .foot{padding:14px 16px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--stroke)}
-    .x{background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer}.x:hover{color:var(--text)}
-    .tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,.10);padding:6px 10px;border-radius:999px;background:rgba(29,29,32,.55)}
-  
-    .userline{display:block;margin-top:4px;font-size:12px;color:var(--muted)}
-    .pixKey{color:var(--accent);font-weight:600}
-    .closeBoxIdle{opacity:.65}
-    .totalsHeader{text-align:center;margin:0 0 10px 0}
-    .totalsRow{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02)}
-
-  
-    .topbar{flex-direction:column;align-items:stretch;gap:12px}
-    .brandline{display:flex;align-items:center;justify-content:flex-start;gap:10px}
-    .menu{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-    .menuleft,.menuright{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .btn.sm{padding:7px 10px;border-radius:12px;font-size:13px}
-    .pill input{min-width:140px}
-    /* Side panel (right card) */
-    .sideHeader{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .sideTitle{flex:1;text-align:center;font-weight:600}
-    .sideBody{display:none}
-    .sideBody.active{display:block}
-    .sideScroll{max-height:46vh;overflow:auto;padding-right:6px}
-    .xBtn{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:12px;width:34px;height:34px;cursor:pointer}
-
-  
-    .brandwrap{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
-    .userbox{display:flex;align-items:center;gap:10px;min-width:180px;justify-content:flex-end}
-    .avatar{width:38px;height:38px;border-radius:14px;display:flex;align-items:center;justify-content:center;
-            border:1px solid var(--line);background:rgba(255,255,255,.03);font-weight:600;color:var(--text)}
-    .usertext{display:flex;flex-direction:column;line-height:1.15;text-align:right}
-    .usertext .label{font-size:12px;color:var(--muted)}
-    .usertext .email{font-size:12px;color:var(--muted)}
-    .userbox.hidden{display:none}
-
-  
-    .courierCard{border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:rgba(255,255,255,.02);margin-bottom:10px}
-    .cRow{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
-    .cRow + .cRow{margin-top:6px}
-    .cName{font-weight:600}
-    .cCode{font-size:12px;color:var(--muted)}
-    .cRight{white-space:nowrap;color:var(--muted);font-size:12px}
-    .cPix{color:var(--accent);font-weight:600;font-size:12px;word-break:break-all}
-    .cActions{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
-
-  
-
-/* --- Layout fix: header + menu em 2 boxes --- */
-.topbar{
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  padding: 14px 18px 10px;
-  display: grid;
-  gap: 10px;
-  background: transparent;
-}
-.headerbox, .menubox{
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 14px;
-  padding: 12px 14px;
-  backdrop-filter: blur(10px);
-}
-.headerbox{
-  display:flex;
-  align-items:center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.brand{
-  display:flex;
-  align-items:center;
-  gap: 12px;
-  min-width: 260px;
-}
-.brand .logo{
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight: 800;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(0,0,0,0.18);
-}
-.brand .title b{ display:block; font-size: 15px; line-height: 1.1; }
-.brand .title span{ display:block; font-size: 12px; opacity: .85; margin-top: 2px; }
-
-.userarea{
-  display:flex;
-  align-items:center;
-  gap: 10px;
-  justify-content:flex-end;
-}
-.avatar{
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight: 800;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(0,0,0,0.18);
-}
-.usertext{ display:flex; flex-direction: column; line-height: 1.1; text-align: right; }
-.userlabel{ font-size: 12px; opacity: .90; }
-.usermail{ font-size: 11px; opacity: .75; }
-
-.menubox{
-  display:flex;
-  align-items:center;
-  justify-content: space-between;
-  gap: 10px;
-}
-.menuleft{ display:flex; gap: 10px; flex-wrap: wrap; }
-.menuright{ display:flex; align-items:center; gap: 10px; }
-.menuright .date{ min-width: 160px; }
-
-/* garante proporção boa do conteúdo */
-.grid{
-  padding-top: 12px;
-}
-
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Docce • Entregas</title>
+<style>
+  :root{
+    --bg:#1f2226;
+    --panel:#2a2f35;
+    --panel2:#252a30;
+    --border:rgba(255,255,255,.10);
+    --text:#e9ecef;
+    --muted:rgba(233,236,239,.72);
+    --accent:#c8a46b;
+    --good:#3bd16f;
+    --danger:#ff5a5f;
+    --shadow:0 10px 35px rgba(0,0,0,.35);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:28px 18px 40px;
+    background:radial-gradient(1200px 700px at 10% 0%, #2b3036 0%, var(--bg) 55%, #171a1e 100%);
+    color:var(--text);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Arial, sans-serif;
+  }
+  .wrap{max-width:1180px;margin:0 auto}
+  .topbar{display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
+  .titleBox{
+    display:flex;align-items:center;justify-content:space-between;
+    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:14px 16px;
+    box-shadow: var(--shadow);
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{
+    width:44px;height:44px;border-radius:14px;
+    display:grid;place-items:center;
+    border:1px solid rgba(200,164,107,.55);
+    background:rgba(200,164,107,.10);
+    color:var(--accent);
+    font-weight:800;
+  }
+  .brand h1{font-size:18px;margin:0;line-height:1.1}
+  .brand .sub{font-size:12px;margin-top:2px;color:var(--muted)}
+  .userBox{display:flex;align-items:center;gap:12px;min-width:240px;justify-content:flex-end}
+  .userMeta{display:flex;flex-direction:column;align-items:flex-end;line-height:1.1}
+  .userMeta .lbl{font-size:12px;color:var(--muted)}
+  .userMeta .val{font-size:13px;font-weight:650}
+  .avatarBtn{
+    display:flex;align-items:center;gap:10px;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.04);
+    color:var(--text);
+    padding:10px 12px;
+    border-radius:16px;
+    cursor:pointer;
+  }
+  .avatar{
+    width:34px;height:34px;border-radius:12px;
+    display:grid;place-items:center;
+    background:rgba(200,164,107,.18);
+    border:1px solid rgba(200,164,107,.45);
+    color:var(--accent);
+    font-weight:800;
+    text-transform:uppercase;
+  }
+  .menuBox{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:rgba(255,255,255,.03);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:12px 14px;
+    box-shadow: var(--shadow);
+    flex-wrap:wrap;
+  }
+  .menuLeft{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{
+    appearance:none;border:1px solid var(--border);
+    background:rgba(255,255,255,.04);
+    color:var(--text);
+    padding:10px 14px;border-radius:16px;
+    cursor:pointer;
+    font-weight:650;
+  }
+  .btn:hover{background:rgba(255,255,255,.06)}
+  .btn.primary{border-color:rgba(200,164,107,.55); background:rgba(200,164,107,.12)}
+  .btn.good{border-color:rgba(59,209,111,.55); background:rgba(59,209,111,.12); color:#dfffe9}
+  .btn.danger{border-color:rgba(255,90,95,.55); background:rgba(255,90,95,.12)}
+  .dateWrap{display:flex;align-items:center;gap:10px}
+  .dateWrap label{font-size:13px;color:var(--muted);font-weight:650}
+  input[type="date"], input[type="text"], input[type="number"], input[type="tel"]{
+    width:100%;
+    background:rgba(0,0,0,.18);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:16px;
+    padding:12px 12px;
+    outline:none;
+  }
+  input[type="date"]{min-width:170px}
+  .grid{
+    display:grid;
+    grid-template-columns: 2fr 1fr;
+    gap:16px;
+    align-items:start;
+  }
+  @media (max-width: 980px){
+    .grid{grid-template-columns:1fr}
+    .userBox{min-width:auto}
+  }
+  .card{
+    background:rgba(255,255,255,.03);
+    border:1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .cardHead{
+    padding:14px 16px;
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  }
+  .cardHead h2{margin:0;font-size:15px}
+  .cardBody{padding:14px 16px}
+  .formGrid{display:grid;grid-template-columns: 1.5fr 1fr 1fr; gap:10px}
+  @media (max-width: 980px){ .formGrid{grid-template-columns:1fr} }
+  .fieldLabel{font-size:12px;color:var(--muted);margin:0 0 6px 2px}
+  .rowBtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .help{color:var(--muted);font-size:12px;margin-top:8px}
+  .list{
+    display:flex;flex-direction:column;gap:10px;
+    max-height: 520px;
+    overflow:auto;
+    padding-right:6px;
+  }
+  .item{
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:12px 12px;
+    background:rgba(0,0,0,.16);
+  }
+  .itemTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .itemTitle{font-weight:750}
+  .itemSub{color:var(--muted);font-size:12px;margin-top:3px}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);font-size:12px;color:var(--muted)}
+  .muted{color:var(--muted)}
+  .right{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+  .money{font-weight:800}
+  .tag{font-size:12px;color:var(--muted)}
+  /* Side panel (right card content) */
+  .sideTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .sideTitle{font-weight:800}
+  .closeX{
+    border:none;background:transparent;color:var(--muted);
+    font-size:20px;cursor:pointer;line-height:1;
+    padding:6px 10px;border-radius:12px;
+  }
+  .closeX:hover{background:rgba(255,255,255,.05);color:var(--text)}
+  /* Modal */
+  .modalBackdrop{
+    position:fixed;inset:0;background:rgba(0,0,0,.55);
+    display:none;align-items:center;justify-content:center;
+    padding:18px; z-index:9999;
+  }
+  .modalBackdrop.show{display:flex}
+  .modal{
+    width:min(720px, 100%);
+    background: #20242a;
+    border:1px solid var(--border);
+    border-radius:22px;
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .modalHead{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .modalHead h3{margin:0;font-size:15px}
+  .modalBody{padding:14px 16px}
+  textarea{
+    width:100%;min-height:160px;resize:vertical;
+    background:rgba(0,0,0,.22);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:12px;color:var(--text);
+    outline:none;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size:12px;
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
-  
-<div class="wrap">
-  
-<div class="topbar">
-  <div class="headerbox">
-    <div class="brand">
-      <div class="logo">D</div>
-      <div class="title">
-        <b>Docce • Entregas</b>
-        <span>Controle diário com fechamento automático</span>
-      </div>
-    </div>
-
-    <div class="userarea" id="userBox">
-      <div class="avatar" id="userAvatar">D</div>
-      <div class="usertext">
-        <div class="userlabel" id="userName">Usuário</div>
-        <div class="usermail" id="userEmail">—</div>
-      </div>
-
-      <button class="btn sm" id="btnOpenLogin">Login</button>
-      <button class="btn secondary sm hidden" id="btnLogout">Sair</button>
-    </div>
-  </div>
-
-  <div class="menubox">
-    <div class="menuleft">
-      <button class="btn secondary sm" id="btnRefresh">Atualizar</button>
-      <button class="btn sm" id="btnFechamento">Fechamento</button>
-      <button class="btn secondary sm hidden" id="btnShowCouriers">Entregadores</button>
-      <button class="btn secondary sm hidden" id="btnShowCadastro">Cadastro</button>
-    </div>
-
-    <div class="menuright">
-      <label class="muted">Dia</label>
-      <input id="datePicker" class="date" type="date" />
-    </div>
-  </div>
-</div>
-
-<div class="grid">
-<div class="grid">
-    <section class="card">
-      <header>
-        <div><h2>Entregas do dia</h2></div>
-</header>
-      <div class="body">
-        <div class="row3">
-          <div class="field"><label>Cliente</label><input id="inpCliente" placeholder="Nome do cliente"></div>
-          <div class="field"><label>Total (R$)</label><input id="inpTotal" inputmode="decimal" placeholder="0,00"></div>
-          <div class="field"><label>Taxa (R$)</label><input id="inpTaxa" inputmode="decimal" placeholder="0,00"></div>
+  <div class="topbar">
+    <div class="titleBox">
+      <div class="brand">
+        <div class="logo">D</div>
+        <div>
+          <h1>Docce • Entregas</h1>
+          <div class="sub">Controle diário com fechamento automático</div>
         </div>
-        <div class="row">
-          <div class="field"><label>Código do entregador</label><input id="inpCodigoEntrega" placeholder="Ex.: 2603" maxlength="4"></div>
-          <div style="display:flex;gap:10px;align-items:flex-end">
-            <button class="btn good" id="btnAddEntrega">Adicionar</button>
-            <button class="btn secondary" id="btnLimpar">Limpar</button>
+      </div>
+
+      <div class="userBox">
+        <div class="userMeta">
+          <div class="lbl">Usuário</div>
+          <div class="val" id="userLine">—</div>
+        </div>
+        <button class="avatarBtn" id="btnAuth" type="button" title="Login / Logout">
+          <div class="avatar" id="avatarLetter">?</div>
+          <div style="font-weight:750" id="btnAuthLabel">Login</div>
+        </button>
+      </div>
+    </div>
+
+    <div class="menuBox">
+      <div class="menuLeft">
+        <button class="btn" id="btnAtualizar" type="button">Atualizar</button>
+        <button class="btn primary" id="btnFechamento" type="button">Fechamento</button>
+        <button class="btn" id="btnEntregadores" type="button">Entregadores</button>
+        <button class="btn" id="btnCadastro" type="button">Cadastro</button>
+      </div>
+      <div class="dateWrap">
+        <label for="dia">Dia</label>
+        <input id="dia" type="date"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- Left: deliveries -->
+    <div class="card">
+      <div class="cardHead">
+        <h2>Entregas do dia</h2>
+        <span class="pill" id="statusPill">Pronto</span>
+      </div>
+      <div class="cardBody">
+        <div class="formGrid">
+          <div>
+            <div class="fieldLabel">Cliente</div>
+            <input id="cliente" type="text" placeholder="Nome do cliente" maxlength="80"/>
+          </div>
+          <div>
+            <div class="fieldLabel">Total (R$)</div>
+            <input id="total" type="text" inputmode="decimal" placeholder="0,00"/>
+          </div>
+          <div>
+            <div class="fieldLabel">Taxa (R$)</div>
+            <input id="taxa" type="text" inputmode="decimal" placeholder="0,00"/>
+          </div>
+          <div>
+            <div class="fieldLabel">Código do entregador</div>
+            <input id="codigo" type="text" inputmode="numeric" placeholder="Ex.: 2603" maxlength="8"/>
           </div>
         </div>
 
-        <div class="notice" id="msg"></div>
+        <div class="rowBtns">
+          <button class="btn good" id="btnAdicionar" type="button">Adicionar</button>
+          <button class="btn" id="btnLimpar" type="button">Limpar</button>
+        </div>
 
-        <div class="sep"></div>
-        <header style="padding:0;border:none;background:none;display:flex;align-items:center;justify-content:space-between">
-          <h2 style="margin:0;font-size:14px">Aguardando entregador</h2><span class="hint">Digite o código e atribua</span>
-        </header>
-        <div class="list" id="listPending"></div>
+        <div class="help">Atribuição: informe o <b>código</b> (4 dígitos) para associar o entregador.</div>
 
-        <div class="sep"></div>
-        <header style="padding:0;border:none;background:none;display:flex;align-items:center;justify-content:space-between">
-          <h2 style="margin:0;font-size:14px">Entregas atribuídas</h2><span class="hint">Editar (trocar entregador) ou excluir</span>
-        </header>
-        <div class="list" id="listAssigned"></div>
-      </div>
-    </section>
+        <div style="height:14px"></div>
 
-    
-<aside class="card" id="sidePanel">
-  <header class="sideHeader">
-    <div class="sideTitle" id="sideTitle"> </div>
-    <button class="xBtn" id="sideClose" title="Fechar" aria-label="Fechar">×</button>
-  </header>
-  <div class="body">
-    <div id="sideFechamento" class="sideBody">
-      <div class="item" style="grid-template-columns:1fr auto;">
-        <div class="main"><b>Totais de entrega</b></div>
-        <div class="meta"><b id="totalTaxaDia">R$ 0,00</b><small class="muted" id="totalEntregasDia">0 entregas</small></div>
-      </div>
-      <div class="list sideScroll" id="listResumo"></div>
-    </div>
-
-    <div id="sideCouriers" class="sideBody">
-      <div class="list sideScroll" id="listCouriers"></div>
-    </div>
-
-    <div id="sideCadastro" class="sideBody">
-      <div class="row">
-        <div class="field"><label>Nome</label><input id="cNome" placeholder="Nome do entregador"></div>
-        <div class="field"><label>Telefone</label><input id="cTel" inputmode="numeric" placeholder="DDD + número"></div>
-      </div>
-      <div class="row">
-        <div class="field"><label>Chave PIX</label><input id="cPix" placeholder="CPF, e-mail, aleatória…"></div>
-        <div class="field"><label>Código (auto: 4 últimos do tel.)</label><input id="cCodigo" placeholder="Ex.: 2603" maxlength="4"></div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn good" id="btnSalvarCourier">Salvar</button>
-        <button class="btn secondary" id="btnLimparCourier">Limpar</button>
+        <div class="list" id="listaEntregas"></div>
       </div>
     </div>
-  </div>
-</aside>
 
+    <!-- Right: side panel -->
+    <div class="card">
+      <div class="cardHead">
+        <div class="sideTop">
+          <div class="sideTitle" id="sideHeader">Painel</div>
+        </div>
+        <button class="closeX" id="btnSideClose" type="button" title="Fechar">×</button>
+      </div>
+      <div class="cardBody">
+        <div id="sideBody" class="muted">Use o menu acima: <b>Fechamento</b>, <b>Entregadores</b> ou <b>Cadastro</b>.</div>
+      </div>
+    </div>
   </div>
 </div>
 
-<div class="backdrop" id="loginBackdrop" aria-hidden="true">
+<!-- Firebase config modal -->
+<div class="modalBackdrop" id="cfgModal">
   <div class="modal">
-    <header><b>Login</b><button class="x" id="loginClose" aria-label="Fechar">×</button></header>
-    <div class="content">
-      <div class="row">
-        <div class="field"><label>E-mail</label><input id="loginEmail" type="email" placeholder="seu@email.com"></div>
-        <div class="field"><label>Senha</label><input id="loginPass" type="password" placeholder="••••••••"></div>
-      </div>
-      <div class="notice">Esse login é o que libera leitura/escrita no banco.</div>
+    <div class="modalHead">
+      <h3>Configurar Firebase</h3>
+      <button class="closeX" id="btnCfgClose" type="button">×</button>
     </div>
-    <div class="foot">
-      <button class="btn secondary" id="loginCancel">Cancelar</button>
-      <button class="btn" id="loginGo">Entrar</button>
+    <div class="modalBody">
+      <div class="help" style="margin-top:0">
+        Cole aqui o objeto <b>firebaseConfig</b> do seu app Web no Firebase (Projeto &gt; ⚙️ Configurações &gt; Seus apps &gt; SDK).
+        Isso fica salvo neste navegador (localStorage).
+      </div>
+      <div style="height:10px"></div>
+      <textarea id="cfgText" spellcheck="false" placeholder='Exemplo:
+{
+  "apiKey": "...",
+  "authDomain": "docce-entregas.firebaseapp.com",
+  "projectId": "docce-entregas",
+  "storageBucket": "docce-entregas.firebasestorage.app",
+  "messagingSenderId": "469986757222",
+  "appId": "1:469986757222:web:....",
+  "measurementId": "G-...."
+}'></textarea>
+      <div class="rowBtns" style="justify-content:flex-end">
+        <button class="btn" id="btnCfgCancel" type="button">Cancelar</button>
+        <button class="btn primary" id="btnCfgSave" type="button">Salvar configuração</button>
+      </div>
+      <div class="help" id="cfgHint"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Courier not found modal -->
+<div class="modalBackdrop" id="nfModal">
+  <div class="modal">
+    <div class="modalHead">
+      <h3>Entregador não cadastrado</h3>
+      <button class="closeX" id="btnNfClose" type="button">×</button>
+    </div>
+    <div class="modalBody">
+      <div class="help" style="margin-top:0" id="nfText">Gostaria de cadastrá-lo?</div>
+      <div class="rowBtns" style="justify-content:flex-end">
+        <button class="btn" id="btnNfNo" type="button">Não</button>
+        <button class="btn primary" id="btnNfYes" type="button">Sim</button>
+      </div>
     </div>
   </div>
 </div>
 
 <script type="module">
+/* =========================================================
+   Docce Entregas - Firebase (Auth + Firestore)
+   - Config via localStorage (to avoid hardcoding secrets in GitHub)
+   - Menu always visible
+   - Login button becomes avatar automatically
+========================================================= */
 
-  const firebaseConfig = {
-  apiKey: "AIzaSyBwuo9jDigmdKgfeofbc38c28v82Ia-ZJk",
-  authDomain: "docce-entregas.firebaseapp.com",
-  projectId: "docce-entregas",
-  storageBucket: "docce-entregas.firebasestorage.app",
-  messagingSenderId: "469986757222",
-  appId: "1:469986757222:web:7b479ecc052830a4f53ba7",
-  measurementId: "G-NXN5VD6W31"
+const LS_CFG_KEY = "docce.firebaseConfig.v1";
+
+const el = (id)=>document.getElementById(id);
+const cfgModal = el("cfgModal");
+const cfgText = el("cfgText");
+const cfgHint = el("cfgHint");
+
+const btnAuth = el("btnAuth");
+const btnAuthLabel = el("btnAuthLabel");
+const avatarLetter = el("avatarLetter");
+const userLine = el("userLine");
+
+const btnAtualizar = el("btnAtualizar");
+const btnFechamento = el("btnFechamento");
+const btnEntregadores = el("btnEntregadores");
+const btnCadastro = el("btnCadastro");
+const dia = el("dia");
+
+const statusPill = el("statusPill");
+const listaEntregas = el("listaEntregas");
+
+const sideHeader = el("sideHeader");
+const sideBody = el("sideBody");
+const btnSideClose = el("btnSideClose");
+
+const nfModal = el("nfModal");
+const nfText = el("nfText");
+
+const cliente = el("cliente");
+const total = el("total");
+const taxa = el("taxa");
+const codigo = el("codigo");
+const btnAdicionar = el("btnAdicionar");
+const btnLimpar = el("btnLimpar");
+
+// ---- Locale helpers ----
+const locale = navigator.language || "pt-BR";
+const currencyFormatter = new Intl.NumberFormat(locale, { style:"currency", currency:"BRL" });
+const numberParser = (s)=>{
+  if (typeof s !== "string") return NaN;
+  const t = s.trim();
+  if (!t) return NaN;
+  // accept comma or dot
+  const normalized = t.replace(/\s/g,"").replace(/\.(?=\d{3}(\D|$))/g,"").replace(",",".");
+  const v = Number(normalized);
+  return Number.isFinite(v) ? v : NaN;
 };
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
-    from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, getDocs, collection, addDoc,
-           updateDoc, deleteDoc, query, where, orderBy }
-    from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+const toMoney = (v)=> currencyFormatter.format(Number(v||0));
+const todayISO = ()=> new Date().toISOString().slice(0,10);
+dia.value = todayISO();
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const $ = (id)=>document.getElementById(id);
+// ---- Firebase lazy loader ----
+let firebase = null;
+let app = null;
+let auth = null;
+let db = null;
+let currentUser = null;
 
-  const USER_LOCALE = (navigator.language || "pt-BR");
-  const brl = (n)=>Number(n||0).toLocaleString(USER_LOCALE,{style:"currency",currency:"BRL"});
-  // Aceita 12,50 | 12.50 | 1.234,56 | 1,234.56
-  const parseBR = (s)=>{
-    let raw = String(s ?? "").trim();
-    if(!raw) return 0;
-    raw = raw.replace(/\s+/g,"");
-    const hasComma = raw.includes(",");
-    const hasDot = raw.includes(".");
-    if(hasComma && hasDot){
-      // decide pelo último separador como decimal
-      const lastComma = raw.lastIndexOf(",");
-      const lastDot = raw.lastIndexOf(".");
-      const decSep = lastComma > lastDot ? "," : ".";
-      const thouSep = decSep === "," ? "." : ",";
-      raw = raw.replaceAll(thouSep, "");
-      raw = decSep === "," ? raw.replace(",", ".") : raw;
-    } else if(hasComma){
-      raw = raw.replace(",", ".");
-    } // else: só ponto ou só números
-    // remove qualquer coisa que não seja número, ponto ou sinal
-    raw = raw.replace(/[^0-9.+-]/g,"");
-    const v = Number(raw);
-    return Number.isFinite(v) ? v : 0;
+async function loadFirebaseModules(){
+  if (firebase) return firebase;
+  const [{ initializeApp }, { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut },
+        { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc, query, where, orderBy, limit, serverTimestamp }]
+      = await Promise.all([
+        import("https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js"),
+        import("https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js")
+      ]);
+  firebase = { initializeApp, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut,
+               getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc, query, where, orderBy, limit, serverTimestamp };
+  return firebase;
+}
+
+function getSavedConfig(){
+  const raw = localStorage.getItem(LS_CFG_KEY);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
+function openCfgModal(prefill){
+  cfgHint.textContent = "";
+  cfgText.value = prefill ? JSON.stringify(prefill, null, 2) : (localStorage.getItem(LS_CFG_KEY) ? localStorage.getItem(LS_CFG_KEY) : "");
+  cfgModal.classList.add("show");
+}
+
+function closeCfgModal(){ cfgModal.classList.remove("show"); }
+
+async function initFirebaseIfPossible(){
+  const cfg = getSavedConfig();
+  if (!cfg) return false;
+  const f = await loadFirebaseModules();
+  if (!app){
+    app = f.initializeApp(cfg);
+    auth = f.getAuth(app);
+    db = f.getFirestore(app);
+
+    f.onAuthStateChanged(auth, (u)=>{
+      currentUser = u || null;
+      renderUser();
+      // refresh data when login changes
+      refreshAll().catch(()=>{});
+    });
+  }
+  return true;
+}
+
+// ---- Auth UI ----
+function initialsFromEmail(email){
+  if (!email) return "?";
+  return email.trim().slice(0,1).toUpperCase();
+}
+function renderUser(){
+  if (!currentUser){
+    userLine.textContent = "—";
+    avatarLetter.textContent = "?";
+    btnAuthLabel.textContent = "Login";
+    return;
+  }
+  const email = currentUser.email || "usuário";
+  userLine.textContent = email;
+  avatarLetter.textContent = initialsFromEmail(email);
+  btnAuthLabel.textContent = "Sair";
+}
+
+// Login / logout flow (simple prompt)
+async function doLogin(){
+  const ok = await initFirebaseIfPossible();
+  if (!ok){
+    openCfgModal();
+    return;
+  }
+  if (currentUser){
+    const f = await loadFirebaseModules();
+    await f.signOut(auth);
+    return;
+  }
+  const email = prompt("E-mail do usuário:");
+  if (!email) return;
+  const pass = prompt("Senha:");
+  if (!pass) return;
+
+  try{
+    const f = await loadFirebaseModules();
+    await f.signInWithEmailAndPassword(auth, email, pass);
+  }catch(err){
+    alert("Falha no login: " + (err?.message || err));
+  }
+}
+
+// ---- Firestore data model ----
+// couriers/{code} => { code, name, phone, pix, pixType, active, updatedAt }
+// deliveries/{autoId} => { date, clientName, total, fee, courierCode, courierName, createdAt, updatedAt }
+
+function ensureLogged(){
+  if (!currentUser) throw new Error("Você precisa estar logado.");
+}
+
+function getCollections(){
+  const f = firebase;
+  return {
+    couriersCol: f.collection(db, "couriers"),
+    deliveriesCol: f.collection(db, "deliveries"),
   };
-  const todayISO = ()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
-  const setMsg=(text,tone="info")=>{$("msg").textContent=text;};
-
-  const requireAuth=()=>{ if(!auth.currentUser){ setMsg("Faça login para usar.", "warn"); throw new Error("not_authenticated"); } };
-
-  async function salvarCourier({codigo,nome,pix,telefone}){
-    requireAuth();
-    await setDoc(doc(db,"couriers",String(codigo)),{nome:String(nome||"").trim(),pix:String(pix||"").trim(),telefone:String(telefone||"").trim(),active:true,updatedAt:Date.now()},{merge:true});
-  }
-  async function listarCouriers(){
-    requireAuth();
-    const snap=await getDocs(collection(db,"couriers"));
-    const arr=snap.docs.map(d=>({codigo:d.id,...d.data()}));
-    arr.sort((a,b)=>String(a.codigo).localeCompare(String(b.codigo)));
-    return arr;
-  }
-  async function obterCourier(codigo){
-    requireAuth();
-    const snap=await getDoc(doc(db,"couriers",String(codigo)));
-    return snap.exists()?{codigo:snap.id,...snap.data()}:null;
-  }
-
-  async function setCourierActive(codigo, active){
-    requireAuth();
-    await updateDoc(doc(db,"couriers",String(codigo)),{active:!!active,updatedAt:Date.now()});
-  }
-
-  async function loadCouriers(){
-    const arr = await listarCouriers();
-    state.couriers = new Map(arr.map(c=>[String(c.codigo), c]));
-    renderCouriers();
-  }
-
-  function renderCouriers(){
-    const el = $("listCouriers");
-    el.innerHTML = "";
-    const arr = Array.from(state.couriers.values()).sort((a,b)=>String(a.codigo).localeCompare(String(b.codigo)));
-
-    if(!arr.length){
-      el.innerHTML = `<div class="muted">Nenhum entregador cadastrado.</div>`;
-      return;
-    }
-
-    for(const c of arr){
-      const codigo = String(c.codigo||"").trim();
-      const nome = String(c.nome||"—");
-      const pix = String(c.pix||"");
-      const tel = String(c.telefone||"");
-      const ativo = (c.active !== false);
-
-      const card = document.createElement("div");
-      card.className = "courierCard";
-      card.innerHTML = `
-        <div class="cRow">
-          <div class="cName">${escapeHtml(nome)}</div>
-          <div class="cCode">${escapeHtml(codigo)}</div>
-        </div>
-        <div class="cRow">
-          <div class="cPix">${escapeHtml(formatPixKey(pix))}</div>
-          <div class="cRight">${escapeHtml(formatPhoneDocce(tel))}</div>
-        </div>
-        <div class="cActions">
-          <button class="btn tiny secondary" data-action="courierEdit" data-code="${escapeHtml(codigo)}">Editar</button>
-          <button class="btn tiny ${ativo ? "danger" : "good"}" data-action="courierToggle" data-code="${escapeHtml(codigo)}">${ativo ? "Desativar" : "Ativar"}</button>
-        </div>
-      `;
-      el.appendChild(card);
-    }
-  }
-
-  async function criarEntrega({date,courierCode,cliente,total,taxa}){
-    requireAuth();
-    await addDoc(collection(db,"deliveries"),{date,courierCode:courierCode?String(courierCode):"",cliente:String(cliente||"").trim(),total:Number(total||0),taxa:Number(taxa||0),status:courierCode?"assigned":"pending",createdAt:Date.now()});
-  }
-  async function listarEntregas(date){
-    requireAuth();
-    const qy=query(collection(db,"deliveries"),where("date","==",date),orderBy("createdAt","asc"));
-    const snap=await getDocs(qy);
-    return snap.docs.map(d=>({id:d.id,...d.data()}));
-  }
-  async function atribuirEntrega(id,courierCode){
-    requireAuth();
-    await updateDoc(doc(db,"deliveries",id),{courierCode:String(courierCode),status:"assigned"});
-  }
-  async function excluirEntrega(id){
-    requireAuth();
-    await deleteDoc(doc(db,"deliveries",id));
-  }
-
-  const state={date:todayISO(),couriers:new Map(),deliveries:[],couriersVisible:false};
-
-    function setClosed(v){
-    state.closed = !!v;
-    const el = $("listResumo");
-    if(!state.closed){
-      $("totalTaxaDia").textContent = brl(0);
-      $("totalEntregasDia").textContent = "0 entregas";
-      if(el) el.innerHTML = `<div class="muted">Clique em <b>Fechar</b> para ver o resumo.</div>`;
-    }
-  }
-
-function setAuthTag(isAuthed,email){
-  const userBox = document.getElementById("userBox");
-  const userEmail = document.getElementById("userEmail");
-  const userName = document.getElementById("userName");
-  const userAvatar = document.getElementById("userAvatar");
-
-  if(isAuthed){
-    const em = String(email||"").trim();
-    const user = em.includes("@") ? em.split("@")[0] : em;
-    userName.textContent = "Usuário";
-    userEmail.textContent = em || "—";
-    const initial = (user && user[0]) ? user[0].toUpperCase() : (em && em[0] ? em[0].toUpperCase() : "?");
-    userAvatar.textContent = initial;
-    userBox.classList.remove("hidden");
-  }else{
-    userEmail.textContent = "—";
-    userAvatar.textContent = "?";
-    userBox.classList.add("hidden");
-  }
-
-  document.getElementById("btnShowCouriers").classList.toggle("hidden", !isAuthed);
-  document.getElementById("btnShowCadastro").classList.toggle("hidden", !isAuthed);
-  document.getElementById("btnOpenLogin").classList.toggle("hidden", isAuthed);
-  document.getElementById("btnLogout").classList.toggle("hidden", !isAuthed);
-}
-` : "Usuário: —";
-  document.getElementById("btnShowCouriers").classList.toggle("hidden", !isAuthed);
-  document.getElementById("btnShowCadastro").classList.toggle("hidden", !isAuthed);
-  document.getElementById("btnOpenLogin").classList.toggle("hidden", isAuthed);
-  document.getElementById("btnLogout").classList.toggle("hidden", !isAuthed);
-}` : "Usuário: —";
-}
-  function updateDayUI(){ $("day").value=state.date; $("lblDia").textContent=`Dia: ${state.date}`; }
-
-  function escapeHtml(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
-
-  function renderPending(){
-    const el=$("listPending"); el.innerHTML="";
-    const pend=state.deliveries.filter(d=>d.status==="pending"||!d.courierCode);
-    if(!pend.length){el.innerHTML=`<div class="muted">Nenhuma entrega pendente.</div>`;return;}
-    for(const d of pend){
-      const item=document.createElement("div"); item.className="item";
-      item.innerHTML=`
-        <div class="main"><b>${escapeHtml(d.cliente||"Sem nome")}</b><small>Total: ${brl(d.total)} • Taxa: ${brl(d.taxa)}</small></div>
-        <div class="meta"><small class="muted">Atribuir</small><b><input data-assign="${d.id}" placeholder="0000" maxlength="4" style="width:90px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.18);color:var(--text);font:inherit;outline:none"></b></div>
-        <div class="actions"><button class="btn tiny good" data-assignbtn="${d.id}">OK</button><button class="btn tiny danger" data-del="${d.id}">Excluir</button></div>`;
-      el.appendChild(item);
-    }
-  }
-
-  function renderAssigned(){
-    const el=$("listAssigned"); el.innerHTML="";
-    const assigned=state.deliveries.filter(d=>d.status==="assigned"&&d.courierCode);
-    if(!assigned.length){el.innerHTML=`<div class="muted">Nenhuma entrega atribuída.</div>`;return;}
-    for(const d of assigned){
-      const c=state.couriers.get(String(d.courierCode))||null;
-      const courierName = c? (c.nome||"—") : "—";
-      const item=document.createElement("div"); item.className="item";
-      item.innerHTML=`
-        <div class="main">
-          <b>${escapeHtml(d.cliente||"Sem nome")}</b>
-          <small>Entregador: ${escapeHtml(courierName)}</small>
-        </div>
-        <div class="meta">
-          <b>${brl(d.taxa)}</b>
-          <small class="muted">${brl(d.total)}</small>
-        </div>
-        <div class="actions">
-          <button class="btn tiny secondary" data-del="${d.id}" data-action="editCourier">Editar</button>
-          <button class="btn tiny danger" data-del="${d.id}" data-action="deleteDelivery">Excluir</button>
-        </div>`;
-      el.appendChild(item);
-    }
-  }
-
-
-
-function hideAllSide(){
-  sideFechamento.classList.remove("active");
-  sideCouriers.classList.remove("active");
-  sideCadastro.classList.remove("active");
-  sideTitle.textContent = "";
 }
 
-// Fluxo: código digitado não cadastrado -> oferecer cadastro e inserir na entrega
-let pendingDeliveryDraft = null; // {cliente,total,taxa,courierCode}
-let pendingCourierCode = null;
-
-function isFourDigits(v){
-  return /^\d{4}$/.test(String(v||"").trim());
+// ---- Side panel renderer ----
+function openSide(title, html){
+  sideHeader.textContent = title;
+  sideBody.innerHTML = html;
 }
-function courierExists(code){
-  return !!state.couriers.get(String(code).trim());
-}
-function openCadastroForNewCourier(code){
-  $("cNome").value = "";
-  $("cTel").value = "";
-  $("cPix").value = "";
-  $("cCodigo").value = String(code||"").trim();
-  openSide(sideCadastro, "Cadastro");
+function closeSide(){
+  sideHeader.textContent = "Painel";
+  sideBody.innerHTML = '<div class="muted">Use o menu acima: <b>Fechamento</b>, <b>Entregadores</b> ou <b>Cadastro</b>.</div>';
 }
 
-function openSide(which, title){
-  hideAllSide();
-  if(which) which.classList.add("active");
-  sideTitle.textContent = title || "";
+// ---- Format helpers (CPF / phone) ----
+function onlyDigits(s){ return (s||"").toString().replace(/\D/g,""); }
+
+function formatCPF(d){
+  const n = onlyDigits(d);
+  if (n.length !== 11) return d;
+  return n.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
 }
-
-sideClose.addEventListener("click", ()=> hideAllSide());
-
-// Menu: Fechamento / Entregadores / Cadastro
-document.getElementById("btnFechamento").addEventListener("click", async ()=>{
-  await closeDay(); // calcula + atualiza listResumo e totais
-  openSide(sideFechamento, "Fechamento do dia");
-});
-
-document.getElementById("btnShowCouriers").addEventListener("click", async ()=>{
-  await loadCouriers();
-  openSide(sideCouriers, "Entregadores cadastrados");
-});
-
-document.getElementById("btnShowCadastro").addEventListener("click", ()=>{
-  openSide(sideCadastro, "Cadastro");
-});
-  $("btnFechar").addEventListener("click", async ()=>{state.closed=true; await reloadAll(); setMsg("Fechamento atualizado.");});
-  $("btnLimpar").addEventListener("click", ()=>{$("inpCliente").value="";$("inpTotal").value="";$("inpTaxa").value="";$("inpCodigoEntrega").value="";setMsg("Campos limpos.");});
-
-  $("btnAddEntrega").addEventListener("click", async ()=>{
-    const codigoEntregador = String($("inpCodigoEntrega").value||"").trim();
-    // Se foi digitado um código de 4 dígitos e ele não existe, oferece cadastro
-    if(isFourDigits(codigoEntregador) && !courierExists(codigoEntregador)){
-      const ok = confirm("Entregador não cadastrado. Gostaria de cadastrá-lo?");
-      if(!ok) return;
-
-      pendingDeliveryDraft = {
-        cliente: $("inpCliente").value,
-        total: $("inpTotal").value,
-        taxa: $("inpTaxa").value,
-        courierCode: String(codigoEntregador).trim()
-      };
-      pendingCourierCode = String(codigoEntregador).trim();
-      openCadastroForNewCourier(pendingCourierCode);
-      return;
-    }
-
-    try{
-      requireAuth();
-      const cliente=$("inpCliente").value.trim();
-      const total=parseBR($("inpTotal").value);
-      const taxa=parseBR($("inpTaxa").value);
-      const codigo=$("inpCodigoEntrega").value.trim();
-      if(!cliente) return setMsg("Informe o nome do cliente.");
-      if(taxa<=0) return setMsg("Informe a taxa (R$).");
-      if(codigo && !/^\d{4}$/.test(codigo)) return setMsg("Código deve ter 4 dígitos.");
-      if(codigo){ const c=await obterCourier(codigo); if(!c) return setMsg("Entregador não encontrado. Cadastre em Entregadores."); }
-      state.closed=false;
-      await criarEntrega({date:state.date,courierCode:codigo||"",cliente,total,taxa});
-      $("inpCliente").value="";$("inpTotal").value="";$("inpTaxa").value="";$("inpCodigoEntrega").value="";
-      setMsg("Entrega adicionada.");
-      await reloadAll();
-    } catch(e){ if(e.message!=="not_authenticated"){console.error(e); setMsg("Erro ao adicionar.");} }
-  });
-
-  document.addEventListener("click", async (e)=>{
-    const t=e.target;
-    if(t?.dataset?.del){ try{requireAuth(); state.closed=false;
-        await excluirEntrega(t.dataset.del); setMsg("Entrega excluída."); await reloadAll();}catch(err){console.error(err);setMsg("Erro ao excluir.");} }
-    if(t?.dataset?.assignbtn){
-      try{
-        requireAuth();
-        const id=t.dataset.assignbtn;
-        const inp=document.querySelector(`input[data-assign="${id}"]`);
-        const codigo=String(inp?.value||"").trim();
-        if(!/^\d{4}$/.test(codigo)) return setMsg("Digite 4 dígitos.");
-        const c=await obterCourier(codigo); if(!c) return setMsg("Entregador não encontrado. Cadastre em Entregadores.");
-        state.closed=false;
-        await atribuirEntrega(id,codigo); setMsg("Entregador atribuído."); await reloadAll();
-      }catch(err){console.error(err);setMsg("Erro ao atribuir.");}
-    }
-    if(t?.dataset?.edit){
-      try{
-        requireAuth();
-        const id=t.dataset.edit;
-        const novo=prompt("Novo código (4 dígitos):"); if(novo==null) return;
-        const codigo=String(novo).trim(); if(!/^\d{4}$/.test(codigo)) return setMsg("Código inválido.");
-        const c=await obterCourier(codigo); if(!c) return setMsg("Entregador não encontrado. Cadastre em Entregadores.");
-        state.closed=false;
-        await atribuirEntrega(id,codigo); setMsg("Entrega atualizada."); await reloadAll();
-      }catch(err){console.error(err);setMsg("Erro ao editar.");}
-    }
-    if(t?.dataset?.deact){
-      try{
-        requireAuth();
-        const code=String(t.dataset.deact);
-        const c=state.couriers.get(code);
-        const next = !(c && c.active===false);
-        // next=true means currently active -> set false; if inactive -> set true
-        await setDoc(doc(db,"couriers",code),{active: !next, updatedAt: Date.now()},{merge:true});
-        setMsg(!next ? "Entregador ativado." : "Entregador desativado.");
-        await renderCouriersList();
-        await reloadAll();
-      }catch(err){console.error(err); setMsg("Erro ao atualizar entregador.");}
-    }
-    if(t?.dataset?.fill){
-      const code=String(t.dataset.fill); const c=state.couriers.get(code); if(!c) return;
-      $("cCodigo").value=code; $("cNome").value=c.nome||""; $("cPix").value=c.pix||""; $("cTel").value=c.telefone||"";
-      setMsg("Entregador preenchido.");
-    }
-  });
-
-
-  $("btnSalvarCourier").addEventListener("click", async ()=>{
-    try{
-      requireAuth();
-      // sem PIN: login já é a segurança
-
-      const nome=$("cNome").value.trim();
-      const telefone=$("cTel").value.trim().replace(/\D/g,"");
-      const pix=$("cPix").value.trim();
-      let codigo=$("cCodigo").value.trim();
-      if(!codigo && telefone.length>=4) codigo=telefone.slice(-4);
-      if(!nome||!telefone||!pix) return setMsg("Preencha nome, telefone e PIX.");
-      if(!/^\d{4}$/.test(codigo)) return setMsg("Código deve ter 4 dígitos.");
-      await salvarCourier({codigo,nome,pix,telefone});
-      $("cNome").value="";$("cTel").value="";$("cPix").value="";$("cCodigo").value="";
-      setMsg("Entregador salvo.");
-      await reloadAll();
-      await renderCouriersList();
-    }catch(err){console.error(err);setMsg("Erro ao salvar entregador.");}
-  });
-
-    // Se esse cadastro veio de uma entrega em andamento, oferece inserir o código e salvar a entrega
-    if(pendingDeliveryDraft && pendingCourierCode){
-      const inserir = confirm("Cadastro concluído. Inserir na entrega?");
-      if(inserir){
-        const code = String(pendingCourierCode).trim();
-        $("inpCodigoEntrega").value = code;
-
-        $("inpCliente").value = pendingDeliveryDraft.cliente || "";
-        $("inpTotal").value = pendingDeliveryDraft.total || "";
-        $("inpTaxa").value = pendingDeliveryDraft.taxa || "";
-
-        $("btnAddEntrega").click();
-
-        pendingDeliveryDraft = null;
-        pendingCourierCode = null;
-        hideAllSide();
-      }else{
-        pendingDeliveryDraft = null;
-        pendingCourierCode = null;
-        hideAllSide();
-      }
-    }
-  $("btnLimparCourier").addEventListener("click", ()=>{$("cNome").value="";$("cTel").value="";$("cPix").value="";$("cCodigo").value="";setMsg("Campos limpos.");});
-
-  const openLogin=()=>{$("loginBackdrop").classList.add("show");};
-  const closeLogin=()=>{$("loginBackdrop").classList.remove("show");};
-  $("btnOpenLogin").addEventListener("click", openLogin);
-  $("loginClose").addEventListener("click", closeLogin);
-  $("loginCancel").addEventListener("click", closeLogin);
-
-  $("loginGo").addEventListener("click", async ()=>{
-    const email=$("loginEmail").value.trim();
-    const pass=$("loginPass").value;
-    if(!email||!pass) return setMsg("Informe e-mail e senha.");
-    try{ await signInWithEmailAndPassword(auth,email,pass); closeLogin(); setMsg("Login efetuado."); await reloadAll(); }
-    catch(e){ console.error(e); setMsg("Falha no login."); }
-  });
-  $("btnLogout").addEventListener("click", async ()=>{ await signOut(auth); state.couriersVisible=false; $("courierArea")?.classList.add("hidden"); $("btnOpenCouriers")?.classList.add("hidden"); setMsg("Você saiu."); });
-
-  onAuthStateChanged(auth, async (user)=>{
-    setAuthTag(!!user, (user&&user.email)||"");
-    // Mostra o e-mail do usuário no “tag” quando logado
-    if(user){ $("authTag").textContent = `✅ logado • ${user.email}`; $("btnOpenCouriers").classList.remove("hidden"); }
-    else { $("authTag").textContent = "🔒 sem login"; $("btnOpenCouriers").classList.add("hidden"); }
-    // Se deslogou, fecha área de entregadores
-    if(!user){ state.couriersVisible=false; $("courierArea")?.classList.add("hidden"); }
-    await reloadAll();
-  });
-
-  state.date=todayISO(); updateDayUI(); setMsg("Faça login para usar.");
-
-function formatCPF(digits){
-  const d = String(digits||"").replace(/\D/g,"");
-  if(d.length!==11) return digits;
-  return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6,9)}-${d.slice(9,11)}`;
-}
-function formatPhoneDocce(digits){
-  const d = String(digits||"").replace(/\D/g,"");
-  if(d.length===11){
-    const dd=d.slice(0,2), part3=d.slice(2,5), part2=d.slice(5,7), part4=d.slice(7,11);
-    return `${dd} ${part3} ${part2} ${part4}`;
+function formatPhoneBR(d){
+  const n = onlyDigits(d);
+  // expected 11 digits (DDD + 9 + 8 digits)
+  if (n.length === 11){
+    const ddd = n.slice(0,2);
+    const p1 = n.slice(2,5);
+    const p2 = n.slice(5,7);
+    const p3 = n.slice(7,11);
+    return `${ddd} ${p1} ${p2} ${p3}`;
   }
-  if(d.length===10){
-    const dd=d.slice(0,2), part3=d.slice(2,5), part2=d.slice(5,7), last4=d.slice(6,10);
-    return `${dd} ${part3} ${part2} ${last4}`;
+  if (n.length === 10){
+    const ddd = n.slice(0,2);
+    const p1 = n.slice(2,5);
+    const p2 = n.slice(5,7);
+    const p3 = n.slice(7,10);
+    return `${ddd} ${p1} ${p2} ${p3}`;
   }
-  if(d.length>11) return formatPhoneDocce(d.slice(-11));
   return d;
 }
-function formatPixKey(raw){
-  const s = String(raw||"").trim();
-  if(!s) return "—";
-  if(s.includes("@")) return s; // e-mail
-  const digits = s.replace(/\D/g,"");
-  // telefone com +55 (13 dígitos) ou marcado por símbolos
-  const looksPhone = s.includes("+") || s.includes("(") || s.includes(")") || s.includes("-") || s.includes(" ");
-  if(digits.length===13 && digits.startsWith("55")) return formatPhoneDocce(digits.slice(-11));
-  if((digits.length===10 || digits.length===11) && looksPhone) return formatPhoneDocce(digits);
-  if(digits.length===11) return formatCPF(digits); // default: CPF
-  if(digits.length===10) return formatPhoneDocce(digits);
-  return s;
+function detectPixType(pix){
+  const d = onlyDigits(pix);
+  if (d.length === 11) return "cpf";
+  if (d.length >= 10 && d.length <= 13) return "phone";
+  if ((pix||"").includes("@")) return "email";
+  return "random";
+}
+function formatPix(pix){
+  const t = detectPixType(pix);
+  if (t==="cpf") return formatCPF(pix);
+  if (t==="phone") return formatPhoneBR(pix);
+  return (pix||"").trim();
 }
 
+// ---- CRUD: Couriers ----
+async function courierExists(code){
+  const f = firebase;
+  const { couriersCol } = getCollections();
+  const ref = f.doc(couriersCol, code);
+  const snap = await f.getDoc(ref);
+  return snap.exists() ? snap.data() : null;
+}
+
+async function upsertCourier(data){
+  ensureLogged();
+  const f = firebase;
+  const { couriersCol } = getCollections();
+  const code = onlyDigits(data.code || "");
+  if (!code) throw new Error("Código inválido.");
+  const ref = f.doc(couriersCol, code);
+  const now = f.serverTimestamp();
+  const payload = {
+    code,
+    name: (data.name||"").trim(),
+    phone: onlyDigits(data.phone||""),
+    pix: (data.pix||"").trim(),
+    pixType: detectPixType(data.pix||""),
+    active: data.active !== false,
+    updatedAt: now,
+  };
+  if (!payload.name) throw new Error("Nome é obrigatório.");
+  if (!payload.pix) throw new Error("Chave Pix é obrigatória.");
+  await f.setDoc(ref, payload, { merge:true });
+  return payload;
+}
+
+async function setCourierActive(code, active){
+  ensureLogged();
+  const f = firebase;
+  const { couriersCol } = getCollections();
+  const ref = f.doc(couriersCol, code);
+  await f.updateDoc(ref, { active: !!active, updatedAt: f.serverTimestamp() });
+}
+
+async function listCouriers(){
+  ensureLogged();
+  const f = firebase;
+  const { couriersCol } = getCollections();
+  const q = f.query(couriersCol, f.orderBy("name","asc"));
+  const snap = await f.getDocs(q);
+  return snap.docs.map(d=>d.data());
+}
+
+// ---- CRUD: Deliveries ----
+async function addDelivery(payload){
+  ensureLogged();
+  const f = firebase;
+  const { deliveriesCol } = getCollections();
+  const docData = {
+    date: dia.value || todayISO(),
+    clientName: (payload.clientName||"").trim(),
+    total: payload.total,
+    fee: payload.fee,
+    courierCode: payload.courierCode || "",
+    courierName: payload.courierName || "",
+    createdAt: f.serverTimestamp(),
+    updatedAt: f.serverTimestamp(),
+  };
+  if (!docData.clientName) throw new Error("Cliente é obrigatório.");
+  await f.addDoc(deliveriesCol, docData);
+}
+
+async function updateDelivery(id, patch){
+  ensureLogged();
+  const f = firebase;
+  const { deliveriesCol } = getCollections();
+  const ref = f.doc(deliveriesCol, id);
+  await f.updateDoc(ref, { ...patch, updatedAt: f.serverTimestamp() });
+}
+
+async function deleteDelivery(id){
+  ensureLogged();
+  const f = firebase;
+  const { deliveriesCol } = getCollections();
+  await f.deleteDoc(f.doc(deliveriesCol, id));
+}
+
+async function listDeliveriesForDay(){
+  ensureLogged();
+  const f = firebase;
+  const { deliveriesCol } = getCollections();
+  const d = dia.value || todayISO();
+  const q = f.query(deliveriesCol,
+      f.where("date","==", d),
+      f.orderBy("createdAt","asc"));
+  const snap = await f.getDocs(q);
+  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+// ---- UI: deliveries list ----
+function renderDeliveries(rows){
+  listaEntregas.innerHTML = "";
+  if (!rows.length){
+    listaEntregas.innerHTML = '<div class="muted">Sem entregas para este dia.</div>';
+    return;
+  }
+
+  for (const r of rows){
+    const assigned = !!(r.courierCode && r.courierName);
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <div class="itemTop">
+        <div>
+          <div class="itemTitle">${escapeHtml(r.clientName || "")}</div>
+          <div class="itemSub">${assigned ? "Entregador: " + escapeHtml(r.courierName) : "Aguardando entregador"}</div>
+        </div>
+        <div class="right">
+          <div class="money">${toMoney(r.fee || 0)}</div>
+          <div class="tag">taxa • total ${toMoney(r.total || 0)}</div>
+        </div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="rowBtns">
+        <button class="btn" data-act="edit">Editar</button>
+        <button class="btn danger" data-act="del">Excluir</button>
+        ${assigned ? '<button class="btn" data-act="chg">Trocar entregador</button>' : '<button class="btn primary" data-act="assign">Atribuir entregador</button>'}
+      </div>
+    `;
+    div.querySelector('[data-act="del"]').onclick = async ()=>{
+      if (!confirm("Excluir esta entrega?")) return;
+      await deleteDelivery(r.id);
+      await refreshAll();
+    };
+    div.querySelector('[data-act="edit"]').onclick = async ()=>{
+      const newClient = prompt("Cliente:", r.clientName || "");
+      if (newClient === null) return;
+      const newTotal = prompt("Total (R$):", String(r.total ?? ""));
+      if (newTotal === null) return;
+      const newFee = prompt("Taxa (R$):", String(r.fee ?? ""));
+      if (newFee === null) return;
+
+      const tV = numberParser(newTotal);
+      const fV = numberParser(newFee);
+      if (!Number.isFinite(tV) || !Number.isFinite(fV)){
+        alert("Valores inválidos.");
+        return;
+      }
+      await updateDelivery(r.id, { clientName: newClient.trim(), total: tV, fee: fV });
+      await refreshAll();
+    };
+
+    const assignBtn = div.querySelector('[data-act="assign"]') || div.querySelector('[data-act="chg"]');
+    assignBtn.onclick = async ()=>{
+      const c = prompt("Código do entregador (4 dígitos):", r.courierCode || "");
+      if (c === null) return;
+      const code = onlyDigits(c);
+      if (!code){
+        await updateDelivery(r.id, { courierCode:"", courierName:"" });
+        await refreshAll();
+        return;
+      }
+      const found = await courierExists(code);
+      if (!found || found.active === false){
+        await handleCourierNotFoundFlow(code, async (newCourier)=>{
+          await updateDelivery(r.id, { courierCode: newCourier.code, courierName: newCourier.name });
+        });
+        await refreshAll();
+        return;
+      }
+      await updateDelivery(r.id, { courierCode: found.code, courierName: found.name });
+      await refreshAll();
+    };
+
+    listaEntregas.appendChild(div);
+  }
+}
+
+function escapeHtml(s){
+  return (s||"").replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c]));
+}
+
+// ---- Courier not found flow (as you requested) ----
+let pendingCourierCode = "";
+let afterCreateAction = null;
+
+function openNfModal(code, onInserted){
+  pendingCourierCode = code;
+  afterCreateAction = onInserted;
+  nfText.textContent = `Código ${code} não está cadastrado. Gostaria de cadastrá-lo?`;
+  nfModal.classList.add("show");
+}
+function closeNfModal(){ nfModal.classList.remove("show"); }
+
+async function handleCourierNotFoundFlow(code, onInserted){
+  return new Promise((resolve)=>{
+    openNfModal(code, async (courier)=>{
+      try{
+        await onInserted(courier);
+      } finally{
+        resolve();
+      }
+    });
+  });
+}
+
+// ---- Side content builders ----
+function buildFechamentoUI(rows){
+  // totals and by courier
+  const totalFee = rows.reduce((a,r)=>a+(Number(r.fee)||0), 0);
+  const count = rows.length;
+
+  const byCourier = new Map();
+  for (const r of rows){
+    const key = r.courierCode ? `${r.courierName}||${r.courierCode}` : "—||";
+    const prev = byCourier.get(key) || { name: r.courierName || "—", code: r.courierCode || "", total:0 };
+    prev.total += (Number(r.fee)||0);
+    byCourier.set(key, prev);
+  }
+  const list = Array.from(byCourier.values())
+    .filter(x=>x.code) // only assigned
+    .sort((a,b)=> (b.total - a.total) || a.name.localeCompare(b.name));
+
+  let html = `
+    <div class="item" style="text-align:center">
+      <div style="font-weight:900">Totais de entrega</div>
+      <div style="display:flex;justify-content:space-between;gap:12px;margin-top:10px">
+        <div class="muted"><b>${count}</b> entregas</div>
+        <div class="money">${toMoney(totalFee)}</div>
+      </div>
+    </div>
+    <div style="height:10px"></div>
+  `;
+
+  if (!list.length){
+    html += `<div class="muted">Nenhuma entrega atribuída a entregador ainda.</div>`;
+    return html;
+  }
+
+  for (const c of list){
+    html += `
+      <div class="item">
+        <div class="itemTop">
+          <div>
+            <div class="itemTitle">${escapeHtml(c.name)}</div>
+            <div class="itemSub"><span style="color:var(--accent)">PIX:</span> ${escapeHtml(formatPix(c.code ? (c.pix || "") : ""))}</div>
+          </div>
+          <div class="right">
+            <div class="money">${toMoney(c.total)}</div>
+            <div class="tag">taxas</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  return html;
+}
+
+function buildCouriersListUI(couriers){
+  const active = couriers.filter(c=>c.active !== false);
+  const inactive = couriers.filter(c=>c.active === false);
+
+  const renderOne = (c)=>`
+    <div class="item">
+      <div class="itemTop">
+        <div style="width:100%">
+          <div style="display:flex;justify-content:space-between;gap:12px">
+            <div class="itemTitle">${escapeHtml(c.name||"")}</div>
+            <div class="muted">${escapeHtml(c.code||"")}</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:12px;margin-top:6px">
+            <div class="itemSub"><span style="color:var(--accent)">PIX:</span> ${escapeHtml(formatPix(c.pix||""))}</div>
+            <div class="itemSub">${escapeHtml(formatPhoneBR(c.phone||""))}</div>
+          </div>
+          <div class="rowBtns" style="justify-content:space-between;margin-top:10px">
+            <button class="btn" data-act="edit" data-code="${escapeHtml(c.code||"")}">Editar</button>
+            ${c.active===false
+              ? `<button class="btn good" data-act="toggle" data-code="${escapeHtml(c.code||"")}" data-on="1">Ativar</button>`
+              : `<button class="btn danger" data-act="toggle" data-code="${escapeHtml(c.code||"")}" data-on="0">Desativar</button>`
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  let html = "";
+  if (!couriers.length) html = `<div class="muted">Nenhum entregador cadastrado.</div>`;
+  else{
+    html += active.map(renderOne).join("");
+    if (inactive.length){
+      html += `<div style="height:10px"></div><div class="muted" style="font-weight:750">Desativados</div><div style="height:8px"></div>`;
+      html += inactive.map(renderOne).join("");
+    }
+  }
+  return html;
+}
+
+function buildCadastroUI(prefillCode=""){
+  return `
+    <div class="item">
+      <div class="fieldLabel">Código (4 dígitos)</div>
+      <input id="c_code" type="text" inputmode="numeric" maxlength="8" placeholder="Ex.: 2603" value="${escapeHtml(prefillCode)}"/>
+      <div style="height:10px"></div>
+
+      <div class="fieldLabel">Nome</div>
+      <input id="c_name" type="text" placeholder="Nome do entregador"/>
+      <div style="height:10px"></div>
+
+      <div class="fieldLabel">Telefone</div>
+      <input id="c_phone" type="tel" inputmode="numeric" placeholder="DDD 999 99 9999"/>
+      <div style="height:10px"></div>
+
+      <div class="fieldLabel">Chave Pix</div>
+      <input id="c_pix" type="text" placeholder="CPF, telefone, e-mail ou aleatória"/>
+      <div class="rowBtns" style="justify-content:flex-end;margin-top:12px">
+        <button class="btn primary" id="c_save" type="button">Salvar</button>
+      </div>
+      <div class="help" id="c_hint"></div>
+    </div>
+  `;
+}
+
+// ---- Menu actions ----
+btnSideClose.onclick = closeSide;
+
+btnFechamento.onclick = async ()=>{
+  try{
+    ensureLogged();
+    statusPill.textContent = "Carregando…";
+    const rows = await listDeliveriesForDay();
+    openSide("Fechamento", buildFechamentoUI(rows));
+  }catch(err){
+    alert(err.message || err);
+  }finally{
+    statusPill.textContent = "Pronto";
+  }
+};
+
+btnEntregadores.onclick = async ()=>{
+  try{
+    ensureLogged();
+    statusPill.textContent = "Carregando…";
+    const list = await listCouriers();
+    openSide("Entregadores", buildCouriersListUI(list));
+
+    // bind events
+    sideBody.querySelectorAll('[data-act="toggle"]').forEach(btn=>{
+      btn.onclick = async ()=>{
+        const code = btn.getAttribute("data-code");
+        const on = btn.getAttribute("data-on")==="1";
+        await setCourierActive(code, on);
+        btnEntregadores.click();
+      };
+    });
+    sideBody.querySelectorAll('[data-act="edit"]').forEach(btn=>{
+      btn.onclick = async ()=>{
+        const code = btn.getAttribute("data-code");
+        const data = await courierExists(code);
+        if (!data) return;
+        openSide("Editar entregador", buildCadastroUI(code));
+        el("c_name").value = data.name||"";
+        el("c_phone").value = formatPhoneBR(data.phone||"");
+        el("c_pix").value = data.pix||"";
+        el("c_save").onclick = async ()=>{
+          try{
+            const payload = {
+              code: el("c_code").value,
+              name: el("c_name").value,
+              phone: el("c_phone").value,
+              pix: el("c_pix").value
+            };
+            await upsertCourier(payload);
+            el("c_hint").textContent = "Salvo.";
+          }catch(e){ el("c_hint").textContent = e.message || e; }
+        };
+      };
+    });
+
+  }catch(err){
+    alert(err.message || err);
+  }finally{
+    statusPill.textContent = "Pronto";
+  }
+};
+
+btnCadastro.onclick = async ()=>{
+  try{
+    ensureLogged();
+    openSide("Cadastro", buildCadastroUI(""));
+    el("c_save").onclick = async ()=>{
+      try{
+        const payload = {
+          code: el("c_code").value,
+          name: el("c_name").value,
+          phone: el("c_phone").value,
+          pix: el("c_pix").value
+        };
+        await upsertCourier(payload);
+        el("c_hint").textContent = "Salvo.";
+      }catch(e){ el("c_hint").textContent = e.message || e; }
+    };
+  }catch(err){
+    alert(err.message || err);
+  }
+};
+
+btnAtualizar.onclick = ()=> refreshAll().catch(err=>alert(err.message||err));
+
+dia.onchange = ()=> refreshAll().catch(()=>{});
+
+// ---- Add delivery flow ----
+btnLimpar.onclick = ()=>{
+  cliente.value="";
+  total.value="";
+  taxa.value="";
+  codigo.value="";
+  cliente.focus();
+};
+
+btnAdicionar.onclick = async ()=>{
+  try{
+    ensureLogged();
+    const tV = numberParser(total.value);
+    const fV = numberParser(taxa.value);
+    if (!Number.isFinite(tV) || !Number.isFinite(fV)){
+      alert("Preencha Total e Taxa com valores válidos.");
+      return;
+    }
+    const code = onlyDigits(codigo.value);
+    let courierName = "";
+    let courierCode = "";
+
+    if (code){
+      const found = await courierExists(code);
+      if (!found || found.active === false){
+        await handleCourierNotFoundFlow(code, async (newCourier)=>{
+          courierCode = newCourier.code;
+          courierName = newCourier.name;
+        });
+      }else{
+        courierCode = found.code;
+        courierName = found.name;
+      }
+    }
+
+    await addDelivery({ clientName: cliente.value, total: tV, fee: fV, courierCode, courierName });
+    btnLimpar.click();
+    await refreshAll();
+  }catch(err){
+    alert(err.message || err);
+  }
+};
+
+// ---- Not found modal wiring -> open Cadastro inside side panel, then Insert/Close ----
+el("btnNfClose").onclick = closeNfModal;
+el("btnNfNo").onclick = ()=>{ closeNfModal(); };
+el("btnNfYes").onclick = async ()=>{
+  closeNfModal();
+  try{
+    ensureLogged();
+    openSide("Cadastro", buildCadastroUI(pendingCourierCode));
+    const hint = el("c_hint");
+    hint.textContent = "Cadastre o entregador e depois escolha a ação.";
+    // buttons row: replace save row with Save + Inserir na entrega + Fechar
+    const saveBtn = el("c_save");
+    saveBtn.textContent = "Salvar";
+    // add extra buttons
+    const row = saveBtn.parentElement;
+    row.style.justifyContent = "space-between";
+    const insertBtn = document.createElement("button");
+    insertBtn.className = "btn primary";
+    insertBtn.type = "button";
+    insertBtn.textContent = "Inserir na entrega";
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "btn";
+    closeBtn.type = "button";
+    closeBtn.textContent = "Fechar";
+
+    row.prepend(insertBtn);
+    row.append(closeBtn);
+
+    let savedCourier = null;
+
+    async function doSave(){
+      const payload = {
+        code: el("c_code").value,
+        name: el("c_name").value,
+        phone: el("c_phone").value,
+        pix: el("c_pix").value
+      };
+      const res = await upsertCourier(payload);
+      savedCourier = res;
+      hint.textContent = "Entregador salvo.";
+      return res;
+    }
+
+    saveBtn.onclick = async ()=>{
+      try{ await doSave(); }catch(e){ hint.textContent = e.message || e; }
+    };
+
+    insertBtn.onclick = async ()=>{
+      try{
+        if (!savedCourier) await doSave();
+        if (savedCourier && typeof afterCreateAction === "function"){
+          await afterCreateAction(savedCourier);
+          alert("Entregador inserido na entrega.");
+        }
+        closeSide();
+        await refreshAll();
+      }catch(e){ alert(e.message || e); }
+    };
+
+    closeBtn.onclick = ()=> closeSide();
+
+  }catch(err){
+    alert(err.message || err);
+  }
+};
+
+// ---- Config modal wiring ----
+el("btnCfgClose").onclick = closeCfgModal;
+el("btnCfgCancel").onclick = closeCfgModal;
+
+el("btnCfgSave").onclick = async ()=>{
+  try{
+    const raw = cfgText.value.trim();
+    if (!raw) throw new Error("Cole o JSON da configuração.");
+    const obj = JSON.parse(raw);
+    // minimal validation
+    for (const k of ["apiKey","authDomain","projectId","appId"]){
+      if (!obj[k]) throw new Error(`Campo obrigatório faltando: ${k}`);
+    }
+    localStorage.setItem(LS_CFG_KEY, JSON.stringify(obj));
+    cfgHint.textContent = "Configuração salva. Tente fazer login novamente.";
+    closeCfgModal();
+    await initFirebaseIfPossible();
+  }catch(err){
+    cfgHint.textContent = err.message || err;
+  }
+};
+
+// ---- Boot ----
+btnAuth.onclick = ()=> doLogin().catch(err=>alert(err.message||err));
+
+async function refreshAll(){
+  const ok = await initFirebaseIfPossible();
+  if (!ok){
+    statusPill.textContent = "Sem Firebase";
+    listaEntregas.innerHTML = '<div class="muted">Clique em <b>Login</b> e configure o Firebase para começar.</div>';
+    return;
+  }
+  if (!currentUser){
+    statusPill.textContent = "Deslogado";
+    listaEntregas.innerHTML = '<div class="muted">Faça login para ver e registrar entregas.</div>';
+    return;
+  }
+  statusPill.textContent = "Carregando…";
+  try{
+    const rows = await listDeliveriesForDay();
+    renderDeliveries(rows);
+  }finally{
+    statusPill.textContent = "Pronto";
+  }
+}
+
+refreshAll().catch(()=>{});
 </script>
 </body>
 </html>
