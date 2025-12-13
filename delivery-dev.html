@@ -43,27 +43,75 @@
     .modal header b{font-size:14px}.modal .content{padding:14px 16px}.modal .foot{padding:14px 16px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--stroke)}
     .x{background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer}.x:hover{color:var(--text)}
     .tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,.10);padding:6px 10px;border-radius:999px;background:rgba(29,29,32,.55)}
+  
+    .userline{display:block;margin-top:4px;font-size:12px;color:var(--muted)}
+    .pixKey{color:var(--accent);font-weight:600}
+    .closeBoxIdle{opacity:.65}
+    .totalsHeader{text-align:center;margin:0 0 10px 0}
+    .totalsRow{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02)}
+
+  
+    .topbar{flex-direction:column;align-items:stretch;gap:12px}
+    .brandline{display:flex;align-items:center;justify-content:flex-start;gap:10px}
+    .menu{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .menuleft,.menuright{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .btn.sm{padding:7px 10px;border-radius:12px;font-size:13px}
+    .pill input{min-width:140px}
+    /* Side panel (right card) */
+    .sideHeader{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .sideTitle{flex:1;text-align:center;font-weight:600}
+    .sideBody{display:none}
+    .sideBody.active{display:block}
+    .sideScroll{max-height:46vh;overflow:auto;padding-right:6px}
+    .xBtn{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:12px;width:34px;height:34px;cursor:pointer}
+
+  
+    .brandwrap{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+    .userbox{display:flex;align-items:center;gap:10px;min-width:180px;justify-content:flex-end}
+    .avatar{width:38px;height:38px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+            border:1px solid var(--line);background:rgba(255,255,255,.03);font-weight:600;color:var(--text)}
+    .usertext{display:flex;flex-direction:column;line-height:1.15;text-align:right}
+    .usertext .label{font-size:12px;color:var(--muted)}
+    .usertext .email{font-size:12px;color:var(--muted)}
+    .userbox.hidden{display:none}
+
   </style>
 </head>
 <body>
 <div class="wrap">
+  
+<div class="wrap">
   <div class="topbar">
-    <div class="brand"><div class="logo">D</div><div class="title"><b>Docce • Entregas</b><span>Controle diário com fechamento automático</span></div></div>
-    <div class="right">
-      <div class="pill"><label for="day">Dia</label><input id="day" type="date"></div>
-      <button class="btn secondary" id="btnRefresh">Atualizar</button>
-      <button class="btn secondary hidden" id="btnOpenCouriers">Entregadores</button>
-      <button class="btn" id="btnOpenLogin">Login</button>
-      <button class="btn secondary hidden" id="btnLogout">Sair</button>
+    <div class="brandline"><div class="brandwrap"><div class="brand">
+        <div class="logo">D</div>
+        <div class="title">
+          <b>Docce • Entregas</b>
+          <span>Controle diário com fechamento automático</span>
+</div>
+      </div>
+    </div>
+
+    <div class="menu">
+      <div class="menuleft">
+        <button class="btn secondary sm" id="btnRefresh">Atualizar</button>
+        <button class="btn sm" id="btnFechamento">Fechamento</button>
+        <button class="btn secondary sm hidden" id="btnShowCouriers">Entregadores</button>
+        <button class="btn secondary sm hidden" id="btnShowCadastro">Cadastro</button>
+      </div>
+      <div class="menuright">
+        <div class="pill"><label for="day">Dia</label><input id="day" type="date"></div>
+        <button class="btn sm" id="btnOpenLogin">Login</button>
+        <button class="btn secondary sm hidden" id="btnLogout">Sair</button>
+      </div>
     </div>
   </div>
 
   <div class="grid">
+<div class="grid">
     <section class="card">
       <header>
-        <div><h2>Entregas do dia</h2><div class="hint">Cadastre o pedido (pode ficar pendente). Depois atribua o entregador.</div></div>
-        <span class="tag" id="authTag">🔒 sem login</span>
-      </header>
+        <div><h2>Entregas do dia</h2></div>
+</header>
       <div class="body">
         <div class="row3">
           <div class="field"><label>Cliente</label><input id="inpCliente" placeholder="Nome do cliente"></div>
@@ -94,43 +142,42 @@
       </div>
     </section>
 
-    <aside class="card">
-      <header>
-        <div><h2>Fechamento do dia</h2><div class="hint">Clique em Fechar para ver o resumo</div></div>
-        <button class="btn secondary" id="btnFechar">Fechar</button>
-      </header>
-      <div class="body">
-        <div class="item" style="grid-template-columns:1fr auto;">
-          <div class="main"><b>Totais de entrega</b><small class="muted" id="lblDia"></small></div>
-          <div class="meta"><b id="totalTaxaDia">R$ 0,00</b><small class="muted" id="totalEntregasDia">0 entregas</small></div>
-        </div>
-<div class="list" id="listResumo"></div>
-        <div class="sep"></div>
-
-        <header style="padding:0;border:none;background:none;display:flex;align-items:center;justify-content:space-between">
-          <h2 style="margin:0;font-size:14px">Entregadores</h2><span class="hint">Liberado com login</span>
-        </header>
-
-        <div class="notice">Entregadores: use o botão <b>Entregadores</b> no topo. (Somente para usuários logados.)</div>
-
-        <div id="courierArea" class="hidden">
-          <div class="sep"></div>
-          <div class="row">
-            <div class="field"><label>Nome</label><input id="cNome" placeholder="Nome do entregador"></div>
-            <div class="field"><label>Telefone</label><input id="cTel" inputmode="numeric" placeholder="DDD + número"></div>
-          </div>
-          <div class="row">
-            <div class="field"><label>Chave PIX</label><input id="cPix" placeholder="CPF, e-mail, aleatória…"></div>
-            <div class="field"><label>Código (auto: 4 últimos do telefone)</label><input id="cCodigo" placeholder="Ex.: 2603" maxlength="4"></div>
-          </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="btn good" id="btnSalvarCourier">Salvar</button>
-            <button class="btn secondary" id="btnLimparCourier">Limpar</button>
-          </div>
-          <div class="list" id="listCouriers"></div>
-        </div>
+    
+<aside class="card" id="sidePanel">
+  <header class="sideHeader">
+    <div class="sideTitle" id="sideTitle"> </div>
+    <button class="xBtn" id="sideClose" title="Fechar" aria-label="Fechar">×</button>
+  </header>
+  <div class="body">
+    <div id="sideFechamento" class="sideBody">
+      <div class="item" style="grid-template-columns:1fr auto;">
+        <div class="main"><b>Totais de entrega</b></div>
+        <div class="meta"><b id="totalTaxaDia">R$ 0,00</b><small class="muted" id="totalEntregasDia">0 entregas</small></div>
       </div>
-    </aside>
+      <div class="list sideScroll" id="listResumo"></div>
+    </div>
+
+    <div id="sideCouriers" class="sideBody">
+      <div class="list sideScroll" id="listCouriers"></div>
+    </div>
+
+    <div id="sideCadastro" class="sideBody">
+      <div class="row">
+        <div class="field"><label>Nome</label><input id="cNome" placeholder="Nome do entregador"></div>
+        <div class="field"><label>Telefone</label><input id="cTel" inputmode="numeric" placeholder="DDD + número"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Chave PIX</label><input id="cPix" placeholder="CPF, e-mail, aleatória…"></div>
+        <div class="field"><label>Código (auto: 4 últimos do tel.)</label><input id="cCodigo" placeholder="Ex.: 2603" maxlength="4"></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn good" id="btnSalvarCourier">Salvar</button>
+        <button class="btn secondary" id="btnLimparCourier">Limpar</button>
+      </div>
+    </div>
+  </div>
+</aside>
+
   </div>
 </div>
 
@@ -251,11 +298,38 @@
     }
   }
 
-function setAuthTag(on){
-    $("authTag").textContent = on ? "✅ logado" : "🔒 sem login";
-    $("btnLogout").classList.toggle("hidden", !on);
-    $("btnOpenLogin").classList.toggle("hidden", on);
+function setAuthTag(isAuthed,email){
+  const userBox = document.getElementById("userBox");
+  const userEmail = document.getElementById("userEmail");
+  const userName = document.getElementById("userName");
+  const userAvatar = document.getElementById("userAvatar");
+
+  if(isAuthed){
+    const em = String(email||"").trim();
+    const user = em.includes("@") ? em.split("@")[0] : em;
+    userName.textContent = "Usuário";
+    userEmail.textContent = em || "—";
+    const initial = (user && user[0]) ? user[0].toUpperCase() : (em && em[0] ? em[0].toUpperCase() : "?");
+    userAvatar.textContent = initial;
+    userBox.classList.remove("hidden");
+  }else{
+    userEmail.textContent = "—";
+    userAvatar.textContent = "?";
+    userBox.classList.add("hidden");
   }
+
+  document.getElementById("btnShowCouriers").classList.toggle("hidden", !isAuthed);
+  document.getElementById("btnShowCadastro").classList.toggle("hidden", !isAuthed);
+  document.getElementById("btnOpenLogin").classList.toggle("hidden", isAuthed);
+  document.getElementById("btnLogout").classList.toggle("hidden", !isAuthed);
+}
+` : "Usuário: —";
+  document.getElementById("btnShowCouriers").classList.toggle("hidden", !isAuthed);
+  document.getElementById("btnShowCadastro").classList.toggle("hidden", !isAuthed);
+  document.getElementById("btnOpenLogin").classList.toggle("hidden", isAuthed);
+  document.getElementById("btnLogout").classList.toggle("hidden", !isAuthed);
+}` : "Usuário: —";
+}
   function updateDayUI(){ $("day").value=state.date; $("lblDia").textContent=`Dia: ${state.date}`; }
 
   function escapeHtml(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
@@ -280,78 +354,48 @@ function setAuthTag(on){
     if(!assigned.length){el.innerHTML=`<div class="muted">Nenhuma entrega atribuída.</div>`;return;}
     for(const d of assigned){
       const c=state.couriers.get(String(d.courierCode))||null;
-      const title=c?`${c.nome} (${d.courierCode})`:`Código ${d.courierCode}`;
-      const pix=c?.pix?`PIX: ${c.pix}`:"PIX: —";
+      const courierName = c? (c.nome||"—") : "—";
       const item=document.createElement("div"); item.className="item";
       item.innerHTML=`
-        <div class="main"><b>${escapeHtml(d.cliente||"Sem nome")} • <span style="color:var(--accent)">${escapeHtml(title)}</span></b><small>${escapeHtml(pix)} • Taxa: ${brl(d.taxa)}</small></div>
-        <div class="meta"><b>${brl(d.taxa)}</b><small class="muted">${brl(d.total)}</small></div>
-        <div class="actions"><button class="btn tiny secondary" data-edit="${d.id}">Editar</button><button class="btn tiny danger" data-del="${d.id}">Excluir</button></div>`;
+        <div class="main">
+          <b>${escapeHtml(d.cliente||"Sem nome")}</b>
+          <small>Entregador: ${escapeHtml(courierName)}</small>
+        </div>
+        <div class="meta">
+          <b>${brl(d.taxa)}</b>
+          <small class="muted">${brl(d.total)}</small>
+        </div>
+        <div class="actions">
+          <button class="btn tiny secondary" data-del="${d.id}" data-action="editCourier">Editar</button>
+          <button class="btn tiny danger" data-del="${d.id}" data-action="deleteDelivery">Excluir</button>
+        </div>`;
       el.appendChild(item);
     }
   }
 
-  function renderResumo(){
-    if(!state.closed){ return; }
-    const assigned=state.deliveries.filter(d=>d.status==="assigned"&&d.courierCode);
-    const totalTaxas=assigned.reduce((a,d)=>a+Number(d.taxa||0),0);
-    $("totalTaxaDia").textContent=brl(totalTaxas);
-    $("totalEntregasDia").textContent=`${assigned.length} entregas`;
-    const by=new Map();
-    for(const d of assigned){const code=String(d.courierCode);by.set(code,(by.get(code)||0)+Number(d.taxa||0));}
-    const el=$("listResumo"); el.innerHTML="";
-    const entries=Array.from(by.entries()).sort((a,b)=>b[1]-a[1]);
-    if(!entries.length){el.innerHTML=`<div class="muted">Sem fechamento ainda.</div>`;return;}
-    for(const [code,sum] of entries){
-      const c=state.couriers.get(code); const name=c?.nome||"Entregador"; const pix=c?.pix||"—";
-      const row=document.createElement("div"); row.className="item"; row.style.gridTemplateColumns="1fr auto";
-      row.innerHTML=`<div class="main"><b>${escapeHtml(name)}</b><small class="muted">PIX: ${escapeHtml(pix)}</small></div><div class="meta"><b>${brl(sum)}</b><small class="muted">taxas</small></div>`;
-      el.appendChild(row);
-    }
-  }
 
-  async function renderCouriersList(){
-    const el=$("listCouriers"); el.innerHTML="";
-    // área disponível somente após login (Rules + Auth)
-    if(!auth.currentUser){el.innerHTML=`<div class="muted">Faça login para ver entregadores.</div>`;return;}
-    try{
-      const arr=await listarCouriers();
-      state.couriers.clear(); for(const c of arr) state.couriers.set(String(c.codigo), c);
-      if(!arr.length){el.innerHTML=`<div class="muted">Nenhum entregador cadastrado.</div>`;return;}
-      for(const c of arr){
-        const item=document.createElement("div"); item.className="item"; item.style.gridTemplateColumns="1fr auto";
-        item.innerHTML=`<div class="main"><b>${escapeHtml(c.nome||"—")} <span class="muted">(${escapeHtml(String(c.codigo))})</span>${(c.active===false)?` <span class="muted">(inativo)</span>`:""}</b><small class="muted">PIX: ${escapeHtml(c.pix||"—")} • Tel: ${escapeHtml(c.telefone||"—")}</small></div><div class="actions"><button class="btn tiny secondary" data-fill="${escapeHtml(String(c.codigo))}">Editar</button> <button class="btn tiny danger" data-deact="${escapeHtml(String(c.codigo))}">${(c.active===false)?"Ativar":"Desativar"}</button></div>`;
-        el.appendChild(item);
-      }
-    } catch { el.innerHTML=`<div class="muted">Faça login para listar entregadores.</div>`; }
-  }
+function openSide(which, title){
+  hideAllSide();
+  if(which) which.classList.add("active");
+  sideTitle.textContent = title || "";
+}
 
-  async function reloadAll(){
-    updateDayUI();
-    if(!auth.currentUser){
-      state.deliveries=[];
-      $("listPending").innerHTML=`<div class="muted">Faça login para visualizar entregas.</div>`;
-      $("listAssigned").innerHTML=`<div class="muted">Faça login para visualizar entregas.</div>`;
-      $("listResumo").innerHTML=`<div class="muted">Faça login para visualizar fechamento.</div>`;
-      $("totalTaxaDia").textContent=brl(0); $("totalEntregasDia").textContent="0 entregas";
-      return;
-    }
-    const cour=await listarCouriers();
-    state.couriers.clear(); for(const c of cour) state.couriers.set(String(c.codigo), c);
-    state.deliveries=await listarEntregas(state.date);
-    renderPending(); renderAssigned(); if(state.closed){ renderResumo(); } else { setClosed(false); }
-    if(state.couriersVisible) await renderCouriersList();
-  }
+sideClose.addEventListener("click", ()=> hideAllSide());
 
-  $("day").addEventListener("change", async (e)=>{state.date=e.target.value||todayISO(); state.closed=false; await reloadAll();});
-  $("btnOpenCouriers").addEventListener("click", async ()=>{
-    if(!auth.currentUser){ setMsg("Faça login para ver entregadores."); return; }
-    state.couriersVisible = !state.couriersVisible;
-    $("courierArea").classList.toggle("hidden", !state.couriersVisible);
-    if(state.couriersVisible) { setMsg("Entregadores abertos."); await renderCouriersList(); }
-    else { setMsg("Entregadores fechados."); }
-  });
-  $("btnRefresh").addEventListener("click", reloadAll);
+// Menu: Fechamento / Entregadores / Cadastro
+document.getElementById("btnFechamento").addEventListener("click", async ()=>{
+  await closeDay(); // calcula + atualiza listResumo e totais
+  openSide(sideFechamento, "Fechamento do dia");
+});
+
+document.getElementById("btnShowCouriers").addEventListener("click", async ()=>{
+  await loadCouriers();
+  openSide(sideCouriers, "Entregadores cadastrados");
+});
+
+document.getElementById("btnShowCadastro").addEventListener("click", ()=>{
+  openSide(sideCadastro, "Cadastro");
+});
   $("btnFechar").addEventListener("click", async ()=>{state.closed=true; await reloadAll(); setMsg("Fechamento atualizado.");});
   $("btnLimpar").addEventListener("click", ()=>{$("inpCliente").value="";$("inpTotal").value="";$("inpTaxa").value="";$("inpCodigoEntrega").value="";setMsg("Campos limpos.");});
 
@@ -459,7 +503,7 @@ function setAuthTag(on){
   $("btnLogout").addEventListener("click", async ()=>{ await signOut(auth); state.couriersVisible=false; $("courierArea")?.classList.add("hidden"); $("btnOpenCouriers")?.classList.add("hidden"); setMsg("Você saiu."); });
 
   onAuthStateChanged(auth, async (user)=>{
-    setAuthTag(!!user);
+    setAuthTag(!!user, (user&&user.email)||"");
     // Mostra o e-mail do usuário no “tag” quando logado
     if(user){ $("authTag").textContent = `✅ logado • ${user.email}`; $("btnOpenCouriers").classList.remove("hidden"); }
     else { $("authTag").textContent = "🔒 sem login"; $("btnOpenCouriers").classList.add("hidden"); }
@@ -469,6 +513,38 @@ function setAuthTag(on){
   });
 
   state.date=todayISO(); updateDayUI(); setMsg("Faça login para usar.");
+
+function formatCPF(digits){
+  const d = String(digits||"").replace(/\D/g,"");
+  if(d.length!==11) return digits;
+  return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6,9)}-${d.slice(9,11)}`;
+}
+function formatPhoneDocce(digits){
+  const d = String(digits||"").replace(/\D/g,"");
+  if(d.length===11){
+    const dd=d.slice(0,2), part3=d.slice(2,5), part2=d.slice(5,7), part4=d.slice(7,11);
+    return `${dd} ${part3} ${part2} ${part4}`;
+  }
+  if(d.length===10){
+    const dd=d.slice(0,2), part3=d.slice(2,5), part2=d.slice(5,7), last4=d.slice(6,10);
+    return `${dd} ${part3} ${part2} ${last4}`;
+  }
+  if(d.length>11) return formatPhoneDocce(d.slice(-11));
+  return d;
+}
+function formatPixKey(raw){
+  const s = String(raw||"").trim();
+  if(!s) return "—";
+  if(s.includes("@")) return s; // e-mail
+  const digits = s.replace(/\D/g,"");
+  // telefone com +55 (13 dígitos) ou marcado por símbolos
+  const looksPhone = s.includes("+") || s.includes("(") || s.includes(")") || s.includes("-") || s.includes(" ");
+  if(digits.length===13 && digits.startsWith("55")) return formatPhoneDocce(digits.slice(-11));
+  if((digits.length===10 || digits.length===11) && looksPhone) return formatPhoneDocce(digits);
+  if(digits.length===11) return formatCPF(digits); // default: CPF
+  if(digits.length===10) return formatPhoneDocce(digits);
+  return s;
+}
 </script>
 </body>
 </html>
