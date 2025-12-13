@@ -9,9 +9,9 @@
     :root{--bg:#0f0f10;--stroke:#2a2a2f;--text:#f3f3f4;--muted:#b7b7be;--good:#2ecc71;--warn:#f1c40f;--bad:#ff5c5c;--accent:#e9d7b5;--shadow:0 12px 32px rgba(0,0,0,.45);--radius:16px}
     *{box-sizing:border-box}html,body{height:100%}
     body{margin:0;font-family:"Signika",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-    .wrap{max-width:1100px;margin:0 auto;padding:22px}
+    .wrap{max-width:1320px;margin:0 auto;padding:22px}
     .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border:1px solid var(--stroke);background:rgba(23,23,25,.8);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(8px);position:sticky;top:12px;z-index:10}
-    .brand{display:flex;align-items:center;gap:10px}.logo{width:36px;height:36px;border-radius:12px;border:1px solid rgba(233,215,181,.35);background:linear-gradient(145deg, rgba(233,215,181,.18), rgba(233,215,181,.04));display:grid;place-items:center;color:var(--accent);font-weight:600}
+    .brand{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--stroke);border-radius:14px;background:rgba(29,29,32,.55)}.logo{width:36px;height:36px;border-radius:12px;border:1px solid rgba(233,215,181,.35);background:linear-gradient(145deg, rgba(233,215,181,.18), rgba(233,215,181,.04));display:grid;place-items:center;color:var(--accent);font-weight:600}
     .title{line-height:1.1}.title b{display:block;font-size:16px}.title span{display:block;font-size:12px;color:var(--muted)}
     .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
     .pill{border:1px solid var(--stroke);background:rgba(29,29,32,.85);color:var(--text);padding:10px 12px;border-radius:999px;display:flex;align-items:center;gap:10px;min-height:40px}
@@ -19,7 +19,7 @@
     .btn{border:1px solid var(--stroke);background:rgba(233,215,181,.10);color:var(--accent);padding:10px 14px;border-radius:999px;cursor:pointer;font:inherit;transition:.12s transform ease,.12s opacity ease,.12s background ease;user-select:none;white-space:nowrap}
     .btn:hover{transform:translateY(-1px);background:rgba(233,215,181,.14)}.btn:active{transform:translateY(0);opacity:.85}
     .btn.secondary{background:rgba(29,29,32,.85);color:var(--text)}.btn.danger{background:rgba(255,92,92,.10);color:var(--bad);border-color:rgba(255,92,92,.25)}.btn.good{background:rgba(46,204,113,.10);color:var(--good);border-color:rgba(46,204,113,.25)}.btn.tiny{padding:7px 10px;font-size:12px}
-    .grid{margin-top:18px;display:grid;grid-template-columns:1.15fr .85fr;gap:14px}@media(max-width:980px){.grid{grid-template-columns:1fr}}
+    .grid{margin-top:18px;display:grid;grid-template-columns:2fr 1fr;gap:14px}@media(max-width:980px){.grid{grid-template-columns:1fr}}
     .card{border:1px solid var(--stroke);background:rgba(23,23,25,.82);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
     .card header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--stroke);background:linear-gradient(180deg, rgba(233,215,181,.07), transparent)}
     .card header h2{margin:0;font-size:14px}.card header .hint{font-size:12px;color:var(--muted)}.card .body{padding:14px 16px}
@@ -75,6 +75,16 @@
     .usertext .email{font-size:12px;color:var(--muted)}
     .userbox.hidden{display:none}
 
+  
+    .courierCard{border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:rgba(255,255,255,.02);margin-bottom:10px}
+    .cRow{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+    .cRow + .cRow{margin-top:6px}
+    .cName{font-weight:600}
+    .cCode{font-size:12px;color:var(--muted)}
+    .cRight{white-space:nowrap;color:var(--muted);font-size:12px}
+    .cPix{color:var(--accent);font-weight:600;font-size:12px;word-break:break-all}
+    .cActions{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+
   </style>
 </head>
 <body>
@@ -119,7 +129,7 @@
           <div class="field"><label>Taxa (R$)</label><input id="inpTaxa" inputmode="decimal" placeholder="0,00"></div>
         </div>
         <div class="row">
-          <div class="field"><label>Código do entregador (opcional)</label><input id="inpCodigoEntrega" placeholder="Ex.: 2603" maxlength="4"></div>
+          <div class="field"><label>Código do entregador</label><input id="inpCodigoEntrega" placeholder="Ex.: 2603" maxlength="4"></div>
           <div style="display:flex;gap:10px;align-items:flex-end">
             <button class="btn good" id="btnAddEntrega">Adicionar</button>
             <button class="btn secondary" id="btnLimpar">Limpar</button>
@@ -267,6 +277,54 @@
     return snap.exists()?{codigo:snap.id,...snap.data()}:null;
   }
 
+  async function setCourierActive(codigo, active){
+    requireAuth();
+    await updateDoc(doc(db,"couriers",String(codigo)),{active:!!active,updatedAt:Date.now()});
+  }
+
+  async function loadCouriers(){
+    const arr = await listarCouriers();
+    state.couriers = new Map(arr.map(c=>[String(c.codigo), c]));
+    renderCouriers();
+  }
+
+  function renderCouriers(){
+    const el = $("listCouriers");
+    el.innerHTML = "";
+    const arr = Array.from(state.couriers.values()).sort((a,b)=>String(a.codigo).localeCompare(String(b.codigo)));
+
+    if(!arr.length){
+      el.innerHTML = `<div class="muted">Nenhum entregador cadastrado.</div>`;
+      return;
+    }
+
+    for(const c of arr){
+      const codigo = String(c.codigo||"").trim();
+      const nome = String(c.nome||"—");
+      const pix = String(c.pix||"");
+      const tel = String(c.telefone||"");
+      const ativo = (c.active !== false);
+
+      const card = document.createElement("div");
+      card.className = "courierCard";
+      card.innerHTML = `
+        <div class="cRow">
+          <div class="cName">${escapeHtml(nome)}</div>
+          <div class="cCode">${escapeHtml(codigo)}</div>
+        </div>
+        <div class="cRow">
+          <div class="cPix">${escapeHtml(formatPixKey(pix))}</div>
+          <div class="cRight">${escapeHtml(formatPhoneDocce(tel))}</div>
+        </div>
+        <div class="cActions">
+          <button class="btn tiny secondary" data-action="courierEdit" data-code="${escapeHtml(codigo)}">Editar</button>
+          <button class="btn tiny ${ativo ? "danger" : "good"}" data-action="courierToggle" data-code="${escapeHtml(codigo)}">${ativo ? "Desativar" : "Ativar"}</button>
+        </div>
+      `;
+      el.appendChild(card);
+    }
+  }
+
   async function criarEntrega({date,courierCode,cliente,total,taxa}){
     requireAuth();
     await addDoc(collection(db,"deliveries"),{date,courierCode:courierCode?String(courierCode):"",cliente:String(cliente||"").trim(),total:Number(total||0),taxa:Number(taxa||0),status:courierCode?"assigned":"pending",createdAt:Date.now()});
@@ -374,6 +432,32 @@ function setAuthTag(isAuthed,email){
   }
 
 
+
+function hideAllSide(){
+  sideFechamento.classList.remove("active");
+  sideCouriers.classList.remove("active");
+  sideCadastro.classList.remove("active");
+  sideTitle.textContent = "";
+}
+
+// Fluxo: código digitado não cadastrado -> oferecer cadastro e inserir na entrega
+let pendingDeliveryDraft = null; // {cliente,total,taxa,courierCode}
+let pendingCourierCode = null;
+
+function isFourDigits(v){
+  return /^\d{4}$/.test(String(v||"").trim());
+}
+function courierExists(code){
+  return !!state.couriers.get(String(code).trim());
+}
+function openCadastroForNewCourier(code){
+  $("cNome").value = "";
+  $("cTel").value = "";
+  $("cPix").value = "";
+  $("cCodigo").value = String(code||"").trim();
+  openSide(sideCadastro, "Cadastro");
+}
+
 function openSide(which, title){
   hideAllSide();
   if(which) which.classList.add("active");
@@ -400,6 +484,23 @@ document.getElementById("btnShowCadastro").addEventListener("click", ()=>{
   $("btnLimpar").addEventListener("click", ()=>{$("inpCliente").value="";$("inpTotal").value="";$("inpTaxa").value="";$("inpCodigoEntrega").value="";setMsg("Campos limpos.");});
 
   $("btnAddEntrega").addEventListener("click", async ()=>{
+    const codigoEntregador = String($("inpCodigoEntrega").value||"").trim();
+    // Se foi digitado um código de 4 dígitos e ele não existe, oferece cadastro
+    if(isFourDigits(codigoEntregador) && !courierExists(codigoEntregador)){
+      const ok = confirm("Entregador não cadastrado. Gostaria de cadastrá-lo?");
+      if(!ok) return;
+
+      pendingDeliveryDraft = {
+        cliente: $("inpCliente").value,
+        total: $("inpTotal").value,
+        taxa: $("inpTaxa").value,
+        courierCode: String(codigoEntregador).trim()
+      };
+      pendingCourierCode = String(codigoEntregador).trim();
+      openCadastroForNewCourier(pendingCourierCode);
+      return;
+    }
+
     try{
       requireAuth();
       const cliente=$("inpCliente").value.trim();
@@ -485,6 +586,29 @@ document.getElementById("btnShowCadastro").addEventListener("click", ()=>{
       await renderCouriersList();
     }catch(err){console.error(err);setMsg("Erro ao salvar entregador.");}
   });
+
+    // Se esse cadastro veio de uma entrega em andamento, oferece inserir o código e salvar a entrega
+    if(pendingDeliveryDraft && pendingCourierCode){
+      const inserir = confirm("Cadastro concluído. Inserir na entrega?");
+      if(inserir){
+        const code = String(pendingCourierCode).trim();
+        $("inpCodigoEntrega").value = code;
+
+        $("inpCliente").value = pendingDeliveryDraft.cliente || "";
+        $("inpTotal").value = pendingDeliveryDraft.total || "";
+        $("inpTaxa").value = pendingDeliveryDraft.taxa || "";
+
+        $("btnAddEntrega").click();
+
+        pendingDeliveryDraft = null;
+        pendingCourierCode = null;
+        hideAllSide();
+      }else{
+        pendingDeliveryDraft = null;
+        pendingCourierCode = null;
+        hideAllSide();
+      }
+    }
   $("btnLimparCourier").addEventListener("click", ()=>{$("cNome").value="";$("cTel").value="";$("cPix").value="";$("cCodigo").value="";setMsg("Campos limpos.");});
 
   const openLogin=()=>{$("loginBackdrop").classList.add("show");};
