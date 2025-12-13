@@ -661,12 +661,19 @@ function renderDeliveries(rows){
     div.innerHTML = `
       <div class="itemTop">
         <div>
-          <div class="itemTitle">${escapeHtml(r.clientName || "")}</div>
-          <div class="itemSub">${assigned ? "Entregador: " + escapeHtml(r.courierName) : "Aguardando entregador"}</div>
+          <div class="itemTitle">Cliente</div>
+          <div class="itemSub">${escapeHtml(r.clientName || "")}</div>
+
+          <div class="itemSub" style="margin-top:8px">
+            ${assigned
+              ? `<span style="opacity:.8">Entregador</span> • ${escapeHtml(courier.name || courier.code || "")}`
+              : `<span style="opacity:.8">Entregador</span> • Aguardando`}
+          </div>
         </div>
+
         <div class="right">
-          <div class="money">${toMoney(r.fee || 0)}</div>
-          <div class="tag">taxa • total ${toMoney(r.total || 0)}</div>
+          <div class="money">${toMoney(r.total || 0)}</div>
+          <div class="tag">Taxa: ${toMoney(r.fee || 0)}</div>
         </div>
       </div>
       <div style="height:10px"></div>
