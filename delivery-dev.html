@@ -85,38 +85,132 @@
     .cPix{color:var(--accent);font-weight:600;font-size:12px;word-break:break-all}
     .cActions{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
 
-  </style>
+  
+
+/* --- Layout fix: header + menu em 2 boxes --- */
+.topbar{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 14px 18px 10px;
+  display: grid;
+  gap: 10px;
+  background: transparent;
+}
+.headerbox, .menubox{
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 14px;
+  padding: 12px 14px;
+  backdrop-filter: blur(10px);
+}
+.headerbox{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  min-width: 260px;
+}
+.brand .logo{
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight: 800;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.18);
+}
+.brand .title b{ display:block; font-size: 15px; line-height: 1.1; }
+.brand .title span{ display:block; font-size: 12px; opacity: .85; margin-top: 2px; }
+
+.userarea{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  justify-content:flex-end;
+}
+.avatar{
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight: 800;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.18);
+}
+.usertext{ display:flex; flex-direction: column; line-height: 1.1; text-align: right; }
+.userlabel{ font-size: 12px; opacity: .90; }
+.usermail{ font-size: 11px; opacity: .75; }
+
+.menubox{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.menuleft{ display:flex; gap: 10px; flex-wrap: wrap; }
+.menuright{ display:flex; align-items:center; gap: 10px; }
+.menuright .date{ min-width: 160px; }
+
+/* garante proporção boa do conteúdo */
+.grid{
+  padding-top: 12px;
+}
+
+</style>
 </head>
 <body>
 <div class="wrap">
   
 <div class="wrap">
-  <div class="topbar">
-    <div class="brandline"><div class="brandwrap"><div class="brand">
-        <div class="logo">D</div>
-        <div class="title">
-          <b>Docce • Entregas</b>
-          <span>Controle diário com fechamento automático</span>
-</div>
+  
+<div class="topbar">
+  <div class="headerbox">
+    <div class="brand">
+      <div class="logo">D</div>
+      <div class="title">
+        <b>Docce • Entregas</b>
+        <span>Controle diário com fechamento automático</span>
       </div>
     </div>
 
-    <div class="menu">
-      <div class="menuleft">
-        <button class="btn secondary sm" id="btnRefresh">Atualizar</button>
-        <button class="btn sm" id="btnFechamento">Fechamento</button>
-        <button class="btn secondary sm hidden" id="btnShowCouriers">Entregadores</button>
-        <button class="btn secondary sm hidden" id="btnShowCadastro">Cadastro</button>
+    <div class="userarea" id="userBox">
+      <div class="avatar" id="userAvatar">D</div>
+      <div class="usertext">
+        <div class="userlabel" id="userName">Usuário</div>
+        <div class="usermail" id="userEmail">—</div>
       </div>
-      <div class="menuright">
-        <div class="pill"><label for="day">Dia</label><input id="day" type="date"></div>
-        <button class="btn sm" id="btnOpenLogin">Login</button>
-        <button class="btn secondary sm hidden" id="btnLogout">Sair</button>
-      </div>
+
+      <button class="btn sm" id="btnOpenLogin">Login</button>
+      <button class="btn secondary sm hidden" id="btnLogout">Sair</button>
     </div>
   </div>
 
-  <div class="grid">
+  <div class="menubox">
+    <div class="menuleft">
+      <button class="btn secondary sm" id="btnRefresh">Atualizar</button>
+      <button class="btn sm" id="btnFechamento">Fechamento</button>
+      <button class="btn secondary sm hidden" id="btnShowCouriers">Entregadores</button>
+      <button class="btn secondary sm hidden" id="btnShowCadastro">Cadastro</button>
+    </div>
+
+    <div class="menuright">
+      <label class="muted">Dia</label>
+      <input id="datePicker" class="date" type="date" />
+    </div>
+  </div>
+</div>
+
+<div class="grid">
 <div class="grid">
     <section class="card">
       <header>
@@ -209,6 +303,7 @@
 </div>
 
 <script type="module">
+
   const firebaseConfig = {
   apiKey: "AIzaSyBwuo9jDigmdKgfeofbc38c28v82Ia-ZJk",
   authDomain: "docce-entregas.firebaseapp.com",
@@ -669,6 +764,7 @@ function formatPixKey(raw){
   if(digits.length===10) return formatPhoneDocce(digits);
   return s;
 }
+
 </script>
 </body>
 </html>
