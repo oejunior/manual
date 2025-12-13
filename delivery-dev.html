@@ -1,3 +1,4 @@
+```html name=delivery-dev.html url=https://github.com/oejunior/manual/blob/88122089d4f06fd12efeccd541bcad5d78518e64/delivery-dev.html
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -321,9 +322,7 @@
 
 /* ---------- Config (substitua conforme necessário) ---------- */
 const firebaseConfig = {
-  // ✅ Cole aqui o "firebaseConfig" do seu projeto (Firebase Console → Configurações do projeto → Seus apps → App da Web)
-  // Dica: isso precisa ficar exatamente como o Firebase fornece (entre aspas).
-const firebaseConfig = {
+  // Cole aqui o "firebaseConfig" do seu projeto (Firebase Console → Configurações do projeto → App da Web)
   apiKey: "AIzaSyBwuo9jDigmdKgfeofbc38c28v82Ia-ZJk",
   authDomain: "docce-entregas.firebaseapp.com",
   projectId: "docce-entregas",
@@ -339,6 +338,11 @@ let app = null;
 let auth = null;
 let db = null;
 let currentUser = null;
+
+/* modal/courier pending state */
+let pendingCourierCode = "";
+let afterCreateAction = null;
+let _pendingNfResolve = null;
 
 /* ---------- Helpers ---------- */
 function el(id){ return document.getElementById(id); }
@@ -421,8 +425,8 @@ async function loadFirebaseModules(){
 async function initFirebaseIfPossible() {
   const cfg = firebaseConfig;
 
-  // Se ainda estiver com placeholders, avisa e não tenta logar
-  if (!cfg || !cfg.apiKey || cfg.apiKey === "AIzaSyBwuo9jDigmdKgfeofbc38c28v82Ia-ZJk" || cfg.projectId === "docce-entregas") {
+  // checar apenas presença (evita bloquear keys "reais")
+  if (!cfg || !cfg.apiKey || !cfg.projectId) {
     showToast("⚠️ Configure o firebaseConfig no HTML (apiKey / projectId).");
     return false;
   }
@@ -644,6 +648,7 @@ async function listDeliveriesForDay(){
 
 /* ---- UI: deliveries list ---- */
 function renderDeliveries(rows){
+  if(!listaEntregas) return;
   listaEntregas.innerHTML = "";
   if (!rows || !rows.length){
     listaEntregas.innerHTML = '<div class="muted">Sem entregas para este dia.</div>';
@@ -727,28 +732,32 @@ function escapeHtml(s){
   return (s||"").replace(/[&<>\"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;" }[c]));
 }
 
-/* ---- Courier not found flow ---- */
-let pendingCourierCode = "";
-let afterCreateAction = null;
-
-function openNfModal(code, onInserted){
+/* ---- Courier not found flow (modal + create flow) ---- */
+function openNfModal(code){
   pendingCourierCode = code;
-  afterCreateAction = onInserted;
   if(nfText) nfText.textContent = `Código ${code} não está cadastrado. Gostaria de cadastrá-lo?`;
   if(nfModal) nfModal.classList.add("show");
+  // return a promise that resolves when user chooses an action (create or cancel)
+  return new Promise((resolve)=>{
+    _pendingNfResolve = resolve;
+  });
 }
-function closeNfModal(){ if(nfModal) nfModal.classList.remove("show"); }
+function closeNfModal(){
+  if(nfModal) nfModal.classList.remove("show");
+  pendingCourierCode = "";
+  afterCreateAction = null;
+  if (typeof _pendingNfResolve === "function"){
+    _pendingNfResolve();
+    _pendingNfResolve = null;
+  }
+}
 
 async function handleCourierNotFoundFlow(code, onInserted){
-  return new Promise((resolve)=>{
-    openNfModal(code, async (courier)=>{
-      try{
-        await onInserted(courier);
-      } finally{
-        resolve();
-      }
-    });
-  });
+  // open modal and wait for user decision
+  afterCreateAction = onInserted;
+  await openNfModal(code);
+  // the modal handlers will call onInserted if user creates courier
+  // when resolve happens we simply return (caller refreshes data)
 }
 
 /* ---- Side content builders ---- */
@@ -1000,113 +1009,113 @@ if(btnAdicionar) btnAdicionar.onclick = async ()=>{
   }
 };
 
-/* ---- Not found modal wiring -> open Cadastro inside side panel, then Insert/Close ---- */
-if(btnNfClose) btnNfClose.onclick = closeNfModal;
-if(btnNfNo) btnNfNo.onclick = ()=>{ closeNfModal(); };
-if(btnNfYes) btnNfYes.onclick = async ()=>{
+/* ---- Modal button handlers (courier not found) ---- */
+if(btnNfClose) btnNfClose.onclick = ()=> {
+  // close without creating
   closeNfModal();
+};
+if(btnNfNo) btnNfNo.onclick = ()=> {
+  // close without creating
+  closeNfModal();
+};
+if(btnNfYes) btnNfYes.onclick = async ()=>{
+  // open side panel with cadastro prefilled with the pending code
+  const code = pendingCourierCode || "";
+  closeNfModal(); // hide modal first
   try{
     ensureLogged();
-    openSide("Cadastro", buildCadastroUI(pendingCourierCode));
-    const hint = el("c_hint");
-    hint.textContent = "Cadastre o entregador e depois escolha a ação.";
-    // buttons row: replace save row with Save + Inserir na entrega + Fechar
-    const saveBtn = el("c_save");
-    saveBtn.textContent = "Salvar";
-    // add extra buttons
-    const row = saveBtn.parentElement;
-    row.style.justifyContent = "space-between";
-    const insertBtn = document.createElement("button");
-    insertBtn.className = "btn primary";
-    insertBtn.type = "button";
-    insertBtn.textContent = "Inserir na entrega";
-    const closeBtn = document.createElement("button");
-    closeBtn.className = "btn";
-    closeBtn.type = "button";
-    closeBtn.textContent = "Fechar";
-
-    row.prepend(insertBtn);
-    row.append(closeBtn);
-
-    let savedCourier = null;
-
-    async function doSave(){
+  }catch(e){
+    // If not logged, show login prompt
+    alert("Você precisa estar logado para cadastrar entregadores.");
+    return;
+  }
+  openSide("Cadastro", buildCadastroUI(code));
+  el("c_name").focus();
+  el("c_save").onclick = async ()=>{
+    try{
       const payload = {
         code: el("c_code").value,
         name: el("c_name").value,
         phone: el("c_phone").value,
         pix: el("c_pix").value
       };
-      const res = await upsertCourier(payload);
-      savedCourier = res;
-      hint.textContent = "Entregador salvo.";
-      return res;
+      const created = await upsertCourier(payload);
+      // If there was a pending afterCreateAction (to assign courier), call it
+      if (typeof afterCreateAction === "function"){
+        try{
+          await afterCreateAction(created);
+        }catch(_) { /* ignore */ }
+        afterCreateAction = null;
+      }
+      // resolve any pending modal promise
+      if (typeof _pendingNfResolve === "function"){
+        _pendingNfResolve();
+        _pendingNfResolve = null;
+      }
+      // feedback to user
+      if (el("c_hint")) el("c_hint").textContent = "Salvo.";
+      // refresh side (go back to entregadores view)
+      try{ btnEntregadores.click(); }catch(e){}
+    }catch(e){
+      if (el("c_hint")) el("c_hint").textContent = e.message || e;
     }
-
-    saveBtn.onclick = async ()=>{
-      try{ await doSave(); }catch(e){ hint.textContent = e.message || e; }
-    };
-
-    insertBtn.onclick = async ()=>{
-      try{
-        if (!savedCourier) await doSave();
-        if (savedCourier && typeof afterCreateAction === "function"){
-          await afterCreateAction(savedCourier);
-          alert("Entregador inserido na entrega.");
-        }
-        closeSide();
-        await refreshAll();
-      }catch(e){ alert(e.message || e); }
-    };
-
-    closeBtn.onclick = ()=> closeSide();
-
-  }catch(err){
-    alert(err.message || err);
-  }
+  };
 };
 
-
-
-/* ---------- Missing: refreshAll ---------- */
+/* ---- Refresh / startup ---- */
 async function refreshAll(){
   if(statusPill) statusPill.textContent = "Carregando…";
   try{
-    // try to init firebase but don't force if not configured
+    // if firebase not initialized, try to init (it will no-op if configured)
     await initFirebaseIfPossible();
-    // ensure dia has a default
-    if(dia && !dia.value) dia.value = todayISO();
-
     if (!currentUser){
-      // show placeholder or ask to login
-      if(listaEntregas) listaEntregas.innerHTML = '<div class="muted">Faça login para ver entregas.</div>';
+      // not logged: clear list and show prompt in side
+      renderUser();
+      renderDeliveries([]);
+      if(sideBody) sideBody.innerHTML = '<div class="muted">Faça login para ver e gerenciar entregas.</div>';
       return;
     }
-
-    // if logged, list deliveries
+    // list deliveries for day and render deliveries
     const rows = await listDeliveriesForDay();
     renderDeliveries(rows);
+    // reset side if it was showing initial muted message
+    if(sideHeader && sideHeader.textContent === "Painel"){
+      if(sideBody) sideBody.innerHTML = '<div class="muted">Use o menu acima: <b>Fechamento</b>, <b>Entregadores</b> ou <b>Cadastro</b>.</div>';
+    }
   }catch(err){
-    console.error(err);
-    throw err;
+    // if ensureLogged threw, show friendly UI
+    if ((err && String(err).includes("Você precisa estar logado"))){
+      renderUser();
+      renderDeliveries([]);
+      if(sideBody) sideBody.innerHTML = '<div class="muted">Faça login para ver e gerenciar entregas.</div>';
+    }else{
+      console.error(err);
+      alert(err.message || err);
+    }
   }finally{
     if(statusPill) statusPill.textContent = "Pronto";
   }
 }
 
-/* ---------- Wire up login button ---------- */
-if(btnAuth) btnAuth.onclick = doLogin;
-
-/* ---------- Initial setup on load ---------- */
+/* ---------- Startup: setar data, bind do login e inicializar ---------- */
 (async function startup(){
-  // set today's date if empty
-  if(dia && !dia.value) dia.value = todayISO();
-  // try to init firebase (will show toast if not configured)
-  try{ await initFirebaseIfPossible();}catch(e){ console.error(e); }
-  // initial render
-  try{ await refreshAll(); }catch(e){ /* ignore, user may not be logged */ }
+  try{
+    // mostra a data de hoje no campo (para que o usuário veja)
+    if (dia) dia.value = todayISO();
+
+    // bind do botão de login
+    if (btnAuth) btnAuth.onclick = doLogin;
+
+    // attach a global refresh on load attempt (and try to initialize firebase)
+    await initFirebaseIfPossible();
+
+    // initial data refresh (if user already logged)
+    await refreshAll().catch(()=>{});
+  }catch(e){
+    console.error("Startup error:", e);
+  }
 })();
 </script>
-
 </body>
 </html>
+```
