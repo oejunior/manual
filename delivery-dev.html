@@ -666,7 +666,7 @@ function renderDeliveries(rows){
 
           <div class="itemSub" style="margin-top:8px">
             ${assigned
-              ? `<span style="opacity:.8">Entregador</span> • ${escapeHtml(courier.name || courier.code || "")}`
+              ? `<span style="opacity:.8">Entregador</span> • ${escapeHtml(delivery.courier.name || delivery.courier.code || "")}`
               : `<span style="opacity:.8">Entregador</span> • Aguardando`}
           </div>
         </div>
