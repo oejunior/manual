@@ -8,7 +8,7 @@
   <style>
     :root{--bg:#0f0f10;--stroke:#2a2a2f;--text:#f3f3f4;--muted:#b7b7be;--good:#2ecc71;--warn:#f1c40f;--bad:#ff5c5c;--accent:#e9d7b5;--shadow:0 12px 32px rgba(0,0,0,.45);--radius:16px}
     *{box-sizing:border-box}html,body{height:100%}
-    body{margin:0;font-family:"Signika",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(1200px 800px at 20% -10%, rgba(233,215,181,.08), transparent 55%),radial-gradient(1200px 800px at 120% 20%, rgba(233,215,181,.06), transparent 55%),var(--bg);color:var(--text)}
+    body{margin:0;font-family:"Signika",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
     .wrap{max-width:1100px;margin:0 auto;padding:22px}
     .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border:1px solid var(--stroke);background:rgba(23,23,25,.8);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(8px);position:sticky;top:12px;z-index:10}
     .brand{display:flex;align-items:center;gap:10px}.logo{width:36px;height:36px;border-radius:12px;border:1px solid rgba(233,215,181,.35);background:linear-gradient(145deg, rgba(233,215,181,.18), rgba(233,215,181,.04));display:grid;place-items:center;color:var(--accent);font-weight:600}
@@ -96,27 +96,22 @@
 
     <aside class="card">
       <header>
-        <div><h2>Fechamento do dia</h2><div class="hint">Total de taxas + total por entregador</div></div>
+        <div><h2>Fechamento do dia</h2><div class="hint">Clique em Fechar para ver o resumo</div></div>
         <button class="btn secondary" id="btnFechar">Fechar</button>
       </header>
       <div class="body">
         <div class="item" style="grid-template-columns:1fr auto;">
-          <div class="main"><b>Totais do dia</b><small class="muted" id="lblDia"></small></div>
+          <div class="main"><b>Totais de entrega</b><small class="muted" id="lblDia"></small></div>
           <div class="meta"><b id="totalTaxaDia">R$ 0,00</b><small class="muted" id="totalEntregasDia">0 entregas</small></div>
         </div>
-        <div class="item" style="grid-template-columns:1fr auto;margin-top:8px;">
-          <div class="main"><b>Total de pedidos do dia</b><small class="muted">Soma dos valores “Total (R$)”</small></div>
-          <div class="meta"><b id="totalPedidosDia">R$ 0,00</b><small class="muted">pedidos</small></div>
-        </div>
-
-        <div class="list" id="listResumo"></div>
+<div class="list" id="listResumo"></div>
         <div class="sep"></div>
 
         <header style="padding:0;border:none;background:none;display:flex;align-items:center;justify-content:space-between">
-          <h2 style="margin:0;font-size:14px">Entregadores</h2><span class="hint">Área protegida por PIN</span>
+          <h2 style="margin:0;font-size:14px">Entregadores</h2><span class="hint">Liberado com login</span>
         </header>
 
-        <div class="notice">A área de entregadores é liberada automaticamente <b>após o login</b>. Use o botão <b>Entregadores</b> no topo para abrir/fechar.</div>
+        <div class="notice">Entregadores: use o botão <b>Entregadores</b> no topo. (Somente para usuários logados.)</div>
 
         <div id="courierArea" class="hidden">
           <div class="sep"></div>
@@ -246,7 +241,17 @@
 
   const state={date:todayISO(),couriers:new Map(),deliveries:[],couriersVisible:false};
 
-  function setAuthTag(on){
+    function setClosed(v){
+    state.closed = !!v;
+    const el = $("listResumo");
+    if(!state.closed){
+      $("totalTaxaDia").textContent = brl(0);
+      $("totalEntregasDia").textContent = "0 entregas";
+      if(el) el.innerHTML = `<div class="muted">Clique em <b>Fechar</b> para ver o resumo.</div>`;
+    }
+  }
+
+function setAuthTag(on){
     $("authTag").textContent = on ? "✅ logado" : "🔒 sem login";
     $("btnLogout").classList.toggle("hidden", !on);
     $("btnOpenLogin").classList.toggle("hidden", on);
@@ -287,12 +292,11 @@
   }
 
   function renderResumo(){
+    if(!state.closed){ return; }
     const assigned=state.deliveries.filter(d=>d.status==="assigned"&&d.courierCode);
     const totalTaxas=assigned.reduce((a,d)=>a+Number(d.taxa||0),0);
-    const totalPedidos=assigned.reduce((a,d)=>a+Number(d.total||0),0);
     $("totalTaxaDia").textContent=brl(totalTaxas);
     $("totalEntregasDia").textContent=`${assigned.length} entregas`;
-    const tp=$("totalPedidosDia"); if(tp) tp.textContent=brl(totalPedidos);
     const by=new Map();
     for(const d of assigned){const code=String(d.courierCode);by.set(code,(by.get(code)||0)+Number(d.taxa||0));}
     const el=$("listResumo"); el.innerHTML="";
@@ -301,7 +305,7 @@
     for(const [code,sum] of entries){
       const c=state.couriers.get(code); const name=c?.nome||"Entregador"; const pix=c?.pix||"—";
       const row=document.createElement("div"); row.className="item"; row.style.gridTemplateColumns="1fr auto";
-      row.innerHTML=`<div class="main"><b>${escapeHtml(name)} <span class="muted">(${escapeHtml(code)})</span></b><small class="muted">PIX: ${escapeHtml(pix)}</small></div><div class="meta"><b>${brl(sum)}</b><small class="muted">taxas</small></div>`;
+      row.innerHTML=`<div class="main"><b>${escapeHtml(name)}</b><small class="muted">PIX: ${escapeHtml(pix)}</small></div><div class="meta"><b>${brl(sum)}</b><small class="muted">taxas</small></div>`;
       el.appendChild(row);
     }
   }
@@ -335,11 +339,11 @@
     const cour=await listarCouriers();
     state.couriers.clear(); for(const c of cour) state.couriers.set(String(c.codigo), c);
     state.deliveries=await listarEntregas(state.date);
-    renderPending(); renderAssigned(); renderResumo();
+    renderPending(); renderAssigned(); if(state.closed){ renderResumo(); } else { setClosed(false); }
     if(state.couriersVisible) await renderCouriersList();
   }
 
-  $("day").addEventListener("change", async (e)=>{state.date=e.target.value||todayISO();await reloadAll();});
+  $("day").addEventListener("change", async (e)=>{state.date=e.target.value||todayISO(); state.closed=false; await reloadAll();});
   $("btnOpenCouriers").addEventListener("click", async ()=>{
     if(!auth.currentUser){ setMsg("Faça login para ver entregadores."); return; }
     state.couriersVisible = !state.couriersVisible;
@@ -348,7 +352,7 @@
     else { setMsg("Entregadores fechados."); }
   });
   $("btnRefresh").addEventListener("click", reloadAll);
-  $("btnFechar").addEventListener("click", async ()=>{await reloadAll(); setMsg("Fechamento atualizado.");});
+  $("btnFechar").addEventListener("click", async ()=>{state.closed=true; await reloadAll(); setMsg("Fechamento atualizado.");});
   $("btnLimpar").addEventListener("click", ()=>{$("inpCliente").value="";$("inpTotal").value="";$("inpTaxa").value="";$("inpCodigoEntrega").value="";setMsg("Campos limpos.");});
 
   $("btnAddEntrega").addEventListener("click", async ()=>{
@@ -362,6 +366,7 @@
       if(taxa<=0) return setMsg("Informe a taxa (R$).");
       if(codigo && !/^\d{4}$/.test(codigo)) return setMsg("Código deve ter 4 dígitos.");
       if(codigo){ const c=await obterCourier(codigo); if(!c) return setMsg("Entregador não encontrado. Cadastre em Entregadores."); }
+      state.closed=false;
       await criarEntrega({date:state.date,courierCode:codigo||"",cliente,total,taxa});
       $("inpCliente").value="";$("inpTotal").value="";$("inpTaxa").value="";$("inpCodigoEntrega").value="";
       setMsg("Entrega adicionada.");
@@ -371,7 +376,8 @@
 
   document.addEventListener("click", async (e)=>{
     const t=e.target;
-    if(t?.dataset?.del){ try{requireAuth(); await excluirEntrega(t.dataset.del); setMsg("Entrega excluída."); await reloadAll();}catch(err){console.error(err);setMsg("Erro ao excluir.");} }
+    if(t?.dataset?.del){ try{requireAuth(); state.closed=false;
+        await excluirEntrega(t.dataset.del); setMsg("Entrega excluída."); await reloadAll();}catch(err){console.error(err);setMsg("Erro ao excluir.");} }
     if(t?.dataset?.assignbtn){
       try{
         requireAuth();
@@ -380,6 +386,7 @@
         const codigo=String(inp?.value||"").trim();
         if(!/^\d{4}$/.test(codigo)) return setMsg("Digite 4 dígitos.");
         const c=await obterCourier(codigo); if(!c) return setMsg("Entregador não encontrado. Cadastre em Entregadores.");
+        state.closed=false;
         await atribuirEntrega(id,codigo); setMsg("Entregador atribuído."); await reloadAll();
       }catch(err){console.error(err);setMsg("Erro ao atribuir.");}
     }
@@ -390,6 +397,7 @@
         const novo=prompt("Novo código (4 dígitos):"); if(novo==null) return;
         const codigo=String(novo).trim(); if(!/^\d{4}$/.test(codigo)) return setMsg("Código inválido.");
         const c=await obterCourier(codigo); if(!c) return setMsg("Entregador não encontrado. Cadastre em Entregadores.");
+        state.closed=false;
         await atribuirEntrega(id,codigo); setMsg("Entrega atualizada."); await reloadAll();
       }catch(err){console.error(err);setMsg("Erro ao editar.");}
     }
