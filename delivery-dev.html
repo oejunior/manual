@@ -189,6 +189,10 @@
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size:12px;
   }
+  /* simple toast */
+  #toast {
+    position:fixed;right:18px;bottom:18px;background:#222;border:1px solid rgba(255,255,255,.06);padding:10px 14px;border-radius:12px;color:var(--text);display:none;z-index:10000;
+  }
 </style>
 </head>
 <body>
@@ -304,14 +308,18 @@
   </div>
 </div>
 
+<div id="toast" role="status" aria-live="polite"></div>
+
 <script type="module">
 /* =========================================================
    Docce Entregas - Firebase (Auth + Firestore)
    - Config via localStorage (to avoid hardcoding secrets in GitHub)
    - Menu always visible
    - Login button becomes avatar automatically
+   - Correções: declarações, helpers, DOM bindings, funções faltantes
 ========================================================= */
 
+/* ---------- Config (substitua conforme necessário) ---------- */
 const firebaseConfig = {
   // ✅ Cole aqui o "firebaseConfig" do seu projeto (Firebase Console → Configurações do projeto → Seus apps → App da Web)
   // Dica: isso precisa ficar exatamente como o Firebase fornece (entre aspas).
@@ -324,6 +332,76 @@ const firebaseConfig = {
   measurementId: "G-NXN5VD6W31",
 };
 
+/* ---------- State / declarations ---------- */
+let firebase = null;
+let app = null;
+let auth = null;
+let db = null;
+let currentUser = null;
+
+/* ---------- Helpers ---------- */
+function el(id){ return document.getElementById(id); }
+
+function showToast(msg, ms = 3000){
+  const t = el('toast');
+  if(!t) { console.log(msg); return; }
+  t.textContent = msg;
+  t.style.display = "block";
+  clearTimeout(t._hideTimer);
+  t._hideTimer = setTimeout(()=>{ t.style.display = "none"; }, ms);
+}
+function todayISO(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const dd = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${dd}`;
+}
+function numberParser(s){
+  if (s === null || s === undefined) return NaN;
+  // accept comma as decimal separator
+  const normalized = String(s).trim().replace(/\./g,"").replace(",",".");
+  const v = parseFloat(normalized);
+  return Number.isFinite(v) ? v : NaN;
+}
+function toMoney(v){
+  const n = Number(v) || 0;
+  return n.toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
+}
+
+/* ---------- DOM bindings (module scope does not create globals from ids) ---------- */
+const userLine = el('userLine');
+const avatarLetter = el('avatarLetter');
+const btnAuthLabel = el('btnAuthLabel');
+const btnAuth = el('btnAuth');
+
+const btnAtualizar = el('btnAtualizar');
+const btnFechamento = el('btnFechamento');
+const btnEntregadores = el('btnEntregadores');
+const btnCadastro = el('btnCadastro');
+const dia = el('dia');
+
+const listaEntregas = el('listaEntregas');
+const statusPill = el('statusPill');
+
+const sideHeader = el('sideHeader');
+const sideBody = el('sideBody');
+const btnSideClose = el('btnSideClose');
+
+const nfModal = el('nfModal');
+const nfText = el('nfText');
+const btnNfClose = el('btnNfClose');
+const btnNfNo = el('btnNfNo');
+const btnNfYes = el('btnNfYes');
+
+const cliente = el('cliente');
+const total = el('total');
+const taxa = el('taxa');
+const codigo = el('codigo');
+const btnAdicionar = el('btnAdicionar');
+const btnLimpar = el('btnLimpar');
+
+/* ---------- Load Firebase modules (modular SDK) ---------- */
 async function loadFirebaseModules(){
   if (firebase) return firebase;
   const [{ initializeApp }, { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut },
@@ -338,7 +416,7 @@ async function loadFirebaseModules(){
   return firebase;
 }
 
-
+/* ---------- Init Firebase safely ---------- */
 async function initFirebaseIfPossible() {
   const cfg = firebaseConfig;
 
@@ -365,25 +443,25 @@ async function initFirebaseIfPossible() {
   return true;
 }
 
-// ---- Auth UI ----
+/* ---- Auth UI ---- */
 function initialsFromEmail(email){
   if (!email) return "?";
   return email.trim().slice(0,1).toUpperCase();
 }
 function renderUser(){
   if (!currentUser){
-    userLine.textContent = "—";
-    avatarLetter.textContent = "?";
-    btnAuthLabel.textContent = "Login";
+    if(userLine) userLine.textContent = "—";
+    if(avatarLetter) avatarLetter.textContent = "?";
+    if(btnAuthLabel) btnAuthLabel.textContent = "Login";
     return;
   }
   const email = currentUser.email || "usuário";
-  userLine.textContent = email;
-  avatarLetter.textContent = initialsFromEmail(email);
-  btnAuthLabel.textContent = "Sair";
+  if(userLine) userLine.textContent = email;
+  if(avatarLetter) avatarLetter.textContent = initialsFromEmail(email);
+  if(btnAuthLabel) btnAuthLabel.textContent = "Sair";
 }
 
-// Login / logout flow (simple prompt)
+/* Login / logout flow (simple prompt) */
 async function doLogin(){
   const ok = await initFirebaseIfPossible();
   if (!ok) { return; }
@@ -405,10 +483,7 @@ async function doLogin(){
   }
 }
 
-// ---- Firestore data model ----
-// couriers/{code} => { code, name, phone, pix, pixType, active, updatedAt }
-// deliveries/{autoId} => { date, clientName, total, fee, courierCode, courierName, createdAt, updatedAt }
-
+/* ---- Firestore data model helpers ---- */
 function ensureLogged(){
   if (!currentUser) throw new Error("Você precisa estar logado.");
 }
@@ -421,17 +496,17 @@ function getCollections(){
   };
 }
 
-// ---- Side panel renderer ----
+/* ---- Side panel renderer ---- */
 function openSide(title, html){
-  sideHeader.textContent = title;
-  sideBody.innerHTML = html;
+  if(sideHeader) sideHeader.textContent = title;
+  if(sideBody) sideBody.innerHTML = html;
 }
 function closeSide(){
-  sideHeader.textContent = "Painel";
-  sideBody.innerHTML = '<div class="muted">Use o menu acima: <b>Fechamento</b>, <b>Entregadores</b> ou <b>Cadastro</b>.</div>';
+  if(sideHeader) sideHeader.textContent = "Painel";
+  if(sideBody) sideBody.innerHTML = '<div class="muted">Use o menu acima: <b>Fechamento</b>, <b>Entregadores</b> ou <b>Cadastro</b>.</div>';
 }
 
-// ---- Format helpers (CPF / phone) ----
+/* ---- Format helpers (CPF / phone) ---- */
 function onlyDigits(s){ return (s||"").toString().replace(/\D/g,""); }
 
 function formatCPF(d){
@@ -441,7 +516,6 @@ function formatCPF(d){
 }
 function formatPhoneBR(d){
   const n = onlyDigits(d);
-  // expected 11 digits (DDD + 9 + 8 digits)
   if (n.length === 11){
     const ddd = n.slice(0,2);
     const p1 = n.slice(2,5);
@@ -472,7 +546,7 @@ function formatPix(pix){
   return (pix||"").trim();
 }
 
-// ---- CRUD: Couriers ----
+/* ---- CRUD: Couriers ---- */
 async function courierExists(code){
   const f = firebase;
   const { couriersCol } = getCollections();
@@ -521,7 +595,7 @@ async function listCouriers(){
   return snap.docs.map(d=>d.data());
 }
 
-// ---- CRUD: Deliveries ----
+/* ---- CRUD: Deliveries ---- */
 async function addDelivery(payload){
   ensureLogged();
   const f = firebase;
@@ -567,10 +641,10 @@ async function listDeliveriesForDay(){
   return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 
-// ---- UI: deliveries list ----
+/* ---- UI: deliveries list ---- */
 function renderDeliveries(rows){
   listaEntregas.innerHTML = "";
-  if (!rows.length){
+  if (!rows || !rows.length){
     listaEntregas.innerHTML = '<div class="muted">Sem entregas para este dia.</div>';
     return;
   }
@@ -599,8 +673,10 @@ function renderDeliveries(rows){
     `;
     div.querySelector('[data-act="del"]').onclick = async ()=>{
       if (!confirm("Excluir esta entrega?")) return;
-      await deleteDelivery(r.id);
-      await refreshAll();
+      try{
+        await deleteDelivery(r.id);
+        await refreshAll();
+      }catch(e){ alert(e.message||e); }
     };
     div.querySelector('[data-act="edit"]').onclick = async ()=>{
       const newClient = prompt("Cliente:", r.clientName || "");
@@ -647,20 +723,20 @@ function renderDeliveries(rows){
 }
 
 function escapeHtml(s){
-  return (s||"").replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c]));
+  return (s||"").replace(/[&<>\"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;" }[c]));
 }
 
-// ---- Courier not found flow (as you requested) ----
+/* ---- Courier not found flow ---- */
 let pendingCourierCode = "";
 let afterCreateAction = null;
 
 function openNfModal(code, onInserted){
   pendingCourierCode = code;
   afterCreateAction = onInserted;
-  nfText.textContent = `Código ${code} não está cadastrado. Gostaria de cadastrá-lo?`;
-  nfModal.classList.add("show");
+  if(nfText) nfText.textContent = `Código ${code} não está cadastrado. Gostaria de cadastrá-lo?`;
+  if(nfModal) nfModal.classList.add("show");
 }
-function closeNfModal(){ nfModal.classList.remove("show"); }
+function closeNfModal(){ if(nfModal) nfModal.classList.remove("show"); }
 
 async function handleCourierNotFoundFlow(code, onInserted){
   return new Promise((resolve)=>{
@@ -674,7 +750,7 @@ async function handleCourierNotFoundFlow(code, onInserted){
   });
 }
 
-// ---- Side content builders ----
+/* ---- Side content builders ---- */
 function buildFechamentoUI(rows){
   // totals and by courier
   const totalFee = rows.reduce((a,r)=>a+(Number(r.fee)||0), 0);
@@ -708,12 +784,13 @@ function buildFechamentoUI(rows){
   }
 
   for (const c of list){
+    // Não temos pix aqui (somos agregação por entregador), então exibir o código
     html += `
       <div class="item">
         <div class="itemTop">
           <div>
             <div class="itemTitle">${escapeHtml(c.name)}</div>
-            <div class="itemSub"><span style="color:var(--accent)">PIX:</span> ${escapeHtml(formatPix(c.code ? (c.pix || "") : ""))}</div>
+            <div class="itemSub"><span style="color:var(--accent)">Código:</span> ${escapeHtml(c.code)}</div>
           </div>
           <div class="right">
             <div class="money">${toMoney(c.total)}</div>
@@ -791,26 +868,26 @@ function buildCadastroUI(prefillCode=""){
   `;
 }
 
-// ---- Menu actions ----
-btnSideClose.onclick = closeSide;
+/* ---------- Menu actions ---------- */
+if(btnSideClose) btnSideClose.onclick = closeSide;
 
-btnFechamento.onclick = async ()=>{
+if(btnFechamento) btnFechamento.onclick = async ()=>{
   try{
     ensureLogged();
-    statusPill.textContent = "Carregando…";
+    if(statusPill) statusPill.textContent = "Carregando…";
     const rows = await listDeliveriesForDay();
     openSide("Fechamento", buildFechamentoUI(rows));
   }catch(err){
     alert(err.message || err);
   }finally{
-    statusPill.textContent = "Pronto";
+    if(statusPill) statusPill.textContent = "Pronto";
   }
 };
 
-btnEntregadores.onclick = async ()=>{
+if(btnEntregadores) btnEntregadores.onclick = async ()=>{
   try{
     ensureLogged();
-    statusPill.textContent = "Carregando…";
+    if(statusPill) statusPill.textContent = "Carregando…";
     const list = await listCouriers();
     openSide("Entregadores", buildCouriersListUI(list));
 
@@ -850,11 +927,11 @@ btnEntregadores.onclick = async ()=>{
   }catch(err){
     alert(err.message || err);
   }finally{
-    statusPill.textContent = "Pronto";
+    if(statusPill) statusPill.textContent = "Pronto";
   }
 };
 
-btnCadastro.onclick = async ()=>{
+if(btnCadastro) btnCadastro.onclick = async ()=>{
   try{
     ensureLogged();
     openSide("Cadastro", buildCadastroUI(""));
@@ -875,20 +952,20 @@ btnCadastro.onclick = async ()=>{
   }
 };
 
-btnAtualizar.onclick = ()=> refreshAll().catch(err=>alert(err.message||err));
+if(btnAtualizar) btnAtualizar.onclick = ()=> refreshAll().catch(err=>alert(err.message||err));
 
-dia.onchange = ()=> refreshAll().catch(()=>{});
+if(dia) dia.onchange = ()=> refreshAll().catch(()=>{});
 
-// ---- Add delivery flow ----
-btnLimpar.onclick = ()=>{
-  cliente.value="";
-  total.value="";
-  taxa.value="";
-  codigo.value="";
-  cliente.focus();
+/* ---- Add delivery flow ---- */
+if(btnLimpar) btnLimpar.onclick = ()=>{
+  if(cliente) cliente.value="";
+  if(total) total.value="";
+  if(taxa) taxa.value="";
+  if(codigo) codigo.value="";
+  if(cliente) cliente.focus();
 };
 
-btnAdicionar.onclick = async ()=>{
+if(btnAdicionar) btnAdicionar.onclick = async ()=>{
   try{
     ensureLogged();
     const tV = numberParser(total.value);
@@ -915,17 +992,17 @@ btnAdicionar.onclick = async ()=>{
     }
 
     await addDelivery({ clientName: cliente.value, total: tV, fee: fV, courierCode, courierName });
-    btnLimpar.click();
+    if(btnLimpar) btnLimpar.click();
     await refreshAll();
   }catch(err){
     alert(err.message || err);
   }
 };
 
-// ---- Not found modal wiring -> open Cadastro inside side panel, then Insert/Close ----
-el("btnNfClose").onclick = closeNfModal;
-el("btnNfNo").onclick = ()=>{ closeNfModal(); };
-el("btnNfYes").onclick = async ()=>{
+/* ---- Not found modal wiring -> open Cadastro inside side panel, then Insert/Close ---- */
+if(btnNfClose) btnNfClose.onclick = closeNfModal;
+if(btnNfNo) btnNfNo.onclick = ()=>{ closeNfModal(); };
+if(btnNfYes) btnNfYes.onclick = async ()=>{
   closeNfModal();
   try{
     ensureLogged();
@@ -990,3 +1067,45 @@ el("btnNfYes").onclick = async ()=>{
 
 
 
+/* ---------- Missing: refreshAll ---------- */
+async function refreshAll(){
+  if(statusPill) statusPill.textContent = "Carregando…";
+  try{
+    // try to init firebase but don't force if not configured
+    await initFirebaseIfPossible();
+    // ensure dia has a default
+    if(dia && !dia.value) dia.value = todayISO();
+
+    if (!currentUser){
+      // show placeholder or ask to login
+      if(listaEntregas) listaEntregas.innerHTML = '<div class="muted">Faça login para ver entregas.</div>';
+      return;
+    }
+
+    // if logged, list deliveries
+    const rows = await listDeliveriesForDay();
+    renderDeliveries(rows);
+  }catch(err){
+    console.error(err);
+    throw err;
+  }finally{
+    if(statusPill) statusPill.textContent = "Pronto";
+  }
+}
+
+/* ---------- Wire up login button ---------- */
+if(btnAuth) btnAuth.onclick = doLogin;
+
+/* ---------- Initial setup on load ---------- */
+(async function startup(){
+  // set today's date if empty
+  if(dia && !dia.value) dia.value = todayISO();
+  // try to init firebase (will show toast if not configured)
+  try{ await initFirebaseIfPossible();}catch(e){ console.error(e); }
+  // initial render
+  try{ await refreshAll(); }catch(e){ /* ignore, user may not be logged */ }
+})();
+</script>
+
+</body>
+</html>
