@@ -285,36 +285,7 @@
 </div>
 
 <!-- Firebase config modal -->
-<div class="modalBackdrop" id="cfgModal">
-  <div class="modal">
-    <div class="modalHead">
-      <h3>Configurar Firebase</h3>
-      <button class="closeX" id="btnCfgClose" type="button">×</button>
-    </div>
-    <div class="modalBody">
-      <div class="help" style="margin-top:0">
-        Cole aqui o objeto <b>firebaseConfig</b> do seu app Web no Firebase (Projeto &gt; ⚙️ Configurações &gt; Seus apps &gt; SDK).
-        Isso fica salvo neste navegador (localStorage).
-      </div>
-      <div style="height:10px"></div>
-      <textarea id="cfgText" spellcheck="false" placeholder='Exemplo:
-{
-  "apiKey": "...",
-  "authDomain": "docce-entregas.firebaseapp.com",
-  "projectId": "docce-entregas",
-  "storageBucket": "docce-entregas.firebasestorage.app",
-  "messagingSenderId": "469986757222",
-  "appId": "1:469986757222:web:....",
-  "measurementId": "G-...."
-}'></textarea>
-      <div class="rowBtns" style="justify-content:flex-end">
-        <button class="btn" id="btnCfgCancel" type="button">Cancelar</button>
-        <button class="btn primary" id="btnCfgSave" type="button">Salvar configuração</button>
-      </div>
-      <div class="help" id="cfgHint"></div>
-    </div>
-  </div>
-</div>
+
 
 <!-- Courier not found modal -->
 <div class="modalBackdrop" id="nfModal">
@@ -341,63 +312,17 @@
    - Login button becomes avatar automatically
 ========================================================= */
 
-const LS_CFG_KEY = "docce.firebaseConfig.v1";
-
-const el = (id)=>document.getElementById(id);
-const cfgModal = el("cfgModal");
-const cfgText = el("cfgText");
-const cfgHint = el("cfgHint");
-
-const btnAuth = el("btnAuth");
-const btnAuthLabel = el("btnAuthLabel");
-const avatarLetter = el("avatarLetter");
-const userLine = el("userLine");
-
-const btnAtualizar = el("btnAtualizar");
-const btnFechamento = el("btnFechamento");
-const btnEntregadores = el("btnEntregadores");
-const btnCadastro = el("btnCadastro");
-const dia = el("dia");
-
-const statusPill = el("statusPill");
-const listaEntregas = el("listaEntregas");
-
-const sideHeader = el("sideHeader");
-const sideBody = el("sideBody");
-const btnSideClose = el("btnSideClose");
-
-const nfModal = el("nfModal");
-const nfText = el("nfText");
-
-const cliente = el("cliente");
-const total = el("total");
-const taxa = el("taxa");
-const codigo = el("codigo");
-const btnAdicionar = el("btnAdicionar");
-const btnLimpar = el("btnLimpar");
-
-// ---- Locale helpers ----
-const locale = navigator.language || "pt-BR";
-const currencyFormatter = new Intl.NumberFormat(locale, { style:"currency", currency:"BRL" });
-const numberParser = (s)=>{
-  if (typeof s !== "string") return NaN;
-  const t = s.trim();
-  if (!t) return NaN;
-  // accept comma or dot
-  const normalized = t.replace(/\s/g,"").replace(/\.(?=\d{3}(\D|$))/g,"").replace(",",".");
-  const v = Number(normalized);
-  return Number.isFinite(v) ? v : NaN;
+const firebaseConfig = {
+  // ✅ Cole aqui o "firebaseConfig" do seu projeto (Firebase Console → Configurações do projeto → Seus apps → App da Web)
+  // Dica: isso precisa ficar exatamente como o Firebase fornece (entre aspas).
+  apiKey: "SUA_API_KEY",
+  authDomain: "SEU_AUTH_DOMAIN",
+  projectId: "SEU_PROJECT_ID",
+  storageBucket: "SEU_STORAGE_BUCKET",
+  messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+  appId: "SEU_APP_ID",
+  measurementId: "SEU_MEASUREMENT_ID",
 };
-const toMoney = (v)=> currencyFormatter.format(Number(v||0));
-const todayISO = ()=> new Date().toISOString().slice(0,10);
-dia.value = todayISO();
-
-// ---- Firebase lazy loader ----
-let firebase = null;
-let app = null;
-let auth = null;
-let db = null;
-let currentUser = null;
 
 async function loadFirebaseModules(){
   if (firebase) return firebase;
@@ -413,24 +338,18 @@ async function loadFirebaseModules(){
   return firebase;
 }
 
-function getSavedConfig(){
-  const raw = localStorage.getItem(LS_CFG_KEY);
-  if (!raw) return null;
-  try { return JSON.parse(raw); } catch { return null; }
-}
 
-function openCfgModal(prefill){
-  cfgHint.textContent = "";
-  cfgText.value = prefill ? JSON.stringify(prefill, null, 2) : (localStorage.getItem(LS_CFG_KEY) ? localStorage.getItem(LS_CFG_KEY) : "");
-  cfgModal.classList.add("show");
-}
+async function initFirebaseIfPossible() {
+  const cfg = firebaseConfig;
 
-function closeCfgModal(){ cfgModal.classList.remove("show"); }
+  // Se ainda estiver com placeholders, avisa e não tenta logar
+  if (!cfg || !cfg.apiKey || cfg.apiKey === "SUA_API_KEY" || cfg.projectId === "SEU_PROJECT_ID") {
+    showToast("⚠️ Configure o firebaseConfig no HTML (apiKey / projectId).");
+    return false;
+  }
 
-async function initFirebaseIfPossible(){
-  const cfg = getSavedConfig();
-  if (!cfg) return false;
   const f = await loadFirebaseModules();
+
   if (!app){
     app = f.initializeApp(cfg);
     auth = f.getAuth(app);
@@ -467,10 +386,7 @@ function renderUser(){
 // Login / logout flow (simple prompt)
 async function doLogin(){
   const ok = await initFirebaseIfPossible();
-  if (!ok){
-    openCfgModal();
-    return;
-  }
+  if (!ok) { return; }
   if (currentUser){
     const f = await loadFirebaseModules();
     await f.signOut(auth);
@@ -1072,53 +988,5 @@ el("btnNfYes").onclick = async ()=>{
   }
 };
 
-// ---- Config modal wiring ----
-el("btnCfgClose").onclick = closeCfgModal;
-el("btnCfgCancel").onclick = closeCfgModal;
 
-el("btnCfgSave").onclick = async ()=>{
-  try{
-    const raw = cfgText.value.trim();
-    if (!raw) throw new Error("Cole o JSON da configuração.");
-    const obj = JSON.parse(raw);
-    // minimal validation
-    for (const k of ["apiKey","authDomain","projectId","appId"]){
-      if (!obj[k]) throw new Error(`Campo obrigatório faltando: ${k}`);
-    }
-    localStorage.setItem(LS_CFG_KEY, JSON.stringify(obj));
-    cfgHint.textContent = "Configuração salva. Tente fazer login novamente.";
-    closeCfgModal();
-    await initFirebaseIfPossible();
-  }catch(err){
-    cfgHint.textContent = err.message || err;
-  }
-};
 
-// ---- Boot ----
-btnAuth.onclick = ()=> doLogin().catch(err=>alert(err.message||err));
-
-async function refreshAll(){
-  const ok = await initFirebaseIfPossible();
-  if (!ok){
-    statusPill.textContent = "Sem Firebase";
-    listaEntregas.innerHTML = '<div class="muted">Clique em <b>Login</b> e configure o Firebase para começar.</div>';
-    return;
-  }
-  if (!currentUser){
-    statusPill.textContent = "Deslogado";
-    listaEntregas.innerHTML = '<div class="muted">Faça login para ver e registrar entregas.</div>';
-    return;
-  }
-  statusPill.textContent = "Carregando…";
-  try{
-    const rows = await listDeliveriesForDay();
-    renderDeliveries(rows);
-  }finally{
-    statusPill.textContent = "Pronto";
-  }
-}
-
-refreshAll().catch(()=>{});
-</script>
-</body>
-</html>
