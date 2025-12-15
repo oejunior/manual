@@ -218,13 +218,12 @@
 
 <script type="module">
   const firebaseConfig = {
-    apiKey: "AIzaSyBwuo9jDigmdKgfeofbc38c28v82Ia-ZJk",
-  authDomain: "docce-entregas.firebaseapp.com",
-  projectId: "docce-entregas",
-  storageBucket: "docce-entregas.firebasestorage.app",
-  messagingSenderId: "469986757222",
-  appId: "1:469986757222:web:7b479ecc052830a4f53ba7",
-  measurementId: "G-NXN5VD6W31"
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_AUTH_DOMAIN",
+    projectId: "SEU_PROJECT_ID",
+    storageBucket: "SEU_STORAGE_BUCKET",
+    messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+    appId: "SEU_APP_ID",
   };
 
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
@@ -245,7 +244,30 @@
   const $ = (id)=>document.getElementById(id);
 
   const brl = (n)=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-  const parseBR = (s)=>{const raw=String(s??"").trim().replace(/\./g,"").replace(",",".");const v=Number(raw);return Number.isFinite(v)?v:0;};
+  const parseBR = (s)=>{
+    let v=String(s??"").trim();
+    if(!v) return 0;
+    v=v.replace(/\s/g,"").replace(/R\$/gi,"");
+    v=v.replace(/[^\d.,-]/g,"");
+    let sign=1;
+    if(v.startsWith("-")){ sign=-1; v=v.slice(1); }
+    const lastDot=v.lastIndexOf(".");
+    const lastComma=v.lastIndexOf(",");
+    let decSep="";
+    if(lastDot>-1 && lastComma>-1) decSep = lastDot>lastComma ? "." : ",";
+    else if(lastDot>-1) decSep=".";
+    else if(lastComma>-1) decSep=",";
+    if(!decSep){
+      const n=Number(v.replace(/[^\d]/g,""));
+      return Number.isFinite(n)?sign*n:0;
+    }
+    const parts=v.split(decSep);
+    const dec=parts.pop();
+    const intPart=(parts.join("").replace(/[^\d]/g,"")||"0");
+    const decPart=dec.replace(/[^\d]/g,"");
+    const n=Number(intPart+"."+decPart);
+    return Number.isFinite(n)?sign*n:0;
+  };
   const todayISO = ()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
   const setMsg=(text,tone="info")=>{$("msg").textContent=text;};
 
@@ -327,9 +349,15 @@
     for(const d of pend){
       const item=document.createElement("div"); item.className="item";
       item.innerHTML=`
-        <div class="main"><b>${escapeHtml(d.cliente||"Sem nome")}</b><small>Total: ${brl(d.total)} • Taxa: ${brl(d.taxa)}</small></div>
-        <div class="meta"><small class="muted">Atribuir</small><b><input data-assign="${d.id}" placeholder="0000" maxlength="4" style="width:90px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.18);color:var(--text);font:inherit;outline:none"></b></div>
-        <div class="actions"><button class="btn tiny good" data-assignbtn="${d.id}">OK</button><button class="btn tiny danger" data-del="${d.id}">Excluir</button></div>`;
+        <div class="main">
+          <b><span style="color:var(--accent)">${escapeHtml(title)}</span></b>
+          <small class="muted">${escapeHtml(d.cliente||"Sem nome")}</small>
+        </div>
+        <div class="meta">
+          <b>${brl(d.taxa)}</b>
+          <small class="muted">${brl(d.total)}</small>
+        </div>
+        <div class="actions"><button class="btn tiny secondary" data-edit="${d.id}">Editar</button><button class="btn tiny danger" data-del="${d.id}">Excluir</button></div>`;
       el.appendChild(item);
     }
   }
@@ -341,7 +369,6 @@
     for(const d of assigned){
       const c=state.couriers.get(String(d.courierCode))||null;
       const title=c?`${c.nome} (${d.courierCode})`:`Código ${d.courierCode}`;
-      const pix=c?.pix?`PIX: ${c.pix}`:"PIX: —";
       const item=document.createElement("div"); item.className="item";
       item.innerHTML=`
         <div class="main"><b>${escapeHtml(d.cliente||"Sem nome")} • <span style="color:var(--accent)">${escapeHtml(title)}</span></b><small>${escapeHtml(pix)} • Taxa: ${brl(d.taxa)}</small></div>
