@@ -68,7 +68,7 @@
   <div class="topbar" style="margin-top:12px">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <button class="btn secondary" id="btnRefresh">Atualizar</button>
-      <button class="btn nav active" id="btnTabFechamento" type="button">Fechamento</button>
+      <button class="btn nav" id="btnTabFechamento" type="button">Fechamento</button>
       <button class="btn nav" id="btnTabEntregadores" type="button">Entregadores</button>
       <button class="btn nav" id="btnTabCadastro" type="button">Cadastro</button>
     </div>
@@ -115,16 +115,22 @@
       <header>
         <div class="panelTitle">
           <div>
-            <h2>Painel</h2>
+            <h2 id="panelTitleText">Painel</h2>
             <div class="hint" id="panelHint">Use o menu acima: <b>Fechamento</b>, <b>Entregadores</b> ou <b>Cadastro</b>.</div>
           </div>
+          <button class="xmini hidden" id="btnPanelClose" title="Fechar">×</button>
           <button class="xmini" id="btnPanelMin" title="Minimizar">—</button>
         </div>
       </header>
       <div class="body" id="panelBody">
 
+        <!-- HOME (Painel) -->
+        <div id="viewHome">
+          <div class="notice">Use o menu acima: <b>Fechamento</b>, <b>Entregadores</b> ou <b>Cadastro</b>.</div>
+        </div>
+
         <!-- FECHAMENTO -->
-        <div id="viewFechamento">
+        <div id="viewFechamento" class="hidden">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
             <div>
               <h2 style="margin:0;font-size:14px">Fechamento do dia</h2>
@@ -149,50 +155,40 @@
 
         <!-- ENTREGADORES -->
         <div id="viewEntregadores" class="hidden">
-          <div>
-            <h2 style="margin:0;font-size:14px">Entregadores</h2>
-            <div class="hint">Acesso via login (Firebase)</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+            <div>
+              <h2 style="margin:0;font-size:14px">Entregadores</h2>
+              <div class="hint">Lista de entregadores cadastrados</div>
+            </div>
           </div>
           <div class="sep"></div>
-
-          <div id="courierArea">
-            <div class="sep"></div>
-            <div class="row">
-              <div class="field"><label>Nome</label><input id="cNome" placeholder="Nome do entregador"></div>
-              <div class="field"><label>Telefone</label><input id="cTel" inputmode="numeric" placeholder="DDD + número"></div>
-            </div>
-            <div class="row">
-              <div class="field"><label>Chave PIX</label><input id="cPix" placeholder="CPF, e-mail, aleatória…"></div>
-              <div class="field"><label>Código (automático)</label><input id="cCodigo" placeholder="Ex.: 2603" maxlength="4" readonly></div>
-            </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap">
-              <button class="btn good" id="btnSalvarCourier">Salvar</button>
-              <button class="btn secondary" id="btnLimparCourier">Limpar</button>
-            </div>
-            <div class="list" id="listCouriers"></div>
-          </div>
+          <div class="list" id="listCouriers"></div>
         </div>
 
-        <!-- CADASTRO (NOVO USUÁRIO) -->
+<!-- CADASTRO (ENTREGADOR) -->
         <div id="viewCadastro" class="hidden">
-          <div>
-            <h2 style="margin:0;font-size:14px">Cadastro de usuário</h2>
-            <div class="hint">Crie um novo login (Firebase Auth)</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+            <div>
+              <h2 style="margin:0;font-size:14px">Cadastro de entregador</h2>
+              <div class="hint">Nome + telefone + PIX (código = 4 últimos do telefone)</div>
+            </div>
           </div>
           <div class="sep"></div>
 
           <div class="row">
-            <div class="field"><label>E-mail</label><input id="newUserEmail" type="email" placeholder="usuario@dominio.com"></div>
-            <div class="field"><label>Senha</label><input id="newUserPass" type="password" placeholder="mínimo 6 caracteres"></div>
+            <div class="field"><label>Nome</label><input id="cNome" placeholder="Nome do entregador"></div>
+            <div class="field"><label>Telefone</label><input id="cTel" inputmode="numeric" placeholder="DDD + número"></div>
           </div>
           <div class="row">
-            <div class="field"><label>Confirmar senha</label><input id="newUserPass2" type="password" placeholder="repita a senha"></div>
-            <div style="display:flex;gap:10px;align-items:flex-end;justify-content:flex-end">
-              <button class="btn good" id="btnCreateUser">Criar usuário</button>
-            </div>
+            <div class="field"><label>Chave PIX</label><input id="cPix" placeholder="CPF, e-mail, aleatória…"></div>
+            <div class="field"><label>Código (automático)</label><input id="cCodigo" placeholder="Ex.: 2603" maxlength="4" readonly></div>
           </div>
-          <div class="notice">Obs.: você precisa estar logado para criar usuários.</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn good" id="btnSalvarCourier">Salvar</button>
+            <button class="btn secondary" id="btnLimparCourier">Limpar</button>
+          </div>
         </div>
+
 
       </div>
     </aside>
@@ -218,19 +214,16 @@
 
 <script type="module">
   const firebaseConfig = {
-    apiKey: "AIzaSyBwuo9jDigmdKgfeofbc38c28v82Ia-ZJk",
-  authDomain: "docce-entregas.firebaseapp.com",
-  projectId: "docce-entregas",
-  storageBucket: "docce-entregas.firebasestorage.app",
-  messagingSenderId: "469986757222",
-  appId: "1:469986757222:web:7b479ecc052830a4f53ba7",
-  measurementId: "G-NXN5VD6W31"
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_AUTH_DOMAIN",
+    projectId: "SEU_PROJECT_ID",
+    storageBucket: "SEU_STORAGE_BUCKET",
+    messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+    appId: "SEU_APP_ID",
   };
 
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
-    from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-  import { createUserWithEmailAndPassword }
     from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, getDocs, collection, addDoc,
            updateDoc, deleteDoc, query, where, orderBy }
@@ -239,9 +232,6 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  // Auth secundário para criar usuários sem derrubar a sessão atual
-  const secondaryApp = initializeApp(firebaseConfig, "secondary");
-  const secondaryAuth = getAuth(secondaryApp);
   const $ = (id)=>document.getElementById(id);
 
   const brl = (n)=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
@@ -312,8 +302,9 @@
 
   const state={date:todayISO(),couriers:new Map(),deliveries:[]};
 
-  // Controle de abas (Painel)
+  // Controle do Painel (abre apenas ao clicar no menu; fecha e volta para "Painel")
   const views={
+    home: $("viewHome"),
     fechamento: $("viewFechamento"),
     entregadores: $("viewEntregadores"),
     cadastro: $("viewCadastro"),
@@ -323,16 +314,29 @@
     entregadores: $("btnTabEntregadores"),
     cadastro: $("btnTabCadastro"),
   };
-  function setActiveTab(name){
-    Object.entries(tabs).forEach(([k,btn])=>btn?.classList.toggle("active", k===name));
-    Object.entries(views).forEach(([k,el])=>el?.classList.toggle("hidden", k!==name));
+
+  function showPanel(name){
+    // name: "fechamento" | "entregadores" | "cadastro" | null (home)
+    const isHome = !name;
+    Object.entries(tabs).forEach(([k,btn])=>btn?.classList.toggle("active", !isHome && k===name));
+    Object.entries(views).forEach(([k,el])=>{
+      const shouldShow = isHome ? (k==="home") : (k===name);
+      el?.classList.toggle("hidden", !shouldShow);
+    });
+
+    $("panelTitleText").textContent = isHome ? "Painel" : (name==="fechamento" ? "Fechamento" : name==="entregadores" ? "Entregadores" : "Cadastro");
+    $("btnPanelClose").classList.toggle("hidden", isHome);
+    $("panelHint").classList.toggle("hidden", !isHome);
   }
+
 
   let panelMin=false;
   $("btnPanelMin").addEventListener("click", ()=>{
     panelMin=!panelMin;
     $("panelBody").classList.toggle("hidden", panelMin);
   });
+
+  $("btnPanelClose").addEventListener("click", ()=>{ showPanel(null); });
 
   function setAuthTag(on){
     $("authTag").textContent = on ? "✅ logado" : "🔒 sem login";
@@ -343,37 +347,37 @@
 
   function escapeHtml(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
 
-  function renderPending(){
+    function renderPending(){
     const el=$("listPending"); el.innerHTML="";
     const pend=state.deliveries.filter(d=>d.status==="pending"||!d.courierCode);
     if(!pend.length){el.innerHTML=`<div class="muted">Nenhuma entrega pendente.</div>`;return;}
     for(const d of pend){
       const item=document.createElement("div"); item.className="item";
       item.innerHTML=`
+        <div class="main"><b>${escapeHtml(d.cliente||"Sem nome")}</b><small>Total: ${brl(d.total)} • Taxa: ${brl(d.taxa)}</small></div>
+        <div class="meta"><small class="muted">Atribuir</small><b><input data-assign="${d.id}" placeholder="0000" maxlength="4" style="width:90px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.18);color:var(--text);font:inherit;outline:none"></b></div>
+        <div class="actions"><button class="btn tiny good" data-assignbtn="${d.id}">OK</button><button class="btn tiny danger" data-del="${d.id}">Excluir</button></div>`;
+      el.appendChild(item);
+    }
+  }
+
+    function renderAssigned(){
+    const el=$("listAssigned"); el.innerHTML="";
+    const assigned=state.deliveries.filter(d=>d.status==="assigned"&&d.courierCode);
+    if(!assigned.length){el.innerHTML=`<div class="muted">Nenhuma entrega atribuída.</div>`;return;}
+    for(const d of assigned){
+      const c=state.couriers.get(String(d.courierCode))||null;
+      const courierName=c?.nome ? String(c.nome) : `Código ${d.courierCode}`;
+      const item=document.createElement("div"); item.className="item"; item.style.gridTemplateColumns="1fr auto auto";
+      item.innerHTML=`
         <div class="main">
-          <b><span style="color:var(--accent)">${escapeHtml(title)}</span></b>
+          <b><span style="color:var(--accent)">${escapeHtml(courierName)}</span></b>
           <small class="muted">${escapeHtml(d.cliente||"Sem nome")}</small>
         </div>
         <div class="meta">
           <b>${brl(d.taxa)}</b>
           <small class="muted">${brl(d.total)}</small>
         </div>
-        <div class="actions"><button class="btn tiny secondary" data-edit="${d.id}">Editar</button><button class="btn tiny danger" data-del="${d.id}">Excluir</button></div>`;
-      el.appendChild(item);
-    }
-  }
-
-  function renderAssigned(){
-    const el=$("listAssigned"); el.innerHTML="";
-    const assigned=state.deliveries.filter(d=>d.status==="assigned"&&d.courierCode);
-    if(!assigned.length){el.innerHTML=`<div class="muted">Nenhuma entrega atribuída.</div>`;return;}
-    for(const d of assigned){
-      const c=state.couriers.get(String(d.courierCode))||null;
-      const title=c?`${c.nome} (${d.courierCode})`:`Código ${d.courierCode}`;
-      const item=document.createElement("div"); item.className="item";
-      item.innerHTML=`
-        <div class="main"><b>${escapeHtml(d.cliente||"Sem nome")} • <span style="color:var(--accent)">${escapeHtml(title)}</span></b><small>${escapeHtml(pix)} • Taxa: ${brl(d.taxa)}</small></div>
-        <div class="meta"><b>${brl(d.taxa)}</b><small class="muted">${brl(d.total)}</small></div>
         <div class="actions"><button class="btn tiny secondary" data-edit="${d.id}">Editar</button><button class="btn tiny danger" data-del="${d.id}">Excluir</button></div>`;
       el.appendChild(item);
     }
@@ -394,7 +398,7 @@
     for(const [code,sum] of entries){
       const c=state.couriers.get(code); const name=c?.nome||"Entregador"; const pix=c?.pix||"—";
       const row=document.createElement("div"); row.className="item"; row.style.gridTemplateColumns="1fr auto";
-      row.innerHTML=`<div class="main"><b>${escapeHtml(name)} <span class="muted">(${escapeHtml(code)})</span></b><small class="muted">PIX: ${escapeHtml(pix)}</small></div><div class="meta"><b>${brl(sum)}</b><small class="muted">taxas</small></div>`;
+      row.innerHTML=`<div class="main"><b>${escapeHtml(name)}</b><small class="muted">PIX: ${escapeHtml(pix)}</small></div><div class="meta"><b>${brl(sum)}</b><small class="muted">taxas</small></div>`;
       el.appendChild(row);
     }
   }
@@ -508,33 +512,9 @@
   $("btnLimparCourier").addEventListener("click", ()=>{$("cNome").value="";$("cTel").value="";$("cPix").value="";$("cCodigo").value="";setMsg("Campos limpos.");});
 
   // Navegação das abas
-  $("btnTabFechamento").addEventListener("click", ()=>setActiveTab("fechamento"));
-  $("btnTabEntregadores").addEventListener("click", ()=>setActiveTab("entregadores"));
-  $("btnTabCadastro").addEventListener("click", ()=>setActiveTab("cadastro"));
-
-  // Criar novo usuário (Firebase Auth) sem derrubar a sessão atual
-  $("btnCreateUser")?.addEventListener("click", async ()=>{
-    try{
-      requireAuth();
-      const email=$("newUserEmail").value.trim();
-      const pass=$("newUserPass").value;
-      const pass2=$("newUserPass2").value;
-      if(!email) return setMsg("Informe o e-mail do novo usuário.");
-      if(!pass || pass.length<6) return setMsg("A senha deve ter pelo menos 6 caracteres.");
-      if(pass!==pass2) return setMsg("As senhas não conferem.");
-
-      await createUserWithEmailAndPassword(secondaryAuth, email, pass);
-      await signOut(secondaryAuth);
-
-      $("newUserEmail").value="";
-      $("newUserPass").value="";
-      $("newUserPass2").value="";
-      setMsg("Usuário criado com sucesso.");
-    }catch(e){
-      console.error(e);
-      setMsg("Erro ao criar usuário.");
-    }
-  });
+  $("btnTabFechamento").addEventListener("click", ()=>showPanel("fechamento"));
+  $("btnTabEntregadores").addEventListener("click", async ()=>{ showPanel("entregadores"); await renderCouriersList(); });
+  $("btnTabCadastro").addEventListener("click", ()=>showPanel("cadastro"));
 
   const openLogin=()=>{$("loginBackdrop").classList.add("show");};
   const closeLogin=()=>{$("loginBackdrop").classList.remove("show");};
@@ -565,7 +545,7 @@
 
   state.date=todayISO();
   updateDayUI();
-  setActiveTab("fechamento");
+  showPanel(null);
   setMsg("Faça login para usar.");
 </script>
 </body>
