@@ -166,16 +166,11 @@
         <!-- (mensagens agora via toast flutuante) -->
 
         <div class="sep"></div>
-        <header style="padding:0;border:none;background:none;display:flex;align-items:center;justify-content:space-between">
-          <h2 style="margin:0;font-size:14px">Aguardando entregador</h2><span class="hint">Digite o código e atribua</span>
+        <header style="padding:0;border:none;background:none;display:flex;align-items:center;justify-content:space-between;gap:10px">
+          <h2 style="margin:0;font-size:14px">Lista de entregas</h2>
+          <span class="hint" id="pendingBadge" style="display:none">0 pendentes</span>
         </header>
-        <div class="list" id="listPending"></div>
-
-        <div class="sep"></div>
-        <header style="padding:0;border:none;background:none;display:flex;align-items:center;justify-content:space-between">
-          <h2 style="margin:0;font-size:14px">Entregas atribuídas</h2><span class="hint">Editar (trocar entregador) ou excluir</span>
-        </header>
-        <div class="list" id="listAssigned"></div>
+        <div class="list" id="listDeliveries"></div>
       </div>
     </section>
 
@@ -199,7 +194,9 @@
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
             <div>
               <h2 style="margin:0;font-size:14px">Fechamento do dia</h2>
+              <div class="hint">Total de taxas + total por entregador</div>
             </div>
+            <button class="sbtn" id="btnFechar">Fechar</button>
           </div>
 
           <div class="sep"></div>
@@ -405,39 +402,71 @@
   function updateDayUI(){ $("day").value=state.date; $("lblDia").textContent=`Dia: ${state.date}`; }
 
   function escapeHtml(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
-
-  function renderPending(){
-    const el=$("listPending"); el.innerHTML="";
-    const pend=state.deliveries.filter(d=>d.status==="pending"||!d.courierCode);
-    if(!pend.length){el.innerHTML=`<div class="muted">Nenhuma entrega pendente.</div>`;return;}
-    for(const d of pend){
-      const item=document.createElement("div"); item.className="item";
-      item.innerHTML=`
-        <div class="main"><b>${escapeHtml(d.cliente||"Sem nome")}</b><small>Total: ${brl(d.total)} • Taxa: ${brl(d.taxa)}</small></div>
-        <div class="meta"><small class="muted">Atribuir</small><b><input data-assign="${d.id}" placeholder="0000" maxlength="4" style="width:90px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.18);color:var(--text);font:inherit;outline:none"></b></div>
-        <div class="actions"><button class="sbtn good" data-assignbtn="${d.id}">OK</button><button class="sbtn danger" data-del="${d.id}">Excluir</button></div>`;
-      el.appendChild(item);
-    }
+  }
   }
 
-  function renderAssigned(){
-    const el=$("listAssigned"); el.innerHTML="";
+
+  function renderDeliveriesList(){
+    const el=$("listDeliveries"); el.innerHTML="";
+    const pending=state.deliveries.filter(d=>d.status==="pending"||!d.courierCode);
     const assigned=state.deliveries.filter(d=>d.status==="assigned"&&d.courierCode);
-    if(!assigned.length){el.innerHTML=`<div class="muted">Nenhuma entrega atribuída.</div>`;return;}
-    for(const d of assigned){
-      const c=state.couriers.get(String(d.courierCode))||null;
-      const courierName=c?.nome ? String(c.nome) : `Código ${d.courierCode}`;
-      const item=document.createElement("div"); item.className="item"; item.style.gridTemplateColumns="1fr auto auto";
-      item.innerHTML=`
-        <div class="main">
-          <b><span style="color:var(--accent)">${escapeHtml(courierName)}</span></b>
-          <small class="muted">${escapeHtml(d.cliente||"Sem nome")}</small>
-        </div>
-        <div class="meta">
-          <b>${brl(d.taxa)}</b>
-          <small class="muted">${brl(d.total)}</small>
-        </div>
-        <div class="actions"><button class="sbtn edit" data-edit="${d.id}">Editar</button><button class="sbtn danger" data-del="${d.id}">Excluir</button></div>`;
+
+    const pendingCount = pending.length;
+    const badge = $("pendingBadge");
+    if(badge){
+      if(pendingCount>0){
+        badge.style.display="";
+        badge.textContent = `${pendingCount} pendente${pendingCount>1?'s':''}`;
+      } else {
+        badge.style.display="none";
+      }
+    }
+
+    const all = [...pending, ...assigned];
+    if(!all.length){
+      el.innerHTML=`<div class="muted">Nenhuma entrega registrada.</div>`;
+      return;
+    }
+
+    for(const d of all){
+      const isPending = !d.courierCode || d.status==="pending";
+      const item=document.createElement("div");
+      item.className="item"+(isPending?" delivery-pending":"");
+      if(isPending){
+        item.innerHTML=`
+          <div class="main">
+            <b>${escapeHtml(d.cliente||"Sem nome")} <span class="pending-tag">pendente</span></b>
+            <small>Total: ${brl(d.total)} • Taxa: ${brl(d.taxa)}</small>
+          </div>
+          <div class="meta">
+            <small class="muted">Atribuir</small>
+            <b>
+              <input data-assign="${d.id}" placeholder="0000" maxlength="4"
+                style="width:90px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.18);color:var(--text);font:inherit;outline:none">
+            </b>
+          </div>
+          <div class="actions">
+            <button class="sbtn good" data-assignbtn="${d.id}">OK</button>
+            <button class="sbtn danger" data-del="${d.id}">Excluir</button>
+          </div>`;
+      } else {
+        const c=state.couriers.get(String(d.courierCode))||null;
+        const courierName=c?.nome ? String(c.nome) : `Código ${d.courierCode}`;
+        item.style.gridTemplateColumns="1fr auto auto";
+        item.innerHTML=`
+          <div class="main">
+            <b><span style="color:var(--accent)">${escapeHtml(courierName)}</span></b>
+            <small class="muted">${escapeHtml(d.cliente||"Sem nome")}</small>
+          </div>
+          <div class="meta">
+            <b>${brl(d.taxa)}</b>
+            <small class="muted">${brl(d.total)}</small>
+          </div>
+          <div class="actions">
+            <button class="sbtn edit" data-edit="${d.id}">Editar</button>
+            <button class="sbtn danger" data-del="${d.id}">Excluir</button>
+          </div>`;
+      }
       el.appendChild(item);
     }
   }
@@ -512,8 +541,8 @@
     updateDayUI();
     if(!auth.currentUser){
       state.deliveries=[];
-      $("listPending").innerHTML=`<div class="muted">Faça login para visualizar entregas.</div>`;
-      $("listAssigned").innerHTML=`<div class="muted">Faça login para visualizar entregas.</div>`;
+      $("listDeliveries").innerHTML=`<div class="muted">Faça login para visualizar entregas.</div>`;
+      if($("pendingBadge")) $("pendingBadge").style.display="none";
       $("listResumo").innerHTML=`<div class="muted">Faça login para visualizar fechamento.</div>`;
       $("totalTaxaDia").textContent=brl(0); $("totalEntregasDia").textContent="0 entregas";
       $("totalVendasDia").textContent=`Total pedidos: ${brl(0)}`;
@@ -524,7 +553,7 @@
     state.couriers.clear(); for(const c of cour) state.couriers.set(String(c.codigo), c);
 
     state.deliveries=await listarEntregas(state.date);
-    renderPending(); renderAssigned(); renderResumo();
+    renderDeliveriesList(); renderResumo();
     await renderCouriersList();
   }
 
