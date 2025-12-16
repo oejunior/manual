@@ -118,7 +118,7 @@
           <div class="field"><label>Cliente</label><input id="inpCliente" placeholder="Nome do cliente"></div>
         </div>
 
-        <div class="row3">
+        <div class="row row3">
           <div class="field"><label>Total (R$)</label><input id="inpTotal" inputmode="decimal" placeholder="0,00"></div>
           <div class="field"><label>Taxa (R$)</label><input id="inpTaxa" inputmode="decimal" placeholder="0,00"></div>
           <div class="field"><label>Entregador</label><input id="inpCodigoEntrega" inputmode="numeric" placeholder="Ex.: 2603" maxlength="4"></div>
@@ -432,7 +432,7 @@
         item.style.gridTemplateColumns="1fr auto";
         item.innerHTML=`
           <div class="main">
-            <b>${escapeHtml(name)} <span class="muted courier-code">• ${escapeHtml(code)}</span></b>
+            <b>${escapeHtml(name)} <span class="muted courier-code">[${escapeHtml(code)}]</span></b>
             <small class="muted">PIX: ${escapeHtml(pix)} • Tel: ${escapeHtml(tel)}</small>
           </div>
           <div class="actions courier-actions">
