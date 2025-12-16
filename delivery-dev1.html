@@ -114,17 +114,19 @@
         <span class="tag" id="authTag">🔒 sem login</span>
       </header>
       <div class="body">
-        <div class="row3">
+        <div class="row" style="grid-template-columns:1fr">
           <div class="field"><label>Cliente</label><input id="inpCliente" placeholder="Nome do cliente"></div>
+        </div>
+
+        <div class="row3">
           <div class="field"><label>Total (R$)</label><input id="inpTotal" inputmode="decimal" placeholder="0,00"></div>
           <div class="field"><label>Taxa (R$)</label><input id="inpTaxa" inputmode="decimal" placeholder="0,00"></div>
+          <div class="field"><label>Entregador</label><input id="inpCodigoEntrega" inputmode="numeric" placeholder="Ex.: 2603" maxlength="4"></div>
         </div>
-        <div class="row">
-          <div class="field"><label>Código do entregador (opcional)</label><input id="inpCodigoEntrega" placeholder="Ex.: 2603" maxlength="4"></div>
-          <div style="display:flex;gap:10px;align-items:flex-end">
-            <button class="sbtn good" id="btnAddEntrega">Adicionar</button>
-            <button class="sbtn" id="btnLimpar">Limpar</button>
-          </div>
+
+        <div style="display:flex;gap:10px;align-items:flex-end;justify-content:flex-end;margin-bottom:10px">
+          <button class="sbtn good" id="btnAddEntrega">Adicionar</button>
+          <button class="sbtn" id="btnLimpar">Limpar</button>
         </div>
 
         <div class="notice" id="msg"></div>
