@@ -86,39 +86,35 @@
     .sbtn.edit{color:rgba(120,170,255,.92);border-color:rgba(120,170,255,.25);background:rgba(120,170,255,.10)}
     .sbtn.edit:hover{background:rgba(120,170,255,.14);color:rgba(150,190,255,1)}
   
-    /* Toast flutuante (substitui mensagens inline) */
-    .toastWrap{
+    /* Toast flutuante (substitui completamente o box de mensagem) */
+    .toastHost{
       position:fixed;
       right:22px;
-      top:160px; /* abaixo do menu superior */
-      z-index:999;
+      top:120px; /* será ajustado via JS para ficar abaixo do menu */
+      z-index:9999;
       pointer-events:none;
+      max-width:min(420px, calc(100vw - 44px));
     }
     .toast{
-      max-width:min(520px, calc(100vw - 44px));
-      border:1px solid rgba(233,215,181,.18);
+      border:1px solid rgba(255,255,255,.12);
       background:rgba(23,23,25,.96);
-      color:var(--accent);
-      box-shadow:var(--shadow);
-      border-radius:14px;
+      color:var(--text);
       padding:10px 12px;
-      font-size:13px;
-      line-height:1.25;
+      border-radius:14px;
+      box-shadow:var(--shadow);
       opacity:0;
       transform:translateY(-6px);
-      transition:.18s opacity ease, .18s transform ease;
-      backdrop-filter:blur(10px);
-      -webkit-backdrop-filter:blur(10px);
+      transition:.18s ease;
+      font-size:13px;
+      line-height:1.25;
     }
     .toast.show{opacity:1;transform:translateY(0)}
-
-    /* Mensagem inline antiga desativada (toast substitui totalmente) */
+    .toast.good{border-color:rgba(46,204,113,.28);background:rgba(46,204,113,.10);color:var(--good)}
+    .toast.bad{border-color:rgba(255,92,92,.28);background:rgba(255,92,92,.10);color:var(--bad)}
+    .toast.warn{border-color:rgba(241,196,15,.28);background:rgba(241,196,15,.10);color:var(--warn)}
+    .toast.info{border-color:rgba(233,215,181,.22);background:rgba(233,215,181,.08);color:var(--accent)}
+    /* Esconde o box antigo de mensagens (substituído pelo toast) */
     #msg{display:none !important}
-
-    .toast.info{color:var(--accent)}
-    .toast.good{color:var(--good);border-color:rgba(46,204,113,.28)}
-    .toast.bad{color:var(--bad);border-color:rgba(255,92,92,.28)}
-    .toast.warn{color:var(--warn);border-color:rgba(241,196,15,.28)}
 
   </style>
 </head>
@@ -142,6 +138,9 @@
     <div class="pill"><label for="day">Dia</label><input id="day" type="date"></div>
   </div>
 
+  <!-- Toast flutuante (mensagens do sistema) -->
+  <div id="toastHost" class="toastHost" aria-live="polite" aria-atomic="true"></div>
+
   <div class="grid">
     <section class="card">
       <header>
@@ -153,7 +152,7 @@
           <div class="field"><label>Cliente</label><input id="inpCliente" placeholder="Nome do cliente"></div>
         </div>
 
-        <div class="row3">
+        <div class="row row3">
           <div class="field"><label>Total (R$)</label><input id="inpTotal" inputmode="decimal" placeholder="0,00"></div>
           <div class="field"><label>Taxa (R$)</label><input id="inpTaxa" inputmode="decimal" placeholder="0,00"></div>
           <div class="field"><label>Entregador</label><input id="inpCodigoEntrega" inputmode="numeric" placeholder="Ex.: 2603" maxlength="4"></div>
@@ -164,7 +163,7 @@
           <button class="sbtn" id="btnLimpar">Limpar</button>
         </div>
 
-        <div id="msg" class="hidden"></div>
+        <div class="notice" id="msg"></div>
 
         <div class="sep"></div>
         <header style="padding:0;border:none;background:none;display:flex;align-items:center;justify-content:space-between">
@@ -262,8 +261,6 @@
   </div>
 </div>
 
-
-  <div class="toastWrap" aria-live="polite" aria-atomic="true"><div id="toast" class="toast"></div></div>
 <script type="module">
   const firebaseConfig = {
     apiKey: "AIzaSyBwuo9jDigmdKgfeofbc38c28v82Ia-ZJk",
@@ -286,27 +283,6 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
   const $ = (id)=>document.getElementById(id);
-
-
-  // Toast flutuante (3,5s) — substitui o box de mensagem inline
-  let __toastTimer=null;
-  function showToast(text, tone="info"){
-    const t=document.getElementById("toast");
-    if(!t) return;
-
-    // reset classes
-    t.classList.remove("good","bad","warn","info");
-    const norm = String(tone||"info").toLowerCase();
-    if(norm==="good" || norm==="success") t.classList.add("good");
-    else if(norm==="bad" || norm==="danger" || norm==="error") t.classList.add("bad");
-    else if(norm==="warn" || norm==="warning") t.classList.add("warn");
-    else t.classList.add("info");
-
-    t.textContent = String(text||"");
-    t.classList.add("show");
-    clearTimeout(__toastTimer);
-    __toastTimer = setTimeout(()=>t.classList.remove("show"), 3500);
-  }
 
   const brl = (n)=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
   const parseBR = (s)=>{
@@ -334,7 +310,36 @@
     return Number.isFinite(n)?sign*n:0;
   };
   const todayISO = ()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
-  const setMsg=(text,tone="info")=>{ showToast(text, tone); };
+    // Toast flutuante (substitui o antigo box inline #msg)
+  let __toastTimer=null;
+  const positionToast=()=>{
+    const host=$("toastHost");
+    if(!host) return;
+    const wrap=document.querySelector(".wrap");
+    const menuBars=document.querySelectorAll(".topbar");
+    const menuBar = menuBars.length>1 ? menuBars[1] : menuBars[0];
+    const wrapRect = wrap?.getBoundingClientRect?.();
+    const menuRect = menuBar?.getBoundingClientRect?.();
+    const right = wrapRect ? Math.max(12, Math.round(window.innerWidth - wrapRect.right + 22)) : 22;
+    const top = menuRect ? Math.round(menuRect.bottom + 10) : 120;
+    host.style.right = right + "px";
+    host.style.top = top + "px";
+  };
+  const showToast=(text,tone="info")=>{
+    const host=$("toastHost");
+    if(!host) return;
+    positionToast();
+    host.innerHTML = "";
+    const t=document.createElement("div");
+    t.className = "toast " + (tone||"info");
+    t.textContent = String(text||"");
+    host.appendChild(t);
+    void t.offsetHeight;
+    t.classList.add("show");
+    clearTimeout(__toastTimer);
+    __toastTimer=setTimeout(()=>{ t.classList.remove("show"); }, 3500);
+  };
+  const setMsg=(text,tone="info")=>{ showToast(text,tone); };
   const requireAuth=()=>{ if(!auth.currentUser){ setMsg("Faça login para usar."); throw new Error("not_authenticated"); } };
 
   async function salvarCourier({codigo,nome,pix,telefone}){
@@ -490,7 +495,7 @@
         item.style.gridTemplateColumns="1fr auto";
         item.innerHTML=`
           <div class="main">
-            <b>${escapeHtml(name)} <span class="muted courier-code">• ${escapeHtml(code)}</span></b>
+            <b>${escapeHtml(name)} <span class="muted courier-code">[${escapeHtml(code)}]</span></b>
             <small class="muted">PIX: ${escapeHtml(pix)} • Tel: ${escapeHtml(tel)}</small>
           </div>
           <div class="actions courier-actions">
@@ -647,7 +652,10 @@
   onAuthStateChanged(auth, async (user)=>{
     setAuthTag(!!user);
     if(user && !wasLogged){
-      state.date=todayISO();
+      window.addEventListener("resize", ()=>{ try{ positionToast(); }catch{} });
+  window.addEventListener("scroll", ()=>{ try{ positionToast(); }catch{} }, {passive:true});
+
+  state.date=todayISO();
       updateDayUI();
     }
     wasLogged=!!user;
