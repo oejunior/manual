@@ -16,8 +16,7 @@
     .title{line-height:1.1}.title b{display:block;font-size:16px}.title span{display:block;font-size:12px;color:var(--muted)}
     /* Tipografia do título principal (topo) */
     .brand-title{font-family:"Island Moments",cursive;font-size:36px;font-weight:400;letter-spacing:1px;color:var(--accent)}
-    .brand-subtitle{font-size:12px;color:var(--muted);font-weight:700; font-variant: all-small-caps;
-  letter-spacing:1px;}
+    .brand-subtitle{font-size:12px;color:var(--muted);font-weight:700;font-variant:all-small-caps;letter-spacing:1px;}
     .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
     .pill{border:1px solid var(--stroke);background:rgba(29,29,32,.85);color:var(--text);padding:8px 12px;border-radius:999px;display:flex;align-items:center;gap:10px;min-height:40px}
     .pill label{font-size:12px;color:var(--muted)}.pill input{border:none;outline:none;background:transparent;color:var(--text);font:inherit;min-width:160px}.pill input[type="date"]{min-width:145px}
@@ -323,6 +322,45 @@
     <div class="foot">
       <button class="btn secondary" id="loginCancel">Cancelar</button>
       <button class="btn" id="loginGo">Entrar</button>
+    </div>
+  
+</div>
+</div>
+
+<!-- Cadastro rápido de entregador (modal) -->
+<div class="backdrop" id="courierBackdrop" aria-hidden="true">
+  <div class="modal">
+    <header><b>Cadastrar entregador</b><button class="x" id="courierClose" aria-label="Fechar">×</button></header>
+    <div class="content">
+      <div class="notice">Entregador não cadastrado. Cadastre agora para atribuir esta entrega.</div>
+      <div class="sep"></div>
+      <div class="row">
+        <div class="field"><label>Nome completo</label><input id="qNome" placeholder="Nome do entregador"></div>
+        <div class="field"><label>Telefone</label><input id="qTel" inputmode="numeric" placeholder="DDD + número"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Chave PIX</label><input id="qPix" placeholder="CPF, e-mail, aleatória…"></div>
+        <div class="field"><label>Código (automático)</label><input id="qCodigo" placeholder="Ex.: 2224" maxlength="4" readonly></div>
+      </div>
+      <div class="hint muted" id="qHint" style="margin-top:6px"></div>
+    </div>
+    <div class="foot">
+      <button class="btn secondary" id="courierCancel">Cancelar</button>
+      <button class="btn" id="courierSave">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmar adicionar entrega após cadastro -->
+<div class="backdrop" id="confirmAddBackdrop" aria-hidden="true">
+  <div class="modal" style="width:min(460px,100%)">
+    <header><b>Adicionar entrega</b><button class="x" id="confirmAddClose" aria-label="Fechar">×</button></header>
+    <div class="content">
+      <div class="notice">Entregador cadastrado. Deseja adicionar esta entrega agora?</div>
+    </div>
+    <div class="foot">
+      <button class="btn secondary" id="confirmAddNo">Cancelar</button>
+      <button class="btn good" id="confirmAddYes">OK</button>
     </div>
   </div>
 </div>
@@ -669,7 +707,21 @@
       if(!cliente) return setMsg("Informe o nome do cliente.");
       if(taxa<=0) return setMsg("Informe a taxa (R$).");
       if(codigo && !/^\d{4}$/.test(codigo)) return setMsg("Código deve ter 4 dígitos.");
-      if(codigo){ const c=await obterCourier(codigo); if(!c) return setMsg("Entregador não encontrado. Cadastre em Entregadores."); }
+      if(codigo){
+        const c=await obterCourier(codigo);
+        if(!c){
+          // Entregador não cadastrado: abre modal de cadastro rápido
+          openQuickCourier(codigo, {
+            expectedCode: codigo,
+            date: state.date,
+            courierCode: codigo,
+            cliente,
+            total,
+            taxa
+          });
+          return;
+        }
+      }
       await criarEntrega({date:state.date,courierCode:codigo||"",cliente,total,taxa});
       $("inpCliente").value="";$("inpTotal").value="";$("inpTaxa").value="";$("inpCodigoEntrega").value="";
       setMsg("Entrega adicionada.");
@@ -761,6 +813,95 @@
   $("btnOpenLogin").addEventListener("click", openLogin);
   $("loginClose").addEventListener("click", closeLogin);
   $("loginCancel").addEventListener("click", closeLogin);
+
+  // === Cadastro rápido de entregador (modal) ===
+  let __pendingDelivery = null;
+
+  const openQuickCourier = (expectedCode, payload) => {
+    __pendingDelivery = payload || null;
+    $("qNome").value = "";
+    $("qPix").value = "";
+    $("qTel").value = "";
+    $("qCodigo").value = String(expectedCode||"").trim();
+    $("qHint").textContent = expectedCode ? `Código informado: ${expectedCode}` : "";
+    $("courierBackdrop").classList.add("show");
+  };
+  const closeQuickCourier = () => {
+    $("courierBackdrop").classList.remove("show");
+  };
+  const openConfirmAdd = () => $("confirmAddBackdrop").classList.add("show");
+  const closeConfirmAdd = () => $("confirmAddBackdrop").classList.remove("show");
+
+  $("courierClose").addEventListener("click", closeQuickCourier);
+  $("courierCancel").addEventListener("click", ()=>{ __pendingDelivery=null; closeQuickCourier(); });
+
+  $("confirmAddClose").addEventListener("click", ()=>{ closeConfirmAdd(); });
+  $("confirmAddNo").addEventListener("click", ()=>{ closeConfirmAdd(); __pendingDelivery=null; });
+
+  // Auto gera código pelo telefone (4 últimos dígitos)
+  $("qTel").addEventListener("input", ()=>{
+    const tel = String($("qTel").value||"").replace(/\D/g,"");
+    $("qCodigo").value = tel.length>=4 ? tel.slice(-4) : "";
+  });
+
+  $("courierSave").addEventListener("click", async ()=>{
+    try{
+      requireAuth();
+      const nome = $("qNome").value.trim();
+      const telefone = String($("qTel").value||"").trim().replace(/\D/g,"");
+      const pix = $("qPix").value.trim();
+      const codigo = String($("qCodigo").value||"").trim();
+
+      if(!nome || !telefone || !pix) return setMsg("Preencha nome, telefone e PIX.");
+      if(telefone.length < 4) return setMsg("Telefone inválido.");
+      if(!/^\d{4}$/.test(codigo)) return setMsg("Código inválido.");
+
+      // Se o usuário tinha informado um código no registro, valide que bate com os 4 últimos
+      const expected = __pendingDelivery?.expectedCode ? String(__pendingDelivery.expectedCode) : "";
+      if(expected && codigo !== expected){
+        return setMsg(`O telefone informado termina em ${codigo}, mas o código digitado foi ${expected}.`);
+      }
+
+      await salvarCourier({codigo, nome, pix, telefone});
+      closeQuickCourier();
+      setMsg("Entregador cadastrado.", "good");
+      openConfirmAdd();
+    }catch(err){
+      console.error(err);
+      setMsg("Erro ao cadastrar entregador.");
+    }
+  });
+
+  $("confirmAddYes").addEventListener("click", async ()=>{
+    try{
+      requireAuth();
+      closeConfirmAdd();
+      if(!__pendingDelivery) return;
+
+      await criarEntrega({
+        date: __pendingDelivery.date,
+        courierCode: __pendingDelivery.courierCode,
+        cliente: __pendingDelivery.cliente,
+        total: __pendingDelivery.total,
+        taxa: __pendingDelivery.taxa
+      });
+
+      // limpa formulário
+      $("inpCliente").value="";
+      $("inpTotal").value="";
+      $("inpTaxa").value="";
+      $("inpCodigoEntrega").value="";
+
+      setMsg("Entrega adicionada.", "good");
+      __pendingDelivery = null;
+      await reloadAll();
+    }catch(err){
+      console.error(err);
+      setMsg("Erro ao adicionar entrega.");
+    }
+  });
+
+  // ============================================
 
   $("loginGo").addEventListener("click", async ()=>{
     const email=$("loginEmail").value.trim();
