@@ -240,6 +240,47 @@
   color:var(--text);
 }
 
+
+/* Fechamento - marcar entregador como pago */
+.paidToggle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.paidToggle input{
+  position:absolute;
+  opacity:0;
+  width:1px;
+  height:1px;
+}
+.paidBox{
+  width:18px;
+  height:18px;
+  border-radius:6px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(29,29,32,.35);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 18px;
+}
+.paidToggle input:checked + .paidBox{
+  border-color:rgba(46,204,113,.55);
+  background:rgba(46,204,113,.10);
+}
+.paidToggle input:checked + .paidBox::after{
+  content:"✓";
+  color:var(--good);
+  font-weight:900;
+  font-size:14px;
+  line-height:1;
+}
+.item.paid{
+  border-color:rgba(46,204,113,.22);
+  box-shadow:0 0 0 1px rgba(46,204,113,.10) inset;
+  opacity:.80;
+}
+
 </style>
 </head>
 <body>
@@ -653,7 +694,35 @@
     for(const [code,sum] of entries){
       const c=state.couriers.get(code); const name=c?.nome||"Entregador"; const pix=c?.pix||"—";
       const row=document.createElement("div"); row.className="item"; row.style.gridTemplateColumns="1fr auto";
-      row.innerHTML=`<div class="main"><b>${escapeHtml(name)}</b><small class="muted">PIX: ${escapeHtml(pix)}</small></div><div class="meta"><b>${brl(sum)}</b><small class="muted">taxas</small></div>`;
+      const key = `paid:${state.date}:${code}`;
+      const paid = localStorage.getItem(key) === "1";
+
+      row.classList.toggle("paid", paid);
+
+      row.innerHTML=`<div class="main">
+          <div class="paidToggle">
+            <label style="display:inline-flex;align-items:center;gap:10px;cursor:pointer">
+              <input type="checkbox" class="paidCheck" ${paid?"checked":""} data-paid="${escapeHtml(code)}">
+              <span class="paidBox" aria-hidden="true"></span>
+            </label>
+            <div>
+              <b>${escapeHtml(name)}</b>
+              <small class="muted">PIX: ${escapeHtml(pix)}</small>
+            </div>
+          </div>
+        </div>
+        <div class="meta">
+          <b>${brl(sum)}</b>
+          <small class="muted">taxas</small>
+        </div>`;
+
+      const chk = row.querySelector(".paidCheck");
+      chk.addEventListener("change", (ev)=>{
+        const on = !!ev.target.checked;
+        localStorage.setItem(key, on ? "1" : "0");
+        row.classList.toggle("paid", on);
+      });
+
       el.appendChild(row);
     }
   }
