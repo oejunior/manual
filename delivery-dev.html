@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Delivery Docce Cheesecake</title>
+  <title>Docce • Entregas</title>
   <link href="https://fonts.googleapis.com/css2?family=Signika:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Island+Moments&display=swap" rel="stylesheet">
   <style>
@@ -15,20 +15,8 @@
     .brand{display:flex;align-items:center;gap:10px}.logo{width:36px;height:36px;border-radius:12px;border:1px solid rgba(233,215,181,.35);background:linear-gradient(145deg, rgba(233,215,181,.18), rgba(233,215,181,.04));display:grid;place-items:center;color:var(--accent);font-weight:600}
     .title{line-height:1.1}.title b{display:block;font-size:16px}.title span{display:block;font-size:12px;color:var(--muted)}
     /* Tipografia do título principal (topo) */
-    .brand-title{
-  font-family:"Island Moments",cursive;
-  font-size:36px;          /* nome mais destacado */
-  font-weight:400;
-  letter-spacing:1.2px;
-  color:var(--accent)
-}
-
-.brand-subtitle{
-  font-size:11px;
-  color:var(--muted);
-  font-variant: small-caps;   /* small caps aplicado */
-  letter-spacing:1px;
-}
+    .brand-title{font-family:"Island Moments",cursive;font-size:28px;font-weight:400;letter-spacing:1px;color:var(--accent)}
+    .brand-subtitle{font-size:12px;color:var(--muted);font-weight:700}
     .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
     .pill{border:1px solid var(--stroke);background:rgba(29,29,32,.85);color:var(--text);padding:10px 12px;border-radius:999px;display:flex;align-items:center;gap:10px;min-height:40px}
     .pill label{font-size:12px;color:var(--muted)}.pill input{border:none;outline:none;background:transparent;color:var(--text);font:inherit;min-width:160px}.pill input[type="date"]{min-width:145px}
@@ -132,14 +120,79 @@
     .toast.info{border-color:rgba(233,215,181,.22);background:rgba(233,215,181,.08);color:var(--accent)}
     /* Esconde o box antigo de mensagens (substituído pelo toast) */
     #msg{display:none !important}
+    #authTag{display:none !important}
 
-  </style>
+    /* Ajustes visuais pedidos */
+    #btnOpenLogin, #btnLogout{
+      font-variant: all-small-caps;
+      font-weight:700;
+      letter-spacing:.9px;
+    }
+    .wrap .topbar:nth-of-type(2) .btn{
+      font-variant: all-small-caps;
+      font-weight:700;
+      letter-spacing:.9px;
+    }
+
+  
+    /* User chip (topbar) */
+    .userchip{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(29,29,32,.70);
+      box-shadow:0 10px 26px rgba(0,0,0,.28);
+      max-width:min(420px, 60vw);
+    }
+    .userchip.hidden{display:none !important}
+    .userchip .avatar{
+      width:34px;height:34px;border-radius:12px;
+      display:grid;place-items:center;
+      border:1px solid rgba(233,215,181,.28);
+      background:linear-gradient(145deg, rgba(233,215,181,.14), rgba(233,215,181,.04));
+      color:var(--accent);
+      font-weight:700;
+      flex:0 0 auto;
+    }
+    .userchip .meta{
+      display:flex;flex-direction:column;line-height:1.05;min-width:0;
+    }
+    .userchip .meta b{
+      font-size:12px;color:var(--text);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      max-width:32ch;
+    }
+    .userchip .meta small{
+      font-size:11px;color:var(--muted);
+      display:flex;align-items:center;gap:6px;
+      font-variant: all-small-caps;
+      letter-spacing:.8px;
+      font-weight:700;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:999px;
+      background:rgba(46,204,113,.95);
+      box-shadow:0 0 0 3px rgba(46,204,113,.12);
+      display:inline-block;
+    }
+
+</style>
 </head>
 <body>
 <div class="wrap">
   <div class="topbar">
     <div class="brand"><div class="logo">D</div><div class="title"><b class="brand-title">Delivery Docce Cheesecake</b><span class="brand-subtitle">Controle de entregas</span></div></div>
     <div class="right">
+      <div id="userChip" class="userchip hidden" title="Usuário logado">
+        <div class="avatar" id="userAvatar">•</div>
+        <div class="meta">
+          <b id="userEmail">—</b>
+          <small><span class="dot" aria-hidden="true"></span><span id="userStatus">Logado</span></small>
+        </div>
+      </div>
       <button class="btn" id="btnOpenLogin">Login</button>
       <button class="btn secondary hidden" id="btnLogout">Sair</button>
     </div>
@@ -161,7 +214,7 @@
   <div class="grid">
     <section class="card">
       <header>
-        <div><h2>Entregas do dia</h2></div>
+        <div><h2>Entregas do dia</h2><div class="hint">Cadastre o pedido (pode ficar pendente). Depois atribua o entregador.</div></div>
         <span class="tag" id="authTag">🔒 sem login</span>
       </header>
       <div class="body">
@@ -414,10 +467,30 @@
   }
   $("btnPanelClose").addEventListener("click", ()=>showPanel(null));
 
-  function setAuthTag(on){
-    $("authTag").textContent = on ? "✅ logado" : "🔒 sem login";
-    $("btnLogout").classList.toggle("hidden", !on);
-    $("btnOpenLogin").classList.toggle("hidden", on);
+  function setAuthTag(on,userEmail){
+    // Atualiza chip do usuário no topo + botões
+    const chip = $("userChip");
+    const avatar = $("userAvatar");
+    const emailEl = $("userEmail");
+    const statusEl = $("userStatus");
+
+    if(on){
+      const email = String(userEmail||"").trim() || "Usuário";
+      if(emailEl) emailEl.textContent = email;
+      if(avatar) avatar.textContent = (email[0]||"•").toUpperCase();
+      if(statusEl) statusEl.textContent = "Acesso permitido";
+      chip?.classList.remove("hidden");
+      $("btnOpenLogin").classList.add("hidden");
+      $("btnLogout").classList.remove("hidden");
+    } else {
+      chip?.classList.add("hidden");
+      $("btnOpenLogin").classList.remove("hidden");
+      $("btnLogout").classList.add("hidden");
+    }
+
+    // Mantém tag antiga (invisível) por compatibilidade
+    const tag = $("authTag");
+    if(tag) tag.textContent = on ? "✅ logado" : "🔒 sem login";
   }
   function updateDayUI(){ $("day").value=state.date; $("lblDia").textContent=`Dia: ${state.date}`; }
 
@@ -715,7 +788,7 @@
 
   let wasLogged=false;
   onAuthStateChanged(auth, async (user)=>{
-    setAuthTag(!!user);
+    setAuthTag(!!user, user?.email||"");
     if(user && !wasLogged){
       window.addEventListener("resize", ()=>{ try{ positionToast(); }catch{} });
   window.addEventListener("scroll", ()=>{ try{ positionToast(); }catch{} }, {passive:true});
