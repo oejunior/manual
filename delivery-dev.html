@@ -181,6 +181,31 @@
 .card h2{
   text-align:center;
 }
+
+    /* Separador alfabético (Entregadores) */
+    .alpha-sep{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin:14px 0 6px;
+      color:var(--muted);
+      font-weight:600;
+    }
+    .alpha-sep::before{
+      content:"";
+      flex:1;
+      height:1px;
+      background:rgba(255,255,255,.12);
+    }
+    .alpha-sep span{
+      padding:2px 10px;
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:999px;
+      background:rgba(29,29,32,.55);
+      color:var(--text);
+      font-weight:700;
+    }
+
 </style>
 </head>
 <body>
@@ -627,11 +652,21 @@
       state.couriers.clear(); for(const c of arr) state.couriers.set(String(c.codigo), c);
       if(!arr.length){ el.innerHTML=`<div class="muted">Nenhum entregador cadastrado.</div>`; return; }
 
+      let lastLetter = "";
       for(const c of arr){
         const code=String(c.codigo||"").trim();
         const name=c.nome||"—";
         const pix=c.pix||"—";
         const tel=c.telefone||"—";
+
+        const firstLetter = name.trim().charAt(0).toUpperCase();
+        if(firstLetter && firstLetter !== lastLetter){
+          lastLetter = firstLetter;
+          const sep = document.createElement("div");
+          sep.className = "alpha-sep";
+          sep.innerHTML = `<span>[ ${firstLetter} ]</span>`;
+          el.appendChild(sep);
+        }
 
         const item=document.createElement("div");
         item.className="item";
