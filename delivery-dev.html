@@ -206,6 +206,40 @@
       font-weight:700;
     }
 
+
+/* Fechamento - grid resumo */
+.closing-date{
+  text-align:center;
+  font-weight:700;
+  font-variant: all-small-caps;
+  letter-spacing:1px;
+  margin:6px 0 14px;
+}
+.closing-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:14px;
+}
+.closing-item{
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;
+  padding:14px;
+  background:rgba(29,29,32,.55);
+  text-align:center;
+}
+.closing-item .label{
+  font-variant: all-small-caps;
+  font-weight:700;
+  letter-spacing:1px;
+  color:var(--muted);
+}
+.closing-item .value{
+  margin-top:6px;
+  font-size:28px;
+  font-weight:800;
+  color:var(--text);
+}
+
 </style>
 </head>
 <body>
