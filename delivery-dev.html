@@ -772,11 +772,18 @@
 
   $("btnLogout").addEventListener("click", async ()=>{ await signOut(auth); setMsg("Você saiu."); });
 
-  let wasLogged=false;
-  onAuthStateChanged(auth, async (user)=>{
-    setAuthTag(!!user, user?.email||"");
-    if(user && !wasLogged){
-}catch{} }, {passive:true});
+  let wasLogged = false;
+onAuthStateChanged(auth, async (user) => {
+  try {
+    setAuthTag(!!user, user?.email || "");
+    if (user && !wasLogged) {
+      wasLogged = true;
+      // lógica do primeiro login
+    }
+  } catch (err) {
+    console.error("Erro no auth state:", err);
+  }
+});
 
   state.date=todayISO();
       updateDayUI();
