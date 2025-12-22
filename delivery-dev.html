@@ -230,6 +230,11 @@
   padding:8px 10px;
   background:rgba(29,29,32,.55);
   text-align:center;
+  min-height:110px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
 }
 .closing-item .label{
   font-variant: all-small-caps;
@@ -242,6 +247,9 @@
   font-size:22px;
   font-weight:800;
   color:var(--text);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  line-height: 1.1;
 }
 
 
@@ -895,7 +903,19 @@ $("btnLimpar").addEventListener("click", ()=>{$("inpCliente").value="";$("inpTot
         const inp=document.querySelector(`input[data-assign="${id}"]`);
         const codigo=String(inp?.value||"").trim();
         if(!/^\d{4}$/.test(codigo)) return setMsg("Digite 4 dígitos.");
-        const c=await obterCourier(codigo); if(!c) return setMsg("Entregador não encontrado. Cadastre em Entregadores.");
+        const c=await obterCourier(codigo);
+        if(!c){
+          const d = state.deliveries.find(x=>String(x.id)===String(id));
+          return openQuickCourier(codigo, {
+            expectedCode: codigo,
+            deliveryId: id,
+            date: d?.date || state.date,
+            courierCode: codigo,
+            cliente: d?.cliente || "",
+            total: d?.total || 0,
+            taxa: d?.taxa || 0
+          });
+        }
         await atribuirEntrega(id,codigo); setMsg("Entregador atribuído."); await reloadAll();
       }catch(err){console.error(err);setMsg("Erro ao atribuir.");}
     }
@@ -906,7 +926,19 @@ $("btnLimpar").addEventListener("click", ()=>{$("inpCliente").value="";$("inpTot
         const id=t.dataset.edit;
         const novo=prompt("Novo código (4 dígitos):"); if(novo==null) return;
         const codigo=String(novo).trim(); if(!/^\d{4}$/.test(codigo)) return setMsg("Código inválido.");
-        const c=await obterCourier(codigo); if(!c) return setMsg("Entregador não encontrado. Cadastre em Entregadores.");
+        const c=await obterCourier(codigo);
+        if(!c){
+          const d = state.deliveries.find(x=>String(x.id)===String(id));
+          return openQuickCourier(codigo, {
+            expectedCode: codigo,
+            deliveryId: id,
+            date: d?.date || state.date,
+            courierCode: codigo,
+            cliente: d?.cliente || "",
+            total: d?.total || 0,
+            taxa: d?.taxa || 0
+          });
+        }
         await atribuirEntrega(id,codigo); setMsg("Entrega atualizada."); await reloadAll();
       }catch(err){console.error(err);setMsg("Erro ao editar.");}
     }
@@ -1029,15 +1061,18 @@ $("btnLimpar").addEventListener("click", ()=>{$("inpCliente").value="";$("inpTot
       closeConfirmAdd();
       if(!__pendingDelivery) return;
 
-      await criarEntrega({
-        date: __pendingDelivery.date,
-        courierCode: __pendingDelivery.courierCode,
-        cliente: __pendingDelivery.cliente,
-        total: __pendingDelivery.total,
-        taxa: __pendingDelivery.taxa
-      });
-
-      // limpa formulário
+      if(__pendingDelivery.deliveryId){
+        await atribuirEntrega(__pendingDelivery.deliveryId, __pendingDelivery.courierCode);
+      }else{
+        await criarEntrega({
+          date: __pendingDelivery.date,
+          courierCode: __pendingDelivery.courierCode,
+          cliente: __pendingDelivery.cliente,
+          total: __pendingDelivery.total,
+          taxa: __pendingDelivery.taxa
+        });
+      }
+// limpa formulário
       $("inpCliente").value="";
       $("inpTotal").value="";
       $("inpTaxa").value="";
