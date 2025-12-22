@@ -19,7 +19,7 @@
     .brand-subtitle{font-size:12px;color:var(--muted);font-weight:700; font-variant: all-small-caps;
   letter-spacing:1px;}
     .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-    .pill{border:1px solid var(--stroke);background:rgba(29,29,32,.85);color:var(--text);padding:10px 12px;border-radius:999px;display:flex;align-items:center;gap:10px;min-height:40px}
+    .pill{border:1px solid var(--stroke);background:rgba(29,29,32,.85);color:var(--text);padding:8px 12px;border-radius:999px;display:flex;align-items:center;gap:10px;min-height:40px}
     .pill label{font-size:12px;color:var(--muted)}.pill input{border:none;outline:none;background:transparent;color:var(--text);font:inherit;min-width:160px}.pill input[type="date"]{min-width:145px}
     .btn{border:1px solid var(--stroke);background:rgba(233,215,181,.10);color:var(--accent);padding:10px 14px;border-radius:999px;cursor:pointer;font:inherit;transition:.12s transform ease,.12s opacity ease,.12s background ease;user-select:none;white-space:nowrap}
     .btn:hover{transform:translateY(-1px);background:rgba(233,215,181,.14)}.btn:active{transform:translateY(0);opacity:.85}
@@ -36,12 +36,12 @@
     .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
     .field input{width:100%;border:none;outline:none;background:transparent;color:var(--text);font:inherit;font-size:14px}
     .list{margin-top:10px;border-top:1px dashed rgba(255,255,255,.08);padding-top:10px;display:flex;flex-direction:column;gap:8px}
-    .item{border:1px solid rgba(255,255,255,.08);background:rgba(29,29,32,.55);border-radius:14px;padding:10px 12px;display:grid;grid-template-columns:1.2fr .8fr auto;gap:10px;align-items:center}
+    .item{border:1px solid rgba(255,255,255,.08);background:rgba(29,29,32,.55);border-radius:14px;padding:8px 12px;display:grid;grid-template-columns:1.2fr .8fr auto;gap:10px;align-items:center}
     .item .main b{display:block;font-size:13px}.item .main small{display:block;color:var(--muted);font-size:12px}
     .item .meta{justify-self:end;text-align:right}.item .meta b{display:block;font-size:13px}.item .meta small{display:block;color:var(--muted);font-size:12px}
     .item .actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
     @media(max-width:760px){.item{grid-template-columns:1fr}.item .meta{justify-self:start;text-align:left}.item .actions{justify-content:flex-start}}
-    .notice{margin-top:12px;padding:10px 12px;border-radius:14px;border:1px solid rgba(233,215,181,.18);background:rgba(233,215,181,.06);color:var(--accent);font-size:13px}
+    .notice{margin-top:12px;padding:8px 12px;border-radius:14px;border:1px solid rgba(233,215,181,.18);background:rgba(233,215,181,.06);color:var(--accent);font-size:13px}
     .muted{color:var(--muted)}.sep{height:1px;background:rgba(255,255,255,.06);margin:12px 0}.hidden{display:none !important}
     .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:18px;z-index:100}
     .backdrop.show{display:flex}
@@ -94,24 +94,23 @@
   
     /* Toast flutuante (substitui completamente o box de mensagem) */
     .toastHost{
-      position:fixed;
-      right:22px;
-      top:120px; /* será ajustado via JS para ficar abaixo do menu */
-      z-index:9999;
+      position:relative;
       pointer-events:none;
-      max-width:min(420px, calc(100vw - 44px));
+      min-width:180px;
+      max-width:280px;
     }
     .toast{
+      position:relative;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(23,23,25,.96);
       color:var(--text);
-      padding:10px 12px;
+      padding:8px 12px;
       border-radius:14px;
       box-shadow:var(--shadow);
       opacity:0;
       transform:translateY(-6px);
       transition:.18s ease;
-      font-size:13px;
+      font-size:12px;
       line-height:1.25;
     }
     .toast.show{opacity:1;transform:translateY(0)}
@@ -205,12 +204,10 @@
       <button class="btn nav" id="btnTabFechamento" type="button">Fechamento</button>
       <button class="btn nav" id="btnTabEntregadores" type="button">Entregadores</button>
       <button class="btn nav" id="btnTabCadastro" type="button">Cadastro</button>
+      <div id="toastHost" class="toastHost inline" aria-live="polite" aria-atomic="true"></div>
     </div>
     <div class="pill"><label for="day">Dia</label><input id="day" type="date"></div>
   </div>
-
-  <!-- Toast flutuante (mensagens do sistema) -->
-  <div id="toastHost" class="toastHost" aria-live="polite" aria-atomic="true"></div>
 
   <div class="grid">
     <section class="card">
@@ -381,19 +378,7 @@
   const todayISO = ()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
     // Toast flutuante (substitui o antigo box inline #msg)
   let __toastTimer=null;
-  const positionToast=()=>{
-    const host=$("toastHost");
-    if(!host) return;
-    const wrap=document.querySelector(".wrap");
-    const menuBars=document.querySelectorAll(".topbar");
-    const menuBar = menuBars.length>1 ? menuBars[1] : menuBars[0];
-    const wrapRect = wrap?.getBoundingClientRect?.();
-    const menuRect = menuBar?.getBoundingClientRect?.();
-    const right = wrapRect ? Math.max(12, Math.round(window.innerWidth - wrapRect.right + 22)) : 22;
-    const top = menuRect ? Math.round(menuRect.bottom + 10) : 120;
-    host.style.right = right + "px";
-    host.style.top = top + "px";
-  };
+  const positionToast=()=>{};
   const showToast=(text,tone="info")=>{
     const host=$("toastHost");
     if(!host) return;
@@ -791,8 +776,7 @@
   onAuthStateChanged(auth, async (user)=>{
     setAuthTag(!!user, user?.email||"");
     if(user && !wasLogged){
-      window.addEventListener("resize", ()=>{ try{ positionToast(); }catch{} });
-  window.addEventListener("scroll", ()=>{ try{ positionToast(); }catch{} }, {passive:true});
+}catch{} }, {passive:true});
 
   state.date=todayISO();
       updateDayUI();
