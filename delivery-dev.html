@@ -363,12 +363,19 @@
           <div class="notice panelNotice">Visualizador: <b>Fechamento</b>, <b>Entregadores</b> ou <b>Cadastro</b>.</div>
         </div>
         <div id="viewFechamento" class="hidden">
-          <div class="item" style="grid-template-columns:1fr auto;">
-            <div class="main"><b>Total de taxas do dia</b><small class="muted" id="lblDia"></small></div>
-            <div class="meta">
-              <b id="totalTaxaDia">R$ 0,00</b>
-              <small class="muted" id="totalEntregasDia">0 entregas</small>
-              <small class="muted" id="totalVendasDia">Total pedidos: R$ 0,00</small>
+          <div class="closing-date" id="closingDate"></div>
+          <div class="closing-grid">
+            <div class="closing-item">
+              <div class="label">Entregas</div>
+              <div class="value" id="closingCount">0</div>
+            </div>
+            <div class="closing-item">
+              <div class="label">Pedidos</div>
+              <div class="value" id="closingOrders">R$ 0,00</div>
+            </div>
+            <div class="closing-item">
+              <div class="label">Taxas</div>
+              <div class="value" id="closingFees">R$ 0,00</div>
             </div>
           </div>
 
@@ -608,7 +615,8 @@
     const tag = $("authTag");
     if(tag) tag.textContent = on ? "✅ logado" : "🔒 sem login";
   }
-  function updateDayUI(){ $("day").value=state.date; $("lblDia").textContent=`Dia: ${state.date}`; }
+  function updateDayUI(){ $("day").value=state.date;
+}
 
   function escapeHtml(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
   function renderDeliveriesList(){
@@ -680,9 +688,13 @@
     const assigned=state.deliveries.filter(d=>d.status==="assigned"&&d.courierCode);
     const totalTaxas=assigned.reduce((a,d)=>a+Number(d.taxa||0),0);
     const totalVendas=assigned.reduce((a,d)=>a+Number(d.total||0),0);
-    $("totalTaxaDia").textContent=brl(totalTaxas);
-    $("totalEntregasDia").textContent=`${assigned.length} entregas`;
-    $("totalVendasDia").textContent=`Total pedidos: ${brl(totalVendas)}`;
+    $("closingCount").textContent=assigned.length;
+    $("closingOrders").textContent=brl(totalVendas);
+    $("closingFees").textContent=brl(totalTaxas);
+
+    // Data formatada conforme idioma do sistema
+    const d = new Date(state.date);
+    $("closingDate").textContent = d.toLocaleDateString(undefined,{year:"numeric",month:"2-digit",day:"2-digit"});
 
     const by=new Map();
     for(const d of assigned){const code=String(d.courierCode);by.set(code,(by.get(code)||0)+Number(d.taxa||0));}
