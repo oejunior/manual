@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Delivery Docce Cheesecake</title>
+  <link href="https://fonts.googleapis.com/css2?family=Signika:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Island+Moments&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f0f10;--stroke:#2a2a2f;--text:#f3f3f4;--muted:#b7b7be;--good:#2ecc71;--warn:#f1c40f;--bad:#ff5c5c;--accent:#e9d7b5;--shadow:0 12px 32px rgba(0,0,0,.45);--radius:16px}
+    *{box-sizing:border-box}html,body{height:100%}
+    /* Background fix */
+    html{background:var(--bg);}
+    body{min-height:100vh;overflow-x:hidden;background-attachment:fixed;background-repeat:no-repeat;background-size:cover;}
+
+    body{margin:0;font-family:"Signika",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(1200px 800px at 20% -10%, rgba(233,215,181,.08), transparent 55%),radial-gradient(1200px 800px at 120% 20%, rgba(233,215,181,.06), transparent 55%),var(--bg);color:var(--text)}
+    .wrap{max-width:1100px;margin:0 auto;padding:22px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border:1px solid var(--stroke);background:rgba(23,23,25,.8);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(8px);position:sticky;top:12px;z-index:10}
+    .brand{display:flex;align-items:center;gap:10px}.logo{width:36px;height:36px;border-radius:12px;border:1px solid rgba(233,215,181,.35);background:linear-gradient(145deg, rgba(233,215,181,.18), rgba(233,215,181,.04));display:grid;place-items:center;color:var(--accent);font-weight:600}
+    .title{line-height:1.1}.title b{display:block;font-size:16px}.title span{display:block;font-size:12px;color:var(--muted)}
+    /* Tipografia do título principal (topo) */
+    .brand-title{font-family:"Island Moments",cursive;font-size:36px;font-weight:400;letter-spacing:1px;color:var(--accent)}
+    .brand-subtitle{font-size:12px;color:var(--muted);font-weight:700;font-variant:small-caps;letter-spacing:1px;}
+    .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .pill{border:1px solid var(--stroke);background:rgba(29,29,32,.85);color:var(--text);padding:8px 12px;border-radius:999px;display:flex;align-items:center;gap:10px;min-height:40px}
+    .pill label{font-size:12px;color:var(--muted)}.pill input{border:none;outline:none;background:transparent;color:var(--text);font:inherit;min-width:160px}.pill input[type="date"]{min-width:145px}
+    .btn{border:1px solid var(--stroke);background:rgba(233,215,181,.10);color:var(--accent);padding:10px 14px;border-radius:999px;cursor:pointer;font:inherit;transition:.12s transform ease,.12s opacity ease,.12s background ease;user-select:none;white-space:nowrap}
+    .btn:hover{transform:translateY(-1px);background:rgba(233,215,181,.14)}.btn:active{transform:translateY(0);opacity:.85}
+    .btn.secondary{background:rgba(29,29,32,.85);color:var(--text)}.btn.danger{background:rgba(255,92,92,.10);color:var(--bad);border-color:rgba(255,92,92,.25)}.btn.good{background:rgba(46,204,113,.10);color:var(--good);border-color:rgba(46,204,113,.25)}.btn.tiny{padding:7px 10px;font-size:12px}
+    .btn.nav{background:rgba(29,29,32,.70);color:var(--text)}
+    .btn.nav.active{background:rgba(233,215,181,.12);color:var(--accent);border-color:rgba(233,215,181,.28)}
+    .grid{margin-top:18px;display:grid;grid-template-columns:1.15fr .85fr;gap:14px}@media(max-width:980px){.grid{grid-template-columns:1fr}}
+    .card{border:1px solid var(--stroke);background:rgba(23,23,25,.82);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .card header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--stroke);background:linear-gradient(180deg, rgba(233,215,181,.07), transparent)}
+    .card header h2{margin:0;font-size:14px}.card header .hint{font-size:12px;color:var(--muted)}.card .body{padding:14px 16px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}.row3{grid-template-columns:1fr 1fr 1fr}
+    @media(max-width:700px){.row,.row3{grid-template-columns:1fr}.pill input{min-width:0}}
+    .field{border:1px solid var(--stroke);background:rgba(29,29,32,.75);border-radius:14px;padding:10px 12px}
+    .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+    .field input{width:100%;border:none;outline:none;background:transparent;color:var(--text);font:inherit;font-size:14px}
+    .list{margin-top:10px;border-top:1px dashed rgba(255,255,255,.08);padding-top:10px;display:flex;flex-direction:column;gap:8px}
+    .item{border:1px solid rgba(255,255,255,.08);background:rgba(29,29,32,.55);border-radius:14px;padding:8px 12px;display:grid;grid-template-columns:1.2fr .8fr auto;gap:10px;align-items:center}
+    .item .main b{display:block;font-size:13px}.item .main small{display:block;color:var(--muted);font-size:12px}
+    .item .meta{justify-self:end;text-align:right}.item .meta b{display:block;font-size:13px}.item .meta small{display:block;color:var(--muted);font-size:12px}
+    .item .actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+    @media(max-width:760px){.item{grid-template-columns:1fr}.item .meta{justify-self:start;text-align:left}.item .actions{justify-content:flex-start}}
+    .notice{margin-top:12px;padding:8px 12px;border-radius:14px;border:1px solid rgba(233,215,181,.18);background:rgba(233,215,181,.06);color:var(--accent);font-size:13px}
+    .muted{color:var(--muted)}.sep{height:1px;background:rgba(255,255,255,.06);margin:12px 0}.hidden{display:none !important}
+    .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:18px;z-index:100}
+    .backdrop.show{display:flex}
+    .modal{width:min(520px,100%);border:1px solid var(--stroke);background:rgba(23,23,25,.96);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+    .modal header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--stroke);background:linear-gradient(180deg, rgba(233,215,181,.08), transparent)}
+    .modal header b{font-size:14px}.modal .content{padding:14px 16px}.modal .foot{padding:14px 16px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--stroke)}
+    .x{background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer}.x:hover{color:var(--text)}
+    .tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,.10);padding:6px 10px;border-radius:999px;background:rgba(29,29,32,.55)}
+
+    .panelTitle{display:flex;align-items:center;justify-content:center;position:relative;gap:10px;width:100%;flex:1}
+    .panelTitle > div{text-align:center}
+    .panelTitle .xmini{position:absolute;right:0;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:6px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.10);background:rgba(29,29,32,.45)}
+    .panelTitle .xmini:hover{color:var(--text)}
+    .panelNotice{font-variant:small-caps;letter-spacing:.6px}
+
+    /* Botões pequenos (listas de entregadores) */
+    .linkbtn{background:rgba(29,29,32,.40);border:1px solid rgba(255,255,255,.12);color:var(--muted);cursor:pointer;font:inherit;font-size:12px;padding:4px 10px;border-radius:999px;font-variant:small-caps;letter-spacing:.9px;font-weight:700}
+    .linkbtn:hover{color:var(--text);background:rgba(29,29,32,.55)}
+    .linkbtn.danger{color:rgba(255,92,92,.85);border-color:rgba(255,92,92,.25);background:rgba(255,92,92,.06)}
+    .linkbtn.danger:hover{color:var(--bad);background:rgba(255,92,92,.10)}
+    .linkbtn.edit{color:rgba(120,170,255,.92);border-color:rgba(120,170,255,.25);background:rgba(120,170,255,.06)}
+    .linkbtn.edit:hover{color:rgba(150,190,255,1);background:rgba(120,170,255,.10)}
+
+    /* Botões padrão do sistema */
+    .sbtn{
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(29,29,32,.35);
+      color:var(--muted);
+      cursor:pointer;
+      font:inherit;
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-variant:small-caps;
+      letter-spacing:.9px;
+      font-weight:700;
+      transition:.12s transform ease,.12s opacity ease,.12s background ease;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .sbtn:hover{color:var(--text);background:rgba(29,29,32,.55);transform:translateY(-1px)}
+    .sbtn:active{transform:translateY(0);opacity:.85}
+        .sbtn.tiny{padding:4px 10px;font-size:11px}
+.sbtn.good{color:rgba(46,204,113,.95);border-color:rgba(46,204,113,.25);background:rgba(46,204,113,.10)}
+    .sbtn.good:hover{background:rgba(46,204,113,.14);color:var(--good)}
+    .sbtn.danger{color:rgba(255,92,92,.90);border-color:rgba(255,92,92,.25);background:rgba(255,92,92,.10)}
+    .sbtn.danger:hover{background:rgba(255,92,92,.14);color:var(--bad)}
+    .sbtn.edit{color:rgba(120,170,255,.92);border-color:rgba(120,170,255,.25);background:rgba(120,170,255,.10)}
+    .sbtn.edit:hover{background:rgba(120,170,255,.14);color:rgba(150,190,255,1)}
+  
+    /* Toast flutuante (substitui completamente o box de mensagem) */
+    .toastHost{
+      position:relative;
+      pointer-events:none;
+      min-width:180px;
+      max-width:280px;
+    }
+    .toast{
+      position:relative;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(23,23,25,.96);
+      color:var(--text);
+      padding:8px 12px;
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      opacity:0;
+      transform:translateY(-6px);
+      transition:.18s ease;
+      font-size:12px;
+      font-variant:small-caps;
+      line-height:1.25;
+    }
+    .toast.show{opacity:1;transform:translateY(0)}
+    .toast.good{border-color:rgba(46,204,113,.28);background:rgba(46,204,113,.10);color:var(--good)}
+    .toast.bad{border-color:rgba(255,92,92,.28);background:rgba(255,92,92,.10);color:var(--bad)}
+    .toast.warn{border-color:rgba(241,196,15,.28);background:rgba(241,196,15,.10);color:var(--warn)}
+    .toast.info{border-color:rgba(233,215,181,.22);background:rgba(233,215,181,.08);color:var(--accent)}
+    /* Esconde o box antigo de mensagens (substituído pelo toast) */
+    #msg{display:none !important}
+    #authTag{display:none !important}
+
+    /* Ajustes visuais pedidos */
+    #btnOpenLogin, #btnLogout{
+      font-variant: small-caps;
+      font-weight:700;
+      letter-spacing:.9px;
+    }
+    .wrap .topbar:nth-of-type(2) .btn{
+      font-variant: small-caps;
+      font-weight:700;
+      letter-spacing:.9px;
+    }
+
+  
+    /* User chip (topbar) */
+    .userchip{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(29,29,32,.70);
+      box-shadow:0 10px 26px rgba(0,0,0,.28);
+      max-width:min(420px, 60vw);
+    }
+    .userchip.hidden{display:none !important}
+    .userchip .avatar{
+      width:34px;height:34px;border-radius:12px;
+      display:grid;place-items:center;
+      border:1px solid rgba(233,215,181,.28);
+      background:linear-gradient(145deg, rgba(233,215,181,.14), rgba(233,215,181,.04));
+      color:var(--accent);
+      font-weight:700;
+      flex:0 0 auto;
+    }
+    .userchip .meta{
+      display:flex;flex-direction:column;line-height:1.05;min-width:0;
+    }
+    .userchip .meta b{
+      font-size:12px;color:var(--text);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      max-width:32ch;
+    }
+    .userchip .meta small{
+      font-size:11px;color:var(--muted);
+      display:flex;align-items:center;gap:6px;
+      font-variant: small-caps;
+      letter-spacing:.8px;
+      font-weight:700;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:999px;
+      background:rgba(46,204,113,.95);
+      box-shadow:0 0 0 3px rgba(46,204,113,.12);
+      display:inline-block;
+    }
+.card h2{
+  text-align:center;
+}
+
+    /* Separador alfabético (Entregadores) */
+    .alpha-sep{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin:14px 0 6px;
+      color:var(--muted);
+      font-weight:600;
+    }
+    .alpha-sep::before{
+      content:"";
+      flex:1;
+      height:1px;
+      background:rgba(255,255,255,.12);
+    }
+    .alpha-sep span{
+      padding:2px 10px;
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:999px;
+      background:rgba(29,29,32,.55);
+      color:var(--text);
+      font-weight:700;
+    }
+
+
+/* Fechamento - grid resumo */
+.closing-date{
+  text-align:center;
+  font-weight:700;
+  font-variant: all-small-caps;
+  letter-spacing:1px;
+  margin:6px 0 14px;
+}
+.closing-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:14px;
+}
+.closing-item{
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;
+  padding:8px 10px;
+  background:rgba(29,29,32,.55);
+  text-align:center;
+  min-height:110px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+.closing-item .label{
+  font-variant: all-small-caps;
+  font-weight:700;
+  letter-spacing:1px;
+  color:rgba(203,185,148,.85);
+}
+.closing-item .value{
+  margin-top:6px;
+  font-size:22px;
+  font-weight:800;
+  color:var(--text);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  line-height: 1.1;
+}
+
+
+/* Fechamento - marcar entregador como pago */
+.paidToggle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.paidToggle input{
+  position:absolute;
+  opacity:0;
+  width:1px;
+  height:1px;
+}
+.paidBox{
+  width:18px;
+  height:18px;
+  border-radius:6px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(29,29,32,.35);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 18px;
+}
+.paidToggle input:checked + .paidBox{
+  border-color:rgba(46,204,113,.55);
+  background:rgba(46,204,113,.10);
+}
+.paidToggle input:checked + .paidBox::after{
+  content:"✓";
+  color:var(--good);
+  font-weight:900;
+  font-size:14px;
+  line-height:1;
+}
+.item.paid{
+  border-color:rgba(46,204,113,.22);
+  box-shadow:0 0 0 1px rgba(46,204,113,.10) inset;
+  opacity:.80;
+}
+
+
+/* PIX Modal */
+#pixCopy{
+  width:100%;
+  font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size:12px;
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand"><div class="logo">D</div><div class="title"><b class="brand-title">Delivery Docce Cheesecake</b><span class="brand-subtitle">Controle de entregas</span></div></div>
+    <div class="right">
+      <div id="userChip" class="userchip hidden" title="Usuário logado">
+        <div class="avatar" id="userAvatar">•</div>
+        <div class="meta">
+          <b id="userEmail">—</b>
+          <small><span class="dot" aria-hidden="true"></span><span id="userStatus">Logado</span></small>
+        </div>
+      </div>
+      <button class="btn" id="btnOpenLogin">Login</button>
+      <button class="btn secondary hidden" id="btnLogout">Sair</button>
+    </div>
+  </div>
+
+  <div class="topbar" style="margin-top:12px">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <button class="btn secondary" id="btnRefresh">Atualizar</button>
+      <button class="btn nav" id="btnTabFechamento" type="button">Fechamento</button>
+      <button class="btn nav" id="btnTabEntregadores" type="button">Entregadores</button>
+      <button class="btn nav" id="btnTabCadastro" type="button">Cadastro</button>
+      <div id="toastHost" class="toastHost inline" aria-live="polite" aria-atomic="true"></div>
+    </div>
+    <div class="pill"><label for="day">Dia</label><input id="day" type="date"></div>
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <header>
+        <div><h2><center></center>Registro de Entregas</center></h2></div>
+        <span class="tag" id="authTag">🔒 sem login</span>
+      </header>
+      <div class="body">
+        <div class="row" style="grid-template-columns:1fr">
+          <div class="field"><label>Cliente</label><input id="inpCliente" placeholder="Nome do cliente"></div>
+        </div>
+
+        <div class="row row3">
+          <div class="field"><label>Total (R$)</label><input id="inpTotal" inputmode="decimal" placeholder="0,00"></div>
+          <div class="field"><label>Taxa (R$)</label><input id="inpTaxa" inputmode="decimal" placeholder="0,00"></div>
+          <div class="field"><label>Entregador</label><input id="inpCodigoEntrega" inputmode="numeric" placeholder="Ex.: 2603" maxlength="4"></div>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:flex-end;justify-content:flex-end;margin-bottom:10px">
+          <button class="sbtn good" id="btnAddEntrega">Adicionar</button>
+          <button class="sbtn" id="btnLimpar">Limpar</button>
+        </div>
+
+        <!-- (mensagens agora via toast flutuante) -->
+
+        <div class="sep"></div>
+        <header style="padding:0;border:none;background:none;display:flex;align-items:center;justify-content:space-between;gap:10px">
+          <h2 style="margin:0;font-size:14px">Entregas do Dia</h2>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="hint" id="pendingBadge" style="display:none">0 pendentes</span>
+            <button class="sbtn tiny" id="btnToggleDeliveries" type="button">Ocultar</button>
+          </div>
+        </header>
+        <div class="list" id="listDeliveries"></div>
+      </div>
+    </section>
+
+    <aside class="card">
+      <header>
+        <div class="panelTitle">
+          <div>
+            <h2 id="panelTitleText">Painel</h2>
+            <div class="hint hidden" id="panelHint"></div>
+          </div>
+          <button class="xmini hidden" id="btnPanelClose" title="Fechar">×</button>
+        </div>
+      </header>
+
+      <div class="body" id="panelBody">
+        <div id="viewHome">
+          <div class="notice panelNotice">Visualizador: <b>Fechamento</b>, <b>Entregadores</b> ou <b>Cadastro</b>.</div>
+        </div>
+        <div id="viewFechamento" class="hidden">
+          <div class="closing-date" id="closingDate"></div>
+          <div class="closing-grid">
+            <div class="closing-item">
+              <div class="label">Entregas</div>
+              <div class="value" id="closingCount">0</div>
+            </div>
+            <div class="closing-item">
+              <div class="label">Pedidos</div>
+              <div class="value" id="closingOrders">R$ 0,00</div>
+            </div>
+            <div class="closing-item">
+              <div class="label">Taxas</div>
+              <div class="value" id="closingFees">R$ 0,00</div>
+            </div>
+          </div>
+
+          <div class="list" id="listResumo"></div>
+        </div>
+
+        <div id="viewEntregadores" class="hidden">
+          <div class="list" id="listCouriers"></div>
+        </div>
+
+        <div id="viewCadastro" class="hidden">
+          <div class="sep"></div>
+
+          <div class="row">
+            <div class="field"><label>Nome</label><input id="cNome" placeholder="Nome do entregador"></div>
+            <div class="field"><label>Telefone</label><input id="cTel" inputmode="numeric" placeholder="DDD + número"></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>Chave PIX</label><input id="cPix" placeholder="CPF, e-mail, aleatória…"></div>
+            <div class="field"><label>Código (automático)</label><input id="cCodigo" placeholder="Ex.: 2603" maxlength="4" readonly></div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="sbtn good" id="btnSalvarCourier">Salvar</button>
+            <button class="sbtn" id="btnLimparCourier">Limpar</button>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="backdrop" id="loginBackdrop" aria-hidden="true">
+  <div class="modal">
+    <header><b>Login</b><button class="x" id="loginClose" aria-label="Fechar">×</button></header>
+    <div class="content">
+      <div class="row">
+        <div class="field"><label>E-mail</label><input id="loginEmail" type="email" placeholder="seu@email.com"></div>
+        <div class="field"><label>Senha</label><input id="loginPass" type="password" placeholder="••••••••"></div>
+      </div>
+      <div class="notice">Esse login é o que libera leitura/escrita no banco.</div>
+    </div>
+    <div class="foot">
+      <button class="btn secondary" id="loginCancel">Cancelar</button>
+      <button class="btn" id="loginGo">Entrar</button>
+    </div>
+  
+</div>
+</div>
+
+<!-- Cadastro rápido de entregador (modal) -->
+<div class="backdrop" id="courierBackdrop" aria-hidden="true">
+  <div class="modal">
+    <header><b>Cadastrar entregador</b><button class="x" id="courierClose" aria-label="Fechar">×</button></header>
+    <div class="content">
+      <div class="notice">Entregador não cadastrado. Cadastre agora para atribuir esta entrega.</div>
+      <div class="sep"></div>
+      <div class="row">
+        <div class="field"><label>Nome completo</label><input id="qNome" placeholder="Nome do entregador"></div>
+        <div class="field"><label>Telefone</label><input id="qTel" inputmode="numeric" placeholder="DDD + número"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Chave PIX</label><input id="qPix" placeholder="CPF, e-mail, aleatória…"></div>
+        <div class="field"><label>Código (automático)</label><input id="qCodigo" placeholder="Ex.: 2224" maxlength="4" readonly></div>
+      </div>
+      <div class="hint muted" id="qHint" style="margin-top:6px"></div>
+    </div>
+    <div class="foot">
+      <button class="btn secondary" id="courierCancel">Cancelar</button>
+      <button class="btn" id="courierSave">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmar adicionar entrega após cadastro -->
+<div class="backdrop" id="confirmAddBackdrop" aria-hidden="true">
+  <div class="modal" style="width:min(460px,100%)">
+    <header><b>Adicionar entrega</b><button class="x" id="confirmAddClose" aria-label="Fechar">×</button></header>
+    <div class="content">
+      <div class="notice">Entregador cadastrado. Deseja adicionar esta entrega agora?</div>
+    </div>
+    <div class="foot">
+      <button class="btn secondary" id="confirmAddNo">Cancelar</button>
+      <button class="btn good" id="confirmAddYes">OK</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- PIX QR (Pagamento) -->
+<div class="backdrop" id="pixBackdrop" aria-hidden="true">
+  <div class="modal" style="width:min(520px,100%)">
+    <header><b>Pagamento PIX</b><button class="x" id="pixClose" aria-label="Fechar">×</button></header>
+    <div class="content">
+      <div class="notice" id="pixWho">—</div>
+      <div class="sep"></div>
+      <div style="display:grid;grid-template-columns:220px 1fr;gap:14px;align-items:start">
+        <div style="text-align:center">
+          <img id="pixQR" alt="QR Code PIX" style="width:220px;height:220px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(29,29,32,.35);object-fit:contain">
+          <div class="hint muted" style="margin-top:8px">Aponte a câmera do banco</div>
+        </div>
+        <div>
+          <div class="field">
+            <label>Chave PIX</label>
+            <input id="pixKey" readonly>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>Valor sugerido</label>
+              <input id="pixAmount" readonly>
+            </div>
+            <div class="field">
+              <label>Código</label>
+              <input id="pixCode" readonly>
+            </div>
+          </div>
+          <div class="field">
+            <label>PIX Copia e Cola</label>
+            <textarea id="pixCopy" rows="3" readonly style="resize:none"></textarea>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+            <button class="btn secondary" id="pixCopyBtn">Copiar PIX</button>
+            <button class="btn good" id="pixPaidBtn">PAGO</button>
+            <button class="btn secondary" id="pixCancelBtn">Cancelar</button>
+          </div>
+          <div class="hint muted" style="margin-top:8px">
+            QR intencional: só aparece ao clicar no entregador. Valor não é embutido no QR.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  const firebaseConfig = {
+    apiKey: "AIzaSyBwuo9jDigmdKgfeofbc38c28v82Ia-ZJk",
+    authDomain: "docce-entregas.firebaseapp.com",
+    projectId: "docce-entregas",
+    storageBucket: "docce-entregas.firebasestorage.app",
+    messagingSenderId: "469986757222",
+    appId: "1:469986757222:web:7b479ecc052830a4f53ba7",
+    measurementId: "G-NXN5VD6W31"
+  };
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, getDocs, collection, addDoc,
+           updateDoc, deleteDoc, query, where, orderBy }
+    from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const $ = (id)=>document.getElementById(id);
+
+  const brl = (n)=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  const parseBR = (s)=>{
+    let v=String(s??"").trim();
+    if(!v) return 0;
+    v=v.replace(/\s/g,"").replace(/R\$/gi,"");
+    v=v.replace(/[^\d.,-]/g,"");
+    let sign=1;
+    if(v.startsWith("-")){ sign=-1; v=v.slice(1); }
+    const lastDot=v.lastIndexOf(".");
+    const lastComma=v.lastIndexOf(",");
+    let decSep="";
+    if(lastDot>-1 && lastComma>-1) decSep = lastDot>lastComma ? "." : ",";
+    else if(lastDot>-1) decSep=".";
+    else if(lastComma>-1) decSep=",";
+    if(!decSep){
+      const n=Number(v.replace(/[^\d]/g,""));
+      return Number.isFinite(n)?sign*n:0;
+    }
+    const parts=v.split(decSep);
+    const dec=parts.pop();
+    const intPart=(parts.join("").replace(/[^\d]/g,"")||"0");
+    const decPart=dec.replace(/[^\d]/g,"");
+    const n=Number(intPart+"."+decPart);
+    return Number.isFinite(n)?sign*n:0;
+  };
+  const todayISO = ()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
+    // Toast flutuante (substitui o antigo box inline #msg)
+  let __toastTimer=null;
+  const positionToast=()=>{};
+  const showToast=(text,tone="info")=>{
+    const host=$("toastHost");
+    if(!host) return;
+    positionToast();
+    host.innerHTML = "";
+    const t=document.createElement("div");
+    t.className = "toast " + (tone||"info");
+    t.textContent = String(text||"");
+    host.appendChild(t);
+    void t.offsetHeight;
+    t.classList.add("show");
+    clearTimeout(__toastTimer);
+    __toastTimer=setTimeout(()=>{ t.classList.remove("show"); }, 3500);
+  };
+  const setMsg=(text,tone="info")=>{ showToast(text,tone); };
+  const requireAuth=()=>{ if(!auth.currentUser){ setMsg("Faça login para usar."); throw new Error("not_authenticated"); } };
+
+  async function salvarCourier({codigo,nome,pix,telefone}){
+    requireAuth();
+    await setDoc(doc(db,"couriers",String(codigo)),{nome:String(nome||"").trim(),pix:String(pix||"").trim(),telefone:String(telefone||"").trim(),updatedAt:Date.now()},{merge:true});
+  }
+  async function listarCouriers(){
+    requireAuth();
+    const snap=await getDocs(collection(db,"couriers"));
+    const arr=snap.docs.map(d=>({codigo:d.id,...d.data()}));
+    arr.sort((a,b)=>String(a.codigo).localeCompare(String(b.codigo)));
+    return arr;
+  }
+  async function obterCourier(codigo){
+    requireAuth();
+    const snap=await getDoc(doc(db,"couriers",String(codigo)));
+    return snap.exists()?{codigo:snap.id,...snap.data()}:null;
+  }
+  async function excluirCourier(codigo){
+    requireAuth();
+    await deleteDoc(doc(db,"couriers",String(codigo)));
+  }
+
+  async function criarEntrega({date,courierCode,cliente,total,taxa}){
+    requireAuth();
+    await addDoc(collection(db,"deliveries"),{date,courierCode:courierCode?String(courierCode):"",cliente:String(cliente||"").trim(),total:Number(total||0),taxa:Number(taxa||0),status:courierCode?"assigned":"pending",createdAt:Date.now()});
+  }
+  async function listarEntregas(date){
+    requireAuth();
+    const qy=query(collection(db,"deliveries"),where("date","==",date),orderBy("createdAt","asc"));
+    const snap=await getDocs(qy);
+    return snap.docs.map(d=>({id:d.id,...d.data()}));
+  }
+  async function atribuirEntrega(id,courierCode){
+    requireAuth();
+    await updateDoc(doc(db,"deliveries",id),{courierCode:String(courierCode),status:"assigned"});
+  }
+  async function excluirEntrega(id){
+    requireAuth();
+    await deleteDoc(doc(db,"deliveries",id));
+  }
+
+  const state={date:todayISO(),couriers:new Map(),deliveries:[]};
+
+  const views={home:$("viewHome"),fechamento:$("viewFechamento"),entregadores:$("viewEntregadores"),cadastro:$("viewCadastro")};
+  const tabs={fechamento:$("btnTabFechamento"),entregadores:$("btnTabEntregadores"),cadastro:$("btnTabCadastro")};
+
+  function showPanel(name){
+    const isHome = !name;
+    Object.entries(tabs).forEach(([k,btn])=>btn?.classList.toggle("active", !isHome && k===name));
+    Object.entries(views).forEach(([k,el])=>{
+      const shouldShow = isHome ? (k==="home") : (k===name);
+      el?.classList.toggle("hidden", !shouldShow);
+    });
+    $("panelTitleText").textContent = isHome ? "Painel" : (name==="fechamento" ? "Fechamento" : name==="entregadores" ? "Entregadores" : "Cadastro");
+    $("btnPanelClose").classList.toggle("hidden", isHome);
+  }
+  $("btnPanelClose").addEventListener("click", ()=>showPanel(null));
+
+  function setAuthTag(on,userEmail){
+    // Atualiza chip do usuário no topo + botões
+    const chip = $("userChip");
+    const avatar = $("userAvatar");
+    const emailEl = $("userEmail");
+    const statusEl = $("userStatus");
+
+    if(on){
+      const email = String(userEmail||"").trim() || "Usuário";
+      if(emailEl) emailEl.textContent = email;
+      if(avatar) avatar.textContent = (email[0]||"•").toUpperCase();
+      if(statusEl) statusEl.textContent = "Acesso permitido";
+      chip?.classList.remove("hidden");
+      $("btnOpenLogin").classList.add("hidden");
+      $("btnLogout").classList.remove("hidden");
+    } else {
+      chip?.classList.add("hidden");
+      $("btnOpenLogin").classList.remove("hidden");
+      $("btnLogout").classList.add("hidden");
+    }
+
+    // Mantém tag antiga (invisível) por compatibilidade
+    const tag = $("authTag");
+    if(tag) tag.textContent = on ? "✅ logado" : "🔒 sem login";
+  }
+  function updateDayUI(){ $("day").value=state.date;
+}
+
+  function escapeHtml(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+  function renderDeliveriesList(){
+    const el=$("listDeliveries"); el.innerHTML="";
+    const pending=state.deliveries.filter(d=>d.status==="pending"||!d.courierCode);
+    const assigned=state.deliveries.filter(d=>d.status==="assigned"&&d.courierCode);
+
+    const pendingCount = pending.length;
+    const badge = $("pendingBadge");
+    if(badge){
+      if(pendingCount>0){
+        badge.style.display="";
+        badge.textContent = `${pendingCount} pendente${pendingCount>1?'s':''}`;
+      } else {
+        badge.style.display="none";
+      }
+    }
+
+    const all = [...pending, ...assigned];
+    if(!all.length){
+      el.innerHTML=`<div class="muted">Nenhuma entrega registrada.</div>`;
+      return;
+    }
+
+    for(const d of all){
+      const isPending = !d.courierCode || d.status==="pending";
+      const item=document.createElement("div");
+      item.className="item"+(isPending?" delivery-pending":"");
+      if(isPending){
+        item.innerHTML=`
+          <div class="main">
+            <b>${escapeHtml(d.cliente||"Sem nome")} <span class="pending-tag">pendente</span></b>
+            <small>Total: ${brl(d.total)} • Taxa: ${brl(d.taxa)}</small>
+          </div>
+          <div class="meta">
+            <small class="muted">Atribuir</small>
+            <b>
+              <input data-assign="${d.id}" placeholder="0000" maxlength="4"
+                style="width:90px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.18);color:var(--text);font:inherit;outline:none">
+            </b>
+          </div>
+          <div class="actions">
+            <button class="sbtn good" data-assignbtn="${d.id}">OK</button>
+            <button class="sbtn danger" data-del="${d.id}">Excluir</button>
+          </div>`;
+      } else {
+        const c=state.couriers.get(String(d.courierCode))||null;
+        const courierName=c?.nome ? String(c.nome) : `Código ${d.courierCode}`;
+        item.style.gridTemplateColumns="1fr auto auto";
+        item.innerHTML=`
+          <div class="main">
+            <b><span style="color:var(--accent)">${escapeHtml(courierName)}</span></b>
+            <small class="muted">${escapeHtml(d.cliente||"Sem nome")}</small>
+          </div>
+          <div class="meta">
+            <b>${brl(d.taxa)}</b>
+            <small class="muted">${brl(d.total)}</small>
+          </div>
+          <div class="actions">
+            <button class="sbtn edit" data-edit="${d.id}">Editar</button>
+            <button class="sbtn danger" data-del="${d.id}">Excluir</button>
+          </div>`;
+      }
+      el.appendChild(item);
+    }
+  }
+
+  function renderResumo(){
+    const assigned=state.deliveries.filter(d=>d.status==="assigned"&&d.courierCode);
+    const totalTaxas=assigned.reduce((a,d)=>a+Number(d.taxa||0),0);
+    const totalVendas=assigned.reduce((a,d)=>a+Number(d.total||0),0);
+    $("closingCount").textContent=assigned.length;
+    $("closingOrders").textContent=brl(totalVendas);
+    $("closingFees").textContent=brl(totalTaxas);
+
+    // Data formatada conforme idioma do sistema
+    const d = new Date(state.date);
+    $("closingDate").textContent = d.toLocaleDateString(undefined,{year:"numeric",month:"2-digit",day:"2-digit"});
+
+    const by=new Map();
+    for(const d of assigned){const code=String(d.courierCode);by.set(code,(by.get(code)||0)+Number(d.taxa||0));}
+
+    const el=$("listResumo"); el.innerHTML="";
+    const entries=Array.from(by.entries()).sort((a,b)=>b[1]-a[1]);
+    if(!entries.length){el.innerHTML=`<div class="muted">Sem fechamento ainda.</div>`;return;}
+
+    for(const [code,sum] of entries){
+      const c=state.couriers.get(code); const name=c?.nome||"Entregador"; const pix=c?.pix||"—";
+      const row=document.createElement("div"); row.className="item"; row.style.gridTemplateColumns="1fr auto";
+      const key = `paid:${state.date}:${code}`;
+      const paid = localStorage.getItem(key) === "1";
+
+      row.classList.toggle("paid", paid);
+
+      row.innerHTML=`<div class="main">
+          <div class="paidToggle">
+            <label style="display:inline-flex;align-items:center;gap:10px;cursor:pointer">
+              <input type="checkbox" class="paidCheck" ${paid?"checked":""} data-paid="${escapeHtml(code)}">
+              <span class="paidBox" aria-hidden="true"></span>
+            </label>
+            <div>
+              <b>${escapeHtml(name)}</b>
+              <small class="muted">PIX: ${escapeHtml(pix)}</small>
+            </div>
+          </div>
+        </div>
+        <div class="meta">
+          <b>${brl(sum)}</b>
+          <small class="muted">taxas</small>
+        </div>`;
+
+      const chk = row.querySelector(".paidCheck");
+      chk.addEventListener("change", (ev)=>{
+        const on = !!ev.target.checked;
+        localStorage.setItem(key, on ? "1" : "0");
+        row.classList.toggle("paid", on);
+      });
+
+      // Clique intencional no card para abrir PIX (não abre se já estiver pago)
+      row.addEventListener("click", (ev)=>{
+        const target = ev.target;
+        if(target && (target.closest("label") || target.classList.contains("paidCheck") || target.classList.contains("paidBox"))) return;
+        if(row.classList.contains("paid")) return setMsg("Já marcado como pago.", "good");
+        openPix({code, date: state.date, amount: sum, name, pix});
+      });
+
+      el.appendChild(row);
+    }
+  }
+
+  let __couriersRenderToken = 0;
+
+  async function renderCouriersList(){
+    const el=$("listCouriers"); el.innerHTML="";
+    const myToken = ++__couriersRenderToken;
+    if(!auth.currentUser){ el.innerHTML=`<div class="muted">Faça login para listar entregadores.</div>`; return; }
+    try{
+      const arr=await listarCouriers();
+
+      if(myToken !== __couriersRenderToken) return;
+
+      const norm=(s)=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+      arr.sort((a,b)=>{
+        const an=norm(a.nome), bn=norm(b.nome);
+        const c=an.localeCompare(bn,"pt-BR");
+        if(c) return c;
+        return String(a.codigo||"").localeCompare(String(b.codigo||""),"pt-BR");
+      });
+
+      state.couriers.clear(); for(const c of arr) state.couriers.set(String(c.codigo), c);
+      if(!arr.length){ el.innerHTML=`<div class="muted">Nenhum entregador cadastrado.</div>`; return; }
+
+      let lastLetter = "";
+      for(const c of arr){
+        if(myToken !== __couriersRenderToken) return;
+        const code=String(c.codigo||"").trim();
+        const name=c.nome||"—";
+        const pix=c.pix||"—";
+        const tel=c.telefone||"—";
+
+        const firstLetter = name.trim().charAt(0).toUpperCase();
+        if(firstLetter && firstLetter !== lastLetter){
+          lastLetter = firstLetter;
+          const sep = document.createElement("div");
+          sep.className = "alpha-sep";
+          sep.innerHTML = `<span>${firstLetter}</span>`;
+          el.appendChild(sep);
+        }
+
+        const item=document.createElement("div");
+        item.className="item";
+        item.style.gridTemplateColumns="1fr auto";
+        item.innerHTML=`
+          <div class="main">
+            <b>${escapeHtml(name)} <span class="muted courier-code">[${escapeHtml(code)}]</span></b>
+            <small class="muted">PIX: ${escapeHtml(pix)} • Tel: ${escapeHtml(tel)}</small>
+          </div>
+          <div class="actions courier-actions">
+            <button class="linkbtn edit" data-editcourier="${escapeHtml(code)}">Editar</button>
+            <button class="linkbtn danger" data-delcourier="${escapeHtml(code)}">Excluir</button>
+          </div>`;
+        el.appendChild(item);
+      }
+    } catch(e){
+      console.error(e);
+      el.innerHTML=`<div class="muted">Faça login para listar entregadores.</div>`;
+    }
+  }
+
+
+  // Lista de entregas colapsável
+  const DELIVERIES_COLLAPSE_KEY = "docce_deliveries_collapsed";
+  function setDeliveriesCollapsed(collapsed){
+    const list = $("listDeliveries");
+    const btn  = $("btnToggleDeliveries");
+    if(list) list.classList.toggle("hidden", !!collapsed);
+    if(btn)  btn.textContent = collapsed ? "Mostrar" : "Ocultar";
+    try{ localStorage.setItem(DELIVERIES_COLLAPSE_KEY, collapsed ? "1" : "0"); }catch{}
+  }
+  function initDeliveriesCollapse(){
+    const btn = $("btnToggleDeliveries");
+    const list = $("listDeliveries");
+    if(!btn || !list) return;
+    let collapsed = false;
+    try{ collapsed = localStorage.getItem(DELIVERIES_COLLAPSE_KEY) === "1"; }catch{}
+    setDeliveriesCollapsed(collapsed);
+    btn.addEventListener("click", ()=>{
+      setDeliveriesCollapsed(!list.classList.contains("hidden"));
+    });
+  }
+
+  async function reloadAll(){
+    updateDayUI();
+    if(!auth.currentUser){
+      state.deliveries=[];
+      $("listDeliveries").innerHTML=`<div class="muted">Faça login para visualizar entregas.</div>`;
+      if($("pendingBadge")) $("pendingBadge").style.display="none";
+      $("listResumo").innerHTML=`<div class="muted">Faça login para visualizar fechamento.</div>`;
+      $("totalTaxaDia").textContent=brl(0); $("totalEntregasDia").textContent="0 entregas";
+      $("totalVendasDia").textContent=`Total pedidos: ${brl(0)}`;
+      return;
+    }
+
+    const cour=await listarCouriers();
+    state.couriers.clear(); for(const c of cour) state.couriers.set(String(c.codigo), c);
+
+    state.deliveries=await listarEntregas(state.date);
+    renderDeliveriesList(); renderResumo();
+    await renderCouriersList();
+  }
+
+  $("day").addEventListener("change", async (e)=>{state.date=e.target.value||todayISO();await reloadAll();});
+  $("btnRefresh").addEventListener("click", reloadAll);
+$("btnLimpar").addEventListener("click", ()=>{$("inpCliente").value="";$("inpTotal").value="";$("inpTaxa").value="";$("inpCodigoEntrega").value="";setMsg("Campos limpos.");});
+
+  $("btnAddEntrega").addEventListener("click", async ()=>{
+    try{
+      requireAuth();
+      const cliente=$("inpCliente").value.trim();
+      const total=parseBR($("inpTotal").value);
+      const taxa=parseBR($("inpTaxa").value);
+      const codigo=$("inpCodigoEntrega").value.trim();
+      if(!cliente) return setMsg("Informe o nome do cliente.");
+      if(taxa<=0) return setMsg("Informe a taxa (R$).");
+      if(codigo && !/^\d{4}$/.test(codigo)) return setMsg("Código deve ter 4 dígitos.");
+      if(codigo){
+        const c=await obterCourier(codigo);
+        if(!c){
+          // Entregador não cadastrado: abre modal de cadastro rápido
+          openQuickCourier(codigo, {
+            expectedCode: codigo,
+            date: state.date,
+            courierCode: codigo,
+            cliente,
+            total,
+            taxa
+          });
+          return;
+        }
+      }
+      await criarEntrega({date:state.date,courierCode:codigo||"",cliente,total,taxa});
+      $("inpCliente").value="";$("inpTotal").value="";$("inpTaxa").value="";$("inpCodigoEntrega").value="";
+      setMsg("Entrega adicionada.");
+      await reloadAll();
+    } catch(e){ if(e.message!=="not_authenticated"){console.error(e); setMsg("Erro ao adicionar.");} }
+  });
+
+  document.addEventListener("click", async (e)=>{
+    const t=e.target;
+
+    if(t?.dataset?.del){
+      try{requireAuth(); await excluirEntrega(t.dataset.del); setMsg("Entrega excluída."); await reloadAll();}
+      catch(err){console.error(err);setMsg("Erro ao excluir.");}
+    }
+
+    if(t?.dataset?.assignbtn){
+      try{
+        requireAuth();
+        const id=t.dataset.assignbtn;
+        const inp=document.querySelector(`input[data-assign="${id}"]`);
+        const codigo=String(inp?.value||"").trim();
+        if(!/^\d{4}$/.test(codigo)) return setMsg("Digite 4 dígitos.");
+        const c=await obterCourier(codigo);
+        if(!c){
+          const d = state.deliveries.find(x=>String(x.id)===String(id));
+          return openQuickCourier(codigo, {
+            expectedCode: codigo,
+            deliveryId: id,
+            date: d?.date || state.date,
+            courierCode: codigo,
+            cliente: d?.cliente || "",
+            total: d?.total || 0,
+            taxa: d?.taxa || 0
+          });
+        }
+        await atribuirEntrega(id,codigo); setMsg("Entregador atribuído."); await reloadAll();
+      }catch(err){console.error(err);setMsg("Erro ao atribuir.");}
+    }
+
+    if(t?.dataset?.edit){
+      try{
+        requireAuth();
+        const id=t.dataset.edit;
+        const novo=prompt("Novo código (4 dígitos):"); if(novo==null) return;
+        const codigo=String(novo).trim(); if(!/^\d{4}$/.test(codigo)) return setMsg("Código inválido.");
+        const c=await obterCourier(codigo);
+        if(!c){
+          const d = state.deliveries.find(x=>String(x.id)===String(id));
+          return openQuickCourier(codigo, {
+            expectedCode: codigo,
+            deliveryId: id,
+            date: d?.date || state.date,
+            courierCode: codigo,
+            cliente: d?.cliente || "",
+            total: d?.total || 0,
+            taxa: d?.taxa || 0
+          });
+        }
+        await atribuirEntrega(id,codigo); setMsg("Entrega atualizada."); await reloadAll();
+      }catch(err){console.error(err);setMsg("Erro ao editar.");}
+    }
+
+    if(t?.dataset?.editcourier){
+      const code=String(t.dataset.editcourier);
+      const c=state.couriers.get(code); if(!c) return;
+      $("cCodigo").value=code; $("cNome").value=c.nome||""; $("cPix").value=c.pix||""; $("cTel").value=c.telefone||"";
+      setMsg("Entregador carregado para edição.");
+      showPanel("cadastro");
+    }
+
+    if(t?.dataset?.delcourier){
+      try{
+        requireAuth();
+        const code=String(t.dataset.delcourier);
+        if(!confirm("Excluir este entregador?")) return;
+        await excluirCourier(code);
+        setMsg("Entregador excluído.");
+        await reloadAll();
+        showPanel("entregadores");
+      }catch(err){console.error(err);setMsg("Erro ao excluir entregador.");}
+    }
+  });
+
+  $("cTel").addEventListener("input", ()=>{ const tel=$("cTel").value.replace(/\D/g,""); $("cCodigo").value = tel.length>=4 ? tel.slice(-4) : ""; });
+
+  $("btnSalvarCourier").addEventListener("click", async ()=>{
+    try{
+      requireAuth();
+      const nome=$("cNome").value.trim();
+      const telefone=$("cTel").value.trim().replace(/\D/g,"");
+      const pix=$("cPix").value.trim();
+      if(telefone.length<4) return setMsg("Telefone inválido.");
+      const codigo=telefone.slice(-4);
+      $("cCodigo").value=codigo;
+      if(!nome||!telefone||!pix) return setMsg("Preencha nome, telefone e PIX.");
+      if(!/^\d{4}$/.test(codigo)) return setMsg("Código deve ter 4 dígitos.");
+      await salvarCourier({codigo,nome,pix,telefone});
+      $("cNome").value="";$("cTel").value="";$("cPix").value="";$("cCodigo").value="";
+      setMsg("Entregador salvo.");
+      await reloadAll();
+      await renderCouriersList();
+    }catch(err){console.error(err);setMsg("Erro ao salvar entregador.");}
+  });
+
+  $("btnLimparCourier").addEventListener("click", ()=>{$("cNome").value="";$("cTel").value="";$("cPix").value="";$("cCodigo").value="";setMsg("Campos limpos.");});
+
+  $("btnTabFechamento").addEventListener("click", ()=>showPanel("fechamento"));
+  $("btnTabEntregadores").addEventListener("click", async ()=>{ showPanel("entregadores"); await renderCouriersList(); });
+  $("btnTabCadastro").addEventListener("click", ()=>showPanel("cadastro"));
+
+  const openLogin=()=>{$("loginBackdrop").classList.add("show");};
+  const closeLogin=()=>{$("loginBackdrop").classList.remove("show");};
+  $("btnOpenLogin").addEventListener("click", openLogin);
+  $("loginClose").addEventListener("click", closeLogin);
+  $("loginCancel").addEventListener("click", closeLogin);
+
+  // === Cadastro rápido de entregador (modal) ===
+  let __pendingDelivery = null;
+
+  const openQuickCourier = (expectedCode, payload) => {
+    __pendingDelivery = payload || null;
+    $("qNome").value = "";
+    $("qPix").value = "";
+    $("qTel").value = "";
+    $("qCodigo").value = String(expectedCode||"").trim();
+    $("qHint").textContent = expectedCode ? `Código informado: ${expectedCode}` : "";
+    $("courierBackdrop").classList.add("show");
+  };
+  const closeQuickCourier = () => {
+    $("courierBackdrop").classList.remove("show");
+  };
+  const openConfirmAdd = () => $("confirmAddBackdrop").classList.add("show");
+  const closeConfirmAdd = () => $("confirmAddBackdrop").classList.remove("show");
+
+  $("courierClose").addEventListener("click", closeQuickCourier);
+  $("courierCancel").addEventListener("click", ()=>{ __pendingDelivery=null; closeQuickCourier(); });
+
+  $("confirmAddClose").addEventListener("click", ()=>{ closeConfirmAdd(); });
+  $("confirmAddNo").addEventListener("click", ()=>{ closeConfirmAdd(); __pendingDelivery=null; });
+
+  // Auto gera código pelo telefone (4 últimos dígitos)
+  $("qTel").addEventListener("input", ()=>{
+    const tel = String($("qTel").value||"").replace(/\D/g,"");
+    $("qCodigo").value = tel.length>=4 ? tel.slice(-4) : "";
+  });
+
+  $("courierSave").addEventListener("click", async ()=>{
+    try{
+      requireAuth();
+      const nome = $("qNome").value.trim();
+      const telefone = String($("qTel").value||"").trim().replace(/\D/g,"");
+      const pix = $("qPix").value.trim();
+      const codigo = String($("qCodigo").value||"").trim();
+
+      if(!nome || !telefone || !pix) return setMsg("Preencha nome, telefone e PIX.");
+      if(telefone.length < 4) return setMsg("Telefone inválido.");
+      if(!/^\d{4}$/.test(codigo)) return setMsg("Código inválido.");
+
+      // Se o usuário tinha informado um código no registro, valide que bate com os 4 últimos
+      const expected = __pendingDelivery?.expectedCode ? String(__pendingDelivery.expectedCode) : "";
+      if(expected && codigo !== expected){
+        return setMsg(`O telefone informado termina em ${codigo}, mas o código digitado foi ${expected}.`);
+      }
+
+      await salvarCourier({codigo, nome, pix, telefone});
+      closeQuickCourier();
+      setMsg("Entregador cadastrado.", "good");
+      openConfirmAdd();
+    }catch(err){
+      console.error(err);
+      setMsg("Erro ao cadastrar entregador.");
+    }
+  });
+
+  $("confirmAddYes").addEventListener("click", async ()=>{
+    try{
+      requireAuth();
+      closeConfirmAdd();
+      if(!__pendingDelivery) return;
+
+      if(__pendingDelivery.deliveryId){
+        await atribuirEntrega(__pendingDelivery.deliveryId, __pendingDelivery.courierCode);
+      }else{
+        await criarEntrega({
+          date: __pendingDelivery.date,
+          courierCode: __pendingDelivery.courierCode,
+          cliente: __pendingDelivery.cliente,
+          total: __pendingDelivery.total,
+          taxa: __pendingDelivery.taxa
+        });
+      }
+// limpa formulário
+      $("inpCliente").value="";
+      $("inpTotal").value="";
+      $("inpTaxa").value="";
+      $("inpCodigoEntrega").value="";
+
+      setMsg("Entrega adicionada.", "good");
+      __pendingDelivery = null;
+      await reloadAll();
+    }catch(err){
+      console.error(err);
+      setMsg("Erro ao adicionar entrega.");
+    }
+  });
+
+  // ============================================
+
+  $("loginGo").addEventListener("click", async ()=>{
+    const email=$("loginEmail").value.trim();
+    const pass=$("loginPass").value;
+    if(!email||!pass) return setMsg("Informe e-mail e senha.");
+    try{ await signInWithEmailAndPassword(auth,email,pass); closeLogin(); setMsg("Login efetuado."); await reloadAll(); }
+    catch(e){ console.error(e); setMsg("Falha no login."); }
+  });
+
+  $("btnLogout").addEventListener("click", async ()=>{ await signOut(auth); setMsg("Você saiu."); });
+
+  let wasLogged = false;
+  onAuthStateChanged(auth, async (user) => {
+    setAuthTag(!!user, user?.email || "");
+
+    // roda uma vez quando entrar pela primeira vez
+    if (user && !wasLogged) {
+      state.date = todayISO();
+      updateDayUI();
+    }
+
+    wasLogged = !!user;
+    await reloadAll();
+  });
+
+
+  state.date=todayISO();
+  updateDayUI();
+  showPanel(null);
+  initDeliveriesCollapse();
+  setMsg("Faça login para usar.");
+</script>
+</body>
+</html>
