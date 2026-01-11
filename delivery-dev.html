@@ -94,6 +94,69 @@
     .sbtn.danger:hover{background:rgba(255,92,92,.14);color:var(--bad)}
     .sbtn.edit{color:rgba(120,170,255,.92);border-color:rgba(120,170,255,.25);background:rgba(120,170,255,.10)}
     .sbtn.edit:hover{background:rgba(120,170,255,.14);color:rgba(150,190,255,1)}
+/* Kebab (⋮) menu + QR Pix modal */
+.kebabWrap{position:relative;display:flex;justify-content:flex-end}
+.kebabBtn{
+  width:36px;height:34px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(29,29,32,.35);
+  color:var(--muted);
+  cursor:pointer;
+  font:inherit;
+  font-size:18px;
+  line-height:1;
+  display:grid;
+  place-items:center;
+  transition:.12s transform ease,.12s opacity ease,.12s background ease;
+  user-select:none;
+}
+.kebabBtn:hover{color:var(--text);background:rgba(29,29,32,.55);transform:translateY(-1px)}
+.kebabBtn:active{transform:translateY(0);opacity:.85}
+.kebabMenu{
+  position:absolute;
+  right:0;
+  top:40px;
+  min-width:210px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(23,23,25,.98);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  z-index:120;
+}
+.kebabMenu[hidden]{display:none !important}
+.kebabItem{
+  width:100%;
+  text-align:left;
+  padding:10px 12px;
+  border:none;
+  background:transparent;
+  color:var(--text);
+  cursor:pointer;
+  font:inherit;
+  font-size:12px;
+  font-variant:small-caps;
+  letter-spacing:.9px;
+  font-weight:700;
+}
+.kebabItem:hover{background:rgba(233,215,181,.08);color:var(--accent)}
+.kebabSep{height:1px;background:rgba(255,255,255,.08)}
+.qrBox{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:14px 0 2px;
+}
+#pixQrBox{width:260px;height:260px;display:grid;place-items:center}
+#pixQrBox img, #pixQrBox canvas{width:260px;height:260px}
+.qrHint{
+  margin-top:8px;
+  font-size:12px;
+  color:var(--muted);
+  text-align:center;
+  line-height:1.35;
+}
   
     /* Toast flutuante (substitui completamente o box de mensagem) */
     .toastHost{
@@ -476,6 +539,34 @@
   </div>
 </div>
 
+
+<!-- QR Pix (modal) -->
+<div class="backdrop" id="pixBackdrop" aria-hidden="true">
+  <div class="modal" style="width:min(520px,100%)">
+    <header>
+      <b>Pix</b>
+      <button class="x" id="pixClose" aria-label="Fechar">×</button>
+    </header>
+    <div class="content">
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center">
+        <div style="font-weight:800" id="pixNome">—</div>
+        <div class="muted" style="font-size:12px" id="pixChave">—</div>
+      </div>
+      <div class="qrBox">
+        <div id="pixQrBox" aria-label="QR Code Pix"></div>
+      </div>
+      <div class="qrHint">Aponte o celular, <b>digite o valor</b> no app do banco e conclua o pagamento.</div>
+    </div>
+    <div class="foot">
+      <button class="btn secondary" id="pixClose2">Fechar</button>
+      <button class="btn good" id="pixMarkPaid">Marcar como pago</button>
+    </div>
+  </div>
+</div>
+
+<!-- QRCode generator (client-side) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <script type="module">
   const firebaseConfig = {
     apiKey: "AIzaSyBwuo9jDigmdKgfeofbc38c28v82Ia-ZJk",
@@ -631,6 +722,116 @@
 }
 
   function escapeHtml(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+// ===== Pix QR (gera payload na hora, sem salvar imagem) =====
+const __pixCtx = { code:null, date:null };
+
+const normPixKey = (k)=>String(k||"").trim();
+
+const stripAccentsUpper = (s)=>{
+  return String(s||"")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^0-9A-Za-z \-\.]/g," ")
+    .replace(/\s+/g," ")
+    .trim()
+    .toUpperCase();
+};
+
+const emv = (id, value)=>{
+  const v = String(value||"");
+  const len = String(v.length).padStart(2,"0");
+  return `${id}${len}${v}`;
+};
+
+// CRC16/CCITT-FALSE (poly 0x1021, init 0xFFFF)
+const crc16ccitt = (str)=>{
+  let crc = 0xFFFF;
+  for(let i=0;i<str.length;i++){
+    crc ^= (str.charCodeAt(i) << 8);
+    for(let j=0;j<8;j++){
+      if(crc & 0x8000) crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
+      else crc = (crc << 1) & 0xFFFF;
+    }
+  }
+  return crc.toString(16).toUpperCase().padStart(4,"0");
+};
+
+const buildPixPayload = ({ chave, nome, cidade, descricao } = {})=>{
+  const key = normPixKey(chave);
+  if(!key) return "";
+
+  const n = stripAccentsUpper(nome || "RECEBEDOR").slice(0,25) || "RECEBEDOR";
+  const c = stripAccentsUpper(cidade || "JI-PARANA").slice(0,15) || "JI-PARANA";
+  const txid = "***";
+
+  const mai =
+    emv("00","br.gov.bcb.pix") +
+    emv("01", key) +
+    (descricao ? emv("02", String(descricao).slice(0,72)) : "");
+
+  const payloadBase =
+    emv("00","01") +                         // Payload Format Indicator
+    emv("01","11") +                         // Point of Initiation Method (11 = static)
+    emv("26", mai) +                         // Merchant Account Information
+    emv("52","0000") +                       // Merchant Category Code
+    emv("53","986") +                        // Transaction Currency (BRL)
+    emv("58","BR") +                         // Country Code
+    emv("59", n) +                           // Merchant Name
+    emv("60", c) +                           // Merchant City
+    emv("62", emv("05", txid));              // Additional Data Field Template (TXID)
+
+  const toCrc = payloadBase + "6304";
+  const crc = crc16ccitt(toCrc);
+  return toCrc + crc;
+};
+
+const openPixModal = ({ nome, chave, code, date, descricao } = {})=>{
+  const pixKey = normPixKey(chave);
+  if(!pixKey){ setMsg("PIX do entregador está vazio."); return; }
+
+  __pixCtx.code = String(code||"").trim();
+  __pixCtx.date = String(date||state.date||"").trim();
+
+  $("pixNome").textContent = String(nome||"—");
+  $("pixChave").textContent = `PIX: ${pixKey}`;
+
+  const payload = buildPixPayload({
+    chave: pixKey,
+    nome: nome || "RECEBEDOR",
+    cidade: "JI-PARANA",
+    descricao: descricao || "Pagamento entregas"
+  });
+
+  const box = $("pixQrBox");
+  box.innerHTML = "";
+  if(!payload){ setMsg("Não foi possível gerar o QR."); return; }
+
+  // QRCode lib (qrcodejs) — gera imagem/canvas no client
+  try{
+    new QRCode(box, { text: payload, width: 260, height: 260, correctLevel: QRCode.CorrectLevel.M });
+    $("pixBackdrop").classList.add("show");
+  }catch(err){
+    console.error(err);
+    setMsg("Erro ao gerar QR Code.");
+  }
+};
+
+const closePixModal = ()=>{ $("pixBackdrop").classList.remove("show"); };
+
+$("pixClose").addEventListener("click", closePixModal);
+$("pixClose2").addEventListener("click", closePixModal);
+
+$("pixMarkPaid").addEventListener("click", ()=>{
+  const code = String(__pixCtx.code||"").trim();
+  const date = String(__pixCtx.date||state.date||"").trim();
+  if(!code){ closePixModal(); return; }
+  const key = `paid:${date}:${code}`;
+  try{ localStorage.setItem(key, "1"); }catch{}
+  // Atualiza UI imediatamente
+  renderResumo();
+  closePixModal();
+  setMsg("Marcado como pago.", "good");
+});
+// ===== /Pix QR =====
   function renderDeliveriesList(){
     const el=$("listDeliveries"); el.innerHTML="";
     const pending=state.deliveries.filter(d=>d.status==="pending"||!d.courierCode);
@@ -717,7 +918,7 @@
 
     for(const [code,sum] of entries){
       const c=state.couriers.get(code); const name=c?.nome||"Entregador"; const pix=c?.pix||"—";
-      const row=document.createElement("div"); row.className="item"; row.style.gridTemplateColumns="1fr auto";
+      const row=document.createElement("div"); row.className="item"; row.style.gridTemplateColumns="1fr auto auto";
       const key = `paid:${state.date}:${code}`;
       const paid = localStorage.getItem(key) === "1";
 
@@ -738,6 +939,12 @@
         <div class="meta">
           <b>${brl(sum)}</b>
           <small class="muted">taxas</small>
+        </div>
+        <div class="kebabWrap">
+          <button class="kebabBtn" data-kebab="resumo-${escapeHtml(code)}" aria-label="Ações">⋮</button>
+          <div class="kebabMenu" id="kebab-resumo-${escapeHtml(code)}" hidden>
+            <button class="kebabItem" data-pixqr="${escapeHtml(code)}">Visualizar QR Code</button>
+          </div>
         </div>`;
 
       const chk = row.querySelector(".paidCheck");
@@ -799,8 +1006,14 @@
             <small class="muted">PIX: ${escapeHtml(pix)} • Tel: ${escapeHtml(tel)}</small>
           </div>
           <div class="actions courier-actions">
-            <button class="linkbtn edit" data-editcourier="${escapeHtml(code)}">Editar</button>
-            <button class="linkbtn danger" data-delcourier="${escapeHtml(code)}">Excluir</button>
+            <div class="kebabWrap">
+              <button class="kebabBtn" data-kebab="courier-${escapeHtml(code)}" aria-label="Ações">⋮</button>
+              <div class="kebabMenu" id="kebab-courier-${escapeHtml(code)}" hidden>
+                <button class="kebabItem" data-editcourier="${escapeHtml(code)}">Editar</button>
+                <div class="kebabSep"></div>
+                <button class="kebabItem" data-delcourier="${escapeHtml(code)}" style="color:rgba(255,92,92,.90)">Excluir</button>
+              </div>
+            </div>
           </div>`;
         el.appendChild(item);
       }
@@ -890,6 +1103,32 @@ $("btnLimpar").addEventListener("click", ()=>{$("inpCliente").value="";$("inpTot
 
   document.addEventListener("click", async (e)=>{
     const t=e.target;
+
+const closeAllKebabs = ()=>{ document.querySelectorAll(".kebabMenu").forEach(m=>m.hidden=true); };
+
+// Toggle kebab (⋮) menus
+const kb = t?.closest?.(".kebabBtn");
+if(kb){
+  const id = kb.dataset.kebab;
+  closeAllKebabs();
+  const menu = document.getElementById("kebab-"+id);
+  if(menu) menu.hidden = !menu.hidden;
+  return;
+}
+if(!t?.closest?.(".kebabMenu")){
+  closeAllKebabs();
+}
+
+// QR Pix (Fechamento)
+if(t?.dataset?.pixqr){
+  const code = String(t.dataset.pixqr||"").trim();
+  const c = state.couriers.get(code) || null;
+  const nome = c?.nome || "Entregador";
+  const chave = c?.pix || "";
+  closeAllKebabs();
+  openPixModal({ nome, chave, code, date: state.date });
+  return;
+}
 
     if(t?.dataset?.del){
       try{requireAuth(); await excluirEntrega(t.dataset.del); setMsg("Entrega excluída."); await reloadAll();}
