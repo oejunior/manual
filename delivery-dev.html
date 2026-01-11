@@ -567,6 +567,28 @@
 <!-- QRCode generator (client-side) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
+<!-- Editar entrega (modal) -->
+<div class="backdrop" id="editDeliveryBackdrop" aria-hidden="true">
+  <div class="modal" style="width:min(460px,100%)">
+    <header><b>Editar entrega</b><button class="x" id="editDeliveryClose" aria-label="Fechar">×</button></header>
+    <div class="content">
+      <div class="notice">Altere o <b>código do entregador</b> (4 dígitos) para esta entrega.</div>
+      <div class="sep"></div>
+      <div class="row" style="grid-template-columns:1fr">
+        <div class="field">
+          <label>Código do entregador</label>
+          <input id="edCourierCode" inputmode="numeric" placeholder="0000" maxlength="4">
+        </div>
+      </div>
+      <div class="hint muted" id="edHint" style="margin-top:6px"></div>
+    </div>
+    <div class="foot">
+      <button class="btn secondary" id="editDeliveryCancel">Cancelar</button>
+      <button class="btn good" id="editDeliverySave">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
   const firebaseConfig = {
     apiKey: "AIzaSyBwuo9jDigmdKgfeofbc38c28v82Ia-ZJk",
@@ -888,9 +910,13 @@ $("pixMarkPaid").addEventListener("click", ()=>{
             <b>${brl(d.taxa)}</b>
             <small class="muted">${brl(d.total)}</small>
           </div>
-          <div class="actions">
-            <button class="sbtn edit" data-edit="${d.id}">Editar</button>
-            <button class="sbtn danger" data-del="${d.id}">Excluir</button>
+          <div class="kebabWrap">
+            <button class="kebabBtn" data-kebab="delivery-${escapeHtml(d.id)}" aria-label="Ações">⋮</button>
+            <div class="kebabMenu" id="kebab-delivery-${escapeHtml(d.id)}" hidden>
+              <button class="kebabItem" data-edit="${d.id}">Editar</button>
+              <div class="kebabSep"></div>
+              <button class="kebabItem" data-del="${d.id}">Excluir</button>
+            </div>
           </div>`;
       }
       el.appendChild(item);
@@ -1162,21 +1188,11 @@ if(t?.dataset?.pixqr){
     if(t?.dataset?.edit){
       try{
         requireAuth();
-        const id=t.dataset.edit;
-        const novo=prompt("Novo código (4 dígitos):"); if(novo==null) return;
-        const codigo=String(novo).trim(); if(!/^\d{4}$/.test(codigo)) return setMsg("Código inválido.");
-        const c=await obterCourier(codigo);
-        if(!c){
-          const d = state.deliveries.find(x=>String(x.id)===String(id));
-          return openQuickCourier(codigo, {
-            expectedCode: codigo,
-            deliveryId: id,
-            date: d?.date || state.date,
-            courierCode: codigo,
-            cliente: d?.cliente || "",
-            total: d?.total || 0,
-            taxa: d?.taxa || 0
-          });
+        const id = String(t.dataset.edit||"");
+        closeAllKebabs();
+        openEditDelivery(id);
+      }catch(err){ console.error(err); setMsg("Erro ao abrir edição."); }
+    });
         }
         await atribuirEntrega(id,codigo); setMsg("Entrega atualizada."); await reloadAll();
       }catch(err){console.error(err);setMsg("Erro ao editar.");}
@@ -1235,6 +1251,62 @@ if(t?.dataset?.pixqr){
   $("btnOpenLogin").addEventListener("click", openLogin);
   $("loginClose").addEventListener("click", closeLogin);
   $("loginCancel").addEventListener("click", closeLogin);
+
+  // === Editar entrega (modal) ===
+  let __editDeliveryId = null;
+
+  const openEditDelivery = (deliveryId) => {
+    __editDeliveryId = String(deliveryId || "");
+    const d = state.deliveries.find(x => String(x.id) === __editDeliveryId) || null;
+    const current = d?.courierCode ? String(d.courierCode) : "";
+    $("edCourierCode").value = current;
+    $("edHint").textContent = current ? `Código atual: ${current}` : "Entrega sem entregador atribuído.";
+    $("editDeliveryBackdrop").classList.add("show");
+    try{ $("edCourierCode").focus(); }catch{}
+  };
+
+  const closeEditDelivery = () => {
+    $("editDeliveryBackdrop").classList.remove("show");
+    __editDeliveryId = null;
+  };
+
+  $("editDeliveryClose").addEventListener("click", closeEditDelivery);
+  $("editDeliveryCancel").addEventListener("click", closeEditDelivery);
+
+  $("editDeliverySave").addEventListener("click", async () => {
+    try{
+      requireAuth();
+      const id = __editDeliveryId;
+      if(!id) return closeEditDelivery();
+
+      const codigo = String($("edCourierCode").value || "").trim();
+      if(!/^[0-9]{4}$/.test(codigo)) return setMsg("Código deve ter 4 dígitos.");
+
+      const c = await obterCourier(codigo);
+      if(!c){
+        // Se entregador não existir, abre cadastro rápido e depois atribui
+        const d = state.deliveries.find(x => String(x.id) === String(id));
+        closeEditDelivery();
+        return openQuickCourier(codigo, {
+          expectedCode: codigo,
+          deliveryId: id,
+          date: d?.date || state.date,
+          courierCode: codigo,
+          cliente: d?.cliente || "",
+          total: d?.total || 0,
+          taxa: d?.taxa || 0
+        });
+      }
+
+      await atribuirEntrega(id, codigo);
+      setMsg("Entrega atualizada.", "good");
+      closeEditDelivery();
+      await reloadAll();
+    }catch(err){
+      console.error(err);
+      setMsg("Erro ao editar.");
+    }
+  });
 
   // === Cadastro rápido de entregador (modal) ===
   let __pendingDelivery = null;
