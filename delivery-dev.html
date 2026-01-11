@@ -38,6 +38,7 @@
     .field{border:1px solid var(--stroke);background:rgba(29,29,32,.75);border-radius:14px;padding:10px 12px}
     .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
     .field input{width:100%;border:none;outline:none;background:transparent;color:var(--text);font:inherit;font-size:14px}
+    .field select{width:100%;border:none;outline:none;background:transparent;color:var(--text);font:inherit;font-size:14px;appearance:none}
     .list{margin-top:10px;border-top:1px dashed rgba(255,255,255,.08);padding-top:10px;display:flex;flex-direction:column;gap:8px}
     .item{border:1px solid rgba(255,255,255,.08);background:rgba(29,29,32,.55);border-radius:14px;padding:8px 12px;display:grid;grid-template-columns:1.2fr .8fr auto;gap:10px;align-items:center}
     .item .main b{display:block;font-size:13px}.item .main small{display:block;color:var(--muted);font-size:12px}
@@ -469,7 +470,7 @@
             <div class="field"><label>Telefone</label><input id="cTel" inputmode="numeric" placeholder="DDD + número"></div>
           </div>
           <div class="row">
-            <div class="field"><label>Chave PIX</label><input id="cPix" placeholder="CPF, e-mail, aleatória…"></div>
+            <div class="field"><label>Tipo de PIX</label><select id="cPixType"><option value="cpf">CPF</option><option value="phone">Telefone</option><option value="email">E-mail</option><option value="random">Aleatoria</option></select><div style="height:8px"></div><label>Chave PIX</label><input id="cPix" placeholder="CPF, e-mail, aleatória…"></div>
             <div class="field"><label>Código (automático)</label><input id="cCodigo" placeholder="Ex.: 2603" maxlength="4" readonly></div>
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -513,7 +514,7 @@
         <div class="field"><label>Telefone</label><input id="qTel" inputmode="numeric" placeholder="DDD + número"></div>
       </div>
       <div class="row">
-        <div class="field"><label>Chave PIX</label><input id="qPix" placeholder="CPF, e-mail, aleatória…"></div>
+        <div class="field"><label>Tipo de PIX</label><select id="qPixType"><option value="cpf">CPF</option><option value="phone">Telefone</option><option value="email">E-mail</option><option value="random">Aleatoria</option></select><div style="height:8px"></div><label>Chave PIX</label><input id="qPix" placeholder="CPF, e-mail, aleatória…"></div>
         <div class="field"><label>Código (automático)</label><input id="qCodigo" placeholder="Ex.: 2224" maxlength="4" readonly></div>
       </div>
       <div class="hint muted" id="qHint" style="margin-top:6px"></div>
@@ -658,9 +659,15 @@
   const setMsg=(text,tone="info")=>{ showToast(text,tone); };
   const requireAuth=()=>{ if(!auth.currentUser){ setMsg("Faça login para usar."); throw new Error("not_authenticated"); } };
 
-  async function salvarCourier({codigo,nome,pix,telefone}){
+  async function salvarCourier({codigo,nome,pix,telefone,pixType}){
     requireAuth();
-    await setDoc(doc(db,"couriers",String(codigo)),{nome:String(nome||"").trim(),pix:String(pix||"").trim(),telefone:String(telefone||"").trim(),updatedAt:Date.now()},{merge:true});
+    await setDoc(doc(db,"couriers",String(codigo)),{
+      nome:String(nome||"").trim(),
+      pix:String(pix||"").trim(),
+      pixType:String(pixType||"").trim(),
+      telefone:String(telefone||"").trim(),
+      updatedAt:Date.now()
+    },{merge:true});
   }
   async function listarCouriers(){
     requireAuth();
@@ -749,6 +756,61 @@ const __pixCtx = { code:null, date:null };
 
 const normPixKey = (k)=>String(k||"").trim();
 
+const inferPixType = (k)=>{
+  const s=String(k||"").trim();
+  if(!s) return "cpf";
+  if(s.includes("@")) return "email";
+  if(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s)) return "random";
+  return "cpf";
+};
+
+const normalizePixKeyByType = (k,type)=>{
+  const s=String(k||"").trim();
+  const t=String(type||"").trim().toLowerCase();
+  if(!s) return "";
+  if(t==="cpf") return s.replace(/\D/g,"");
+  if(t==="phone"||t==="telefone"||t==="celular"){
+    const digits=s.replace(/\D/g,""); if(!digits) return "";
+    if(digits.startsWith("55")) return "+"+digits;
+    return "+55"+digits;
+  }
+  if(t==="email") return s.toLowerCase();
+  if(t==="random"||t==="aleatoria"||t==="aleatória") return s.toLowerCase();
+  return s;
+};
+
+
+// === PIX: tipo + normalização (CPF, Telefone, E-mail, Aleatória) ===
+const inferPixType = (k)=>{
+  const s = String(k||"").trim();
+  if(!s) return "cpf";
+  if(s.includes("@")) return "email";
+  if(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s)) return "random";
+  return "cpf";
+};
+
+const normalizePixKeyByType = (k, type)=>{
+  const s = String(k||"").trim();
+  const t = String(type||"").trim().toLowerCase();
+  if(!s) return "";
+  if(t==="cpf"){
+    return s.replace(/\D/g,"");
+  }
+  if(t==="phone" || t==="telefone" || t==="celular"){
+    const digits = s.replace(/\D/g,"");
+    if(!digits) return "";
+    if(digits.startsWith("55")) return "+" + digits;
+    return "+55" + digits;
+  }
+  if(t==="email"){
+    return s.toLowerCase();
+  }
+  if(t==="random" || t==="aleatoria" || t==="aleatória"){
+    return s.toLowerCase();
+  }
+  return s;
+};
+
 const stripAccentsUpper = (s)=>{
   return String(s||"")
     .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
@@ -806,8 +868,10 @@ const buildPixPayload = ({ chave, nome, cidade, descricao } = {})=>{
   return toCrc + crc;
 };
 
-const openPixModal = ({ nome, chave, code, date, descricao } = {})=>{
-  const pixKey = normPixKey(chave);
+const openPixModal = ({ nome, chave, pixType, code, date, descricao } = {})=>{
+  const pixKeyRaw = normPixKey(chave);
+  const pixKey = normalizePixKeyByType(pixKeyRaw, pixType || inferPixType(pixKeyRaw));
+  if(!pixKey){ setMsg("PIX do entregador está vazio."); return; }
   if(!pixKey){ setMsg("PIX do entregador está vazio."); return; }
 
   __pixCtx.code = String(code||"").trim();
@@ -1152,7 +1216,7 @@ if(t?.dataset?.pixqr){
   const nome = c?.nome || "Entregador";
   const chave = c?.pix || "";
   closeAllKebabs();
-  openPixModal({ nome, chave, code, date: state.date });
+  openPixModal({ nome, chave, pixType: (c?.pixType || inferPixType(chave)), code, date: state.date });
   return;
 }
 
@@ -1201,7 +1265,7 @@ if(t?.dataset?.pixqr){
     if(t?.dataset?.editcourier){
       const code=String(t.dataset.editcourier);
       const c=state.couriers.get(code); if(!c) return;
-      $("cCodigo").value=code; $("cNome").value=c.nome||""; $("cPix").value=c.pix||""; $("cTel").value=c.telefone||"";
+      $("cCodigo").value=code; $("cNome").value=c.nome||""; $("cPix").value=c.pix||""; $("cTel").value=c.telefone||""; if($("cPixType")) $("cPixType").value=(c.pixType||inferPixType(c.pix||"")||"cpf");
       setMsg("Entregador carregado para edição.");
       showPanel("cadastro");
     }
@@ -1226,21 +1290,22 @@ if(t?.dataset?.pixqr){
       requireAuth();
       const nome=$("cNome").value.trim();
       const telefone=$("cTel").value.trim().replace(/\D/g,"");
-      const pix=$("cPix").value.trim();
+      const pixType = (($("cPixType")?.value||"").trim() || inferPixType($("cPix").value.trim()) || "cpf");
+      const pix = $("cPix").value.trim();
       if(telefone.length<4) return setMsg("Telefone inválido.");
       const codigo=telefone.slice(-4);
       $("cCodigo").value=codigo;
       if(!nome||!telefone||!pix) return setMsg("Preencha nome, telefone e PIX.");
       if(!/^\d{4}$/.test(codigo)) return setMsg("Código deve ter 4 dígitos.");
-      await salvarCourier({codigo,nome,pix,telefone});
-      $("cNome").value="";$("cTel").value="";$("cPix").value="";$("cCodigo").value="";
+      await salvarCourier({codigo,nome,pix,telefone,pixType});
+      $("cNome").value="";$("cTel").value="";$("cPix").value="";$("cCodigo").value=""; if($("cPixType")) $("cPixType").value="cpf";
       setMsg("Entregador salvo.");
       await reloadAll();
       await renderCouriersList();
     }catch(err){console.error(err);setMsg("Erro ao salvar entregador.");}
   });
 
-  $("btnLimparCourier").addEventListener("click", ()=>{$("cNome").value="";$("cTel").value="";$("cPix").value="";$("cCodigo").value="";setMsg("Campos limpos.");});
+  $("btnLimparCourier").addEventListener("click", ()=>{$("cNome").value="";$("cTel").value="";$("cPix").value="";$("cCodigo").value=""; if($("cPixType")) $("cPixType").value="cpf"; setMsg("Campos limpos.");});
 
   $("btnTabFechamento").addEventListener("click", ()=>showPanel("fechamento"));
   $("btnTabEntregadores").addEventListener("click", async ()=>{ showPanel("entregadores"); await renderCouriersList(); });
@@ -1343,6 +1408,7 @@ if(t?.dataset?.pixqr){
       requireAuth();
       const nome = $("qNome").value.trim();
       const telefone = String($("qTel").value||"").trim().replace(/\D/g,"");
+      const pixType = (($("qPixType")?.value||"").trim() || inferPixType($("qPix").value.trim()) || "cpf");
       const pix = $("qPix").value.trim();
       const codigo = String($("qCodigo").value||"").trim();
 
@@ -1356,7 +1422,7 @@ if(t?.dataset?.pixqr){
         return setMsg(`O telefone informado termina em ${codigo}, mas o código digitado foi ${expected}.`);
       }
 
-      await salvarCourier({codigo, nome, pix, telefone});
+      await salvarCourier({codigo, nome, pix, telefone, pixType});
       closeQuickCourier();
       setMsg("Entregador cadastrado.", "good");
       openConfirmAdd();
